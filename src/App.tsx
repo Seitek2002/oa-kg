@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
@@ -10,10 +11,13 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import { homeOutline, shieldCheckmarkOutline, peopleOutline, cardOutline, personOutline } from 'ionicons/icons';
+import Home from './pages/Home';
+import Osago from './pages/Osago';
+import Agents from './pages/Agents';
+import Finance from './pages/Finance';
+import Profile from './pages/Profile';
+import OnboardingModal from './components/OnboardingModal';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -40,48 +44,76 @@ import '@ionic/react/css/display.css';
 
 /* import '@ionic/react/css/palettes/dark.always.css'; */
 /* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+// import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/tab1">
-            <Tab1 />
-          </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
-          <Route path="/tab3">
-            <Tab3 />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/tab1" />
-          </Route>
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={square} />
-            <IonLabel>Tab 3</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    const completed = localStorage.getItem('onboardingComplete');
+    setShowOnboarding(!completed);
+  }, []);
+
+  const handleOnboardingFinish = () => {
+    setShowOnboarding(false);
+  };
+
+  return (
+    <IonApp>
+      <OnboardingModal isOpen={showOnboarding} onFinish={handleOnboardingFinish} />
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/home">
+              <Home />
+            </Route>
+            <Route exact path="/osago">
+              <Osago />
+            </Route>
+            <Route exact path="/agents">
+              <Agents />
+            </Route>
+            <Route exact path="/finance">
+              <Finance />
+            </Route>
+            <Route exact path="/profile">
+              <Profile />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom">
+            <IonTabButton tab="home" href="/home">
+              <IonIcon aria-hidden="true" icon={homeOutline} />
+              <IonLabel>Главная</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="osago" href="/osago">
+              <IonIcon aria-hidden="true" icon={shieldCheckmarkOutline} />
+              <IonLabel>ОСАГО</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="agents" href="/agents">
+              <IonIcon aria-hidden="true" icon={peopleOutline} />
+              <IonLabel>Агенты</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="finance" href="/finance">
+              <IonIcon aria-hidden="true" icon={cardOutline} />
+              <IonLabel>Финансы</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="profile" href="/profile">
+              <IonIcon aria-hidden="true" icon={personOutline} />
+              <IonLabel>Профиль</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  );
+};
 
 export default App;
