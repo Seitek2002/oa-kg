@@ -27,6 +27,7 @@ import Finance from './pages/Finance';
 import Profile from './pages/Profile';
 import ReferralInfo from './pages/ReferralInfo';
 import InviteFriend from './pages/InviteFriend';
+import Withdraw from './pages/Withdraw';
 import OnboardingModal from './components/OnboardingModal';
 
 import logo from './assets/logo.svg';
@@ -91,49 +92,55 @@ const App: React.FC = () => {
         </IonHeader>
         <IonTabs>
           <IonRouterOutlet>
-            <Route exact path='/home'>
+            <Route exact path='/a/home'>
               <Home />
             </Route>
-            <Route exact path='/osago'>
+            <Route exact path='/a/osago'>
               <Osago />
             </Route>
-            <Route exact path='/agents'>
+            <Route exact path='/a/agents'>
               <Agents />
             </Route>
-            <Route exact path='/finance'>
+            <Route exact path='/a/finance'>
               <Finance />
             </Route>
-            <Route exact path='/profile'>
+            <Route exact path='/a/profile'>
               <Profile />
             </Route>
-            <Route exact path='/referral'>
+            <Route exact path='/a/referral'>
               <ReferralInfo />
             </Route>
-            <Route exact path='/invite'>
+            <Route exact path='/a/invite'>
               <InviteFriend />
             </Route>
+            <Route exact path='/a/withdraw'>
+              <Withdraw />
+            </Route>
+            <Route exact path='/a/'>
+              <Redirect to='/a/home' />
+            </Route>
             <Route exact path='/'>
-              <Redirect to='/home' />
+              <Redirect to='/a/home' />
             </Route>
           </IonRouterOutlet>
           <IonTabBar slot='bottom'>
-            <IonTabButton tab='home' href='/home'>
+            <IonTabButton tab='home' href='/a/home'>
               <IonIcon aria-hidden='true' icon={homeOutline} />
               <IonLabel>Главная</IonLabel>
             </IonTabButton>
-            <IonTabButton tab='osago' href='/osago'>
+            <IonTabButton tab='osago' href='/a/osago'>
               <IonIcon aria-hidden='true' icon={shieldCheckmarkOutline} />
               <IonLabel>ОСАГО</IonLabel>
             </IonTabButton>
-            <IonTabButton tab='agents' href='/agents'>
+            <IonTabButton tab='agents' href='/a/agents'>
               <IonIcon aria-hidden='true' icon={peopleOutline} />
               <IonLabel>Агенты</IonLabel>
             </IonTabButton>
-            <IonTabButton tab='finance' href='/finance'>
+            <IonTabButton tab='finance' href='/a/finance'>
               <IonIcon aria-hidden='true' icon={cardOutline} />
               <IonLabel>Финансы</IonLabel>
             </IonTabButton>
-            <IonTabButton tab='profile' href='/profile'>
+            <IonTabButton tab='profile' href='/a/profile'>
               <IonIcon aria-hidden='true' icon={personOutline} />
               <IonLabel>Профиль</IonLabel>
             </IonTabButton>

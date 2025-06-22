@@ -151,7 +151,7 @@ const Agents: React.FC = () => {
             expand='block'
             color='success'
             style={{ fontWeight: 500, borderRadius: 12, marginBottom: 8 }}
-            onClick={() => history.push('/invite')}
+            onClick={() => history.push('/a/invite')}
           >
             <IonIcon icon={personAddOutline} slot='start' />
             Пригласить друга в команду
