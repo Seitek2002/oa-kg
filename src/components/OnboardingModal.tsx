@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import {
   IonContent,
   IonButton,
@@ -9,23 +10,26 @@ import {
   IonInputOtp,
 } from '@ionic/react';
 
-import { Swiper, SwiperSlide } from 'swiper/react';
+import img1 from '../assets/onboarding/image-1.png';
+import img2 from '../assets/onboarding/image-2.png';
+import img3 from '../assets/onboarding/image-3.png';
+
 import 'swiper/css';
 import './OnboardingModal.css';
 
 const slideData = [
   {
-    image: '/src/assets/onboarding/image-1.png',
+    image: img1,
     title: 'Помоги другим оформить ОСАГО и заработай до 100 000 сом',
     subtitle: 'Вознаграждение 10% от ОСАГО',
   },
   {
-    image: '/src/assets/onboarding/image-2.png',
+    image: img2,
     title: 'Научи регистрировать друзей и зарабатывай пассивно от их продаж',
     subtitle: 'Вознаграждение 5% от ОСАГО друзей',
   },
   {
-    image: '/src/assets/onboarding/image-3.png',
+    image: img3,
     title: 'Все легально! Стань агентом по продаже ОСАГО за 2 минуты',
     subtitle: 'Вознаграждение 5% от ОСАГО друзей',
     extra:
@@ -181,7 +185,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               <h2>Введите код из SMS</h2>
               <IonInputOtp
                 length={5}
-                onChange={(e) => setSmsCode((prev) => prev + e.currentTarget.value)}
+                onChange={(e) =>
+                  setSmsCode((prev) => prev + e.currentTarget.value)
+                }
               >
                 Не получили код? <a href='#'>Отправить код заново</a>
               </IonInputOtp>
