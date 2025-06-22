@@ -1,6 +1,5 @@
 import React from 'react';
-import { IonPage, IonButton, IonIcon, IonInput, IonRadioGroup, IonRadio, IonLabel } from '@ionic/react';
-import { cardOutline, checkmarkCircleOutline, closeCircleOutline, timeOutline, cashOutline } from 'ionicons/icons';
+import { IonPage, IonButton, IonInput, IonRadioGroup, IonRadio, IonLabel } from '@ionic/react';
 
 const Withdraw: React.FC = () => (
   <IonPage style={{ overflow: 'auto', background: '#f6f8fa', padding: 16 }}>
