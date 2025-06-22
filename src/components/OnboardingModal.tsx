@@ -186,7 +186,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               <IonInputOtp
                 length={5}
                 onChange={(e) =>
-                  setSmsCode((prev) => prev + e.currentTarget.value)
+                  setSmsCode((prev) => prev + (e.currentTarget?.value || ''))
                 }
               >
                 Не получили код? <a href='#'>Отправить код заново</a>
