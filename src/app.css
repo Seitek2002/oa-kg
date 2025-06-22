@@ -1,0 +1,10 @@
+.header {
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header+.ion-page {
+    top: 60px;
+}
