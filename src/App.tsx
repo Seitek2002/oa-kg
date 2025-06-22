@@ -25,6 +25,8 @@ import Osago from './pages/Osago';
 import Agents from './pages/Agents';
 import Finance from './pages/Finance';
 import Profile from './pages/Profile';
+import ReferralInfo from './pages/ReferralInfo';
+import InviteFriend from './pages/InviteFriend';
 import OnboardingModal from './components/OnboardingModal';
 
 import logo from './assets/logo.svg';
@@ -103,6 +105,12 @@ const App: React.FC = () => {
             </Route>
             <Route exact path='/profile'>
               <Profile />
+            </Route>
+            <Route exact path='/referral'>
+              <ReferralInfo />
+            </Route>
+            <Route exact path='/invite'>
+              <InviteFriend />
             </Route>
             <Route exact path='/'>
               <Redirect to='/home' />
