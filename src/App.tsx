@@ -23,12 +23,12 @@ import {
 import Home from './pages/Home';
 import Osago from './pages/Osago';
 import Agents from './pages/Agents';
-import Finance from './pages/Finance';
 import Profile from './pages/Profile';
 import ReferralInfo from './pages/ReferralInfo';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw';
 import OnboardingModal from './components/OnboardingModal';
+import Finances from './pages/Finances';
 
 import logo from './assets/logo.svg';
 
@@ -101,8 +101,8 @@ const App: React.FC = () => {
             <Route exact path='/a/agents'>
               <Agents />
             </Route>
-            <Route exact path='/a/finance'>
-              <Finance />
+            <Route exact path='/a/finances'>
+              <Finances />
             </Route>
             <Route exact path='/a/profile'>
               <Profile />
@@ -136,9 +136,9 @@ const App: React.FC = () => {
               <IonIcon aria-hidden='true' icon={peopleOutline} />
               <IonLabel>Агенты</IonLabel>
             </IonTabButton>
-            <IonTabButton tab='finance' href='/a/finance'>
+            <IonTabButton tab='finances' href='/a/finances'>
               <IonIcon aria-hidden='true' icon={cardOutline} />
-              <IonLabel>Финансы</IonLabel>
+              <IonLabel>Финансы 2</IonLabel>
             </IonTabButton>
             <IonTabButton tab='profile' href='/a/profile'>
               <IonIcon aria-hidden='true' icon={personOutline} />
