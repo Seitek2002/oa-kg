@@ -2,19 +2,29 @@ FROM node:20.11.1-alpine as build
 
 WORKDIR /app
 
+# Копируем package files и устанавливаем зависимости
 COPY package*.json ./
 RUN npm install
-RUN npm install serve -g
 
+# Копируем исходный код и собираем
 COPY . .
 RUN npm run build
 
-EXPOSE 3000
+# Используем минимальный образ для хранения статических файлов
+FROM alpine:latest
 
-# Создаем скрипт для выполнения обеих команд
-RUN echo '#!/bin/sh' > /start.sh && \
-    echo 'cp -r /app/dist/. /frontend_static/' >> /start.sh && \
-    echo 'npm run serve' >> /start.sh && \
-    chmod +x /start.sh
+WORKDIR /app
 
-CMD ["/start.sh"]
+# Копируем собранные файлы
+COPY --from=build /app/dist ./
+
+# Создаем пользователя для безопасности
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+# Меняем владельца файлов
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+# Эта команда просто держит контейнер запущенным
+CMD ["tail", "-f", "/dev/null"]
