@@ -20,8 +20,8 @@ import {
   personOutline,
 } from 'ionicons/icons';
 
-import Home from './pages/Home';
 import Osago from './pages/Osago/Osago';
+import Home from './pages/Home/Home';
 import Agents from './pages/Agents';
 import Profile from './pages/Profile';
 import ReferralInfo from './pages/Referral/ReferralInfo';
