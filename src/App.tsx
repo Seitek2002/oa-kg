@@ -22,7 +22,7 @@ import {
 
 import Home from './pages/Home';
 import Osago from './pages/Osago/Osago';
-import Agents from './pages/Agents';
+import Agents from './pages/Agents/Agents';
 import Profile from './pages/Profile';
 import ReferralInfo from './pages/Referral/ReferralInfo';
 import InviteFriend from './pages/InviteFriend';
