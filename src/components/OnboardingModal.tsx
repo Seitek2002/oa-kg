@@ -83,8 +83,12 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
       }
       setSmsCode('');
       setStep(4);
-    } catch (e: { message: string }) {
-      setError(e.message || 'Ошибка отправки SMS');
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message || 'Ошибка отправки SMS');
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setLoading(false);
     }
@@ -113,8 +117,12 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
       }
       localStorage.setItem('onboardingComplete', '1');
       onFinish();
-    } catch (e: { message: string }) {
-      setError(e.message || 'Ошибка проверки кода');
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message || 'Ошибка проверки кода');
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setLoading(false);
     }
