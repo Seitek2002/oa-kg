@@ -21,10 +21,10 @@ import {
 } from 'ionicons/icons';
 
 import Home from './pages/Home';
-import Osago from './pages/Osago';
+import Osago from './pages/Osago/Osago';
 import Agents from './pages/Agents';
 import Profile from './pages/Profile';
-import ReferralInfo from './pages/ReferralInfo';
+import ReferralInfo from './pages/Referral/ReferralInfo';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw';
 import OnboardingModal from './components/OnboardingModal';
