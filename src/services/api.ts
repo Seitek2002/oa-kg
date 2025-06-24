@@ -7,7 +7,23 @@ export const api = createApi({
     getUsers: builder.query<any[], void>({
       query: () => 'users',
     }),
+    sendSms: builder.mutation<{ success: boolean }, { phoneNumber: string }>({
+      query: ({ phoneNumber }) => ({
+        url: 'https://oa.kg/api/auth/sms/send/',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ phoneNumber }).toString(),
+      }),
+    }),
+    verifySms: builder.mutation<{ token?: string }, { phoneNumber: string; code: string }>({
+      query: ({ phoneNumber, code }) => ({
+        url: 'https://oa.kg/api/auth/sms/verify/',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ phoneNumber, code }).toString(),
+      }),
+    }),
   }),
 });
 
-export const { useGetUsersQuery } = api;
+export const { useGetUsersQuery, useSendSmsMutation, useVerifySmsMutation } = api;

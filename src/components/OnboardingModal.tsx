@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSendSmsMutation, useVerifySmsMutation } from '../services/api';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import {
   IonContent,
@@ -52,8 +53,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const [agree, setAgree] = useState(false);
   const [smsCode, setSmsCode] = useState('');
   const [country, setCountry] = useState('+996');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [sendSms, { isLoading: isSending }] = useSendSmsMutation();
+  const [verifySms, { isLoading: isVerifying }] = useVerifySmsMutation();
 
   if (!isOpen) return null;
 
@@ -62,69 +64,35 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   };
 
   const handleSendSms = async () => {
-    setLoading(true);
     setError('');
+    const num =
+      country === '+7-KZ' || country === '+7-RU'
+        ? '+7' + phone
+        : country + phone;
     try {
-      const num =
-        country === '+7-KZ' || country === '+7-RU'
-          ? '+7' + phone
-          : country + phone;
-      const params = new URLSearchParams();
-      params.append('phoneNumber', num);
-      const res = await fetch('https://oa.kg/api/auth/sms/send/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params.toString(),
-      });
-      if (!res.ok) {
-        throw new Error('Ошибка отправки SMS');
-      }
+      await sendSms({ phoneNumber: num }).unwrap();
       setSmsCode('');
       setStep(4);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message || 'Ошибка отправки SMS');
-      } else {
-        setError('An unknown error occurred');
-      }
-    } finally {
-      setLoading(false);
+    } catch (e: any) {
+      setError(e?.data?.message || 'Ошибка отправки SMS');
     }
   };
 
   const handleFinish = async () => {
-    setLoading(true);
     setError('');
+    const num =
+      country === '+7-KZ' || country === '+7-RU'
+        ? '+7' + phone
+        : country + phone;
     try {
-      const num =
-        country === '+7-KZ' || country === '+7-RU'
-          ? '+7' + phone
-          : country + phone;
-      const params = new URLSearchParams();
-      params.append('phoneNumber', num);
-      params.append('code', smsCode);
-      const res = await fetch('https://oa.kg/api/auth/sms/verify/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params.toString(),
-      });
-      if (!res.ok) {
-        throw new Error('Неверный код');
+      const data = await verifySms({ phoneNumber: num, code: smsCode }).unwrap();
+      if (data.token) {
+        localStorage.setItem('token', data.token);
       }
       localStorage.setItem('onboardingComplete', '1');
       onFinish();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message || 'Ошибка проверки кода');
-      } else {
-        setError('An unknown error occurred');
-      }
-    } finally {
-      setLoading(false);
+    } catch (e: any) {
+      setError(e?.data?.message || 'Ошибка проверки кода');
     }
   };
 
@@ -253,11 +221,11 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               )}
               <IonButton
                 expand='block'
-                disabled={!phone || !agree || phone.length < 9 || loading}
+                disabled={!phone || !agree || phone.length < 9 || isSending}
                 onClick={handleSendSms}
                 style={{ marginTop: 24 }}
               >
-                {loading ? 'Отправка...' : 'Начать зарабатывать'}
+                {isSending ? 'Отправка...' : 'Начать зарабатывать'}
               </IonButton>
             </div>
           )}
@@ -299,11 +267,11 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               )}
               <IonButton
                 expand='block'
-                disabled={smsCode.length < 5 || loading}
+                disabled={smsCode.length < 5 || isVerifying}
                 onClick={handleFinish}
                 style={{ marginTop: 24 }}
               >
-                {loading ? 'Проверка...' : 'Начать зарабатывать'}
+                {isVerifying ? 'Проверка...' : 'Начать зарабатывать'}
               </IonButton>
             </div>
           )}
