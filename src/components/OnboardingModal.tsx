@@ -51,6 +51,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const [phone, setPhone] = useState('');
   const [agree, setAgree] = useState(false);
   const [smsCode, setSmsCode] = useState('');
+  const [country, setCountry] = useState('+996');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
@@ -58,13 +61,63 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
     setStep(3);
   };
 
-  const handleSendSms = () => {
-    setStep(4);
+  const handleSendSms = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const num =
+        country === '+7-KZ' || country === '+7-RU'
+          ? '+7' + phone
+          : country + phone;
+      const params = new URLSearchParams();
+      params.append('phoneNumber', num);
+      const res = await fetch('https://oa.kg/api/auth/sms/send/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      });
+      if (!res.ok) {
+        throw new Error('Ошибка отправки SMS');
+      }
+      setSmsCode('');
+      setStep(4);
+    } catch (e: { message: string }) {
+      setError(e.message || 'Ошибка отправки SMS');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleFinish = () => {
-    localStorage.setItem('onboardingComplete', '1');
-    onFinish();
+  const handleFinish = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const num =
+        country === '+7-KZ' || country === '+7-RU'
+          ? '+7' + phone
+          : country + phone;
+      const params = new URLSearchParams();
+      params.append('phoneNumber', num);
+      params.append('code', smsCode);
+      const res = await fetch('https://oa.kg/api/auth/sms/verify/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      });
+      if (!res.ok) {
+        throw new Error('Неверный код');
+      }
+      localStorage.setItem('onboardingComplete', '1');
+      onFinish();
+    } catch (e: { message: string }) {
+      setError(e.message || 'Ошибка проверки кода');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Кастомная пагинация
@@ -148,13 +201,25 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               <h2 className='onboarding-title'>Начните зарабатывать</h2>
               <p className='onboarding-subtitle'>Введите номер телефона</p>
               <div className='onboarding-phoneNumber'>
-                <span>КР (+996)</span>
+                <select
+                  value={country}
+                  onChange={(e) => {
+                    setCountry(e.target.value);
+                    setPhone('');
+                  }}
+                  style={{ marginRight: 8, padding: 4, fontSize: 16 }}
+                >
+                  <option value='+996'>КР (+996)</option>
+                  <option value='+7-KZ'>Казахстан (+7)</option>
+                  <option value='+7-RU'>Россия (+7)</option>
+                  <option value='+998'>Узбекистан (+998)</option>
+                </select>
                 <IonInput
                   type='tel'
                   placeholder='XXXXXXXXX'
                   value={phone}
                   onIonChange={(e) => setPhone(e.detail.value!)}
-                  maxlength={9}
+                  maxlength={country === '+998' ? 9 : 10}
                 />
               </div>
               <IonItem lines='none'>
@@ -170,13 +235,21 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               <p className='onboarding-sms'>
                 На номер телефона указанный выше будет отправлен СМС код
               </p>
+              {error && (
+                <IonText
+                  color='danger'
+                  style={{ display: 'block', marginBottom: 8 }}
+                >
+                  {error}
+                </IonText>
+              )}
               <IonButton
                 expand='block'
-                disabled={!phone || !agree || phone.length < 9}
+                disabled={!phone || !agree || phone.length < 9 || loading}
                 onClick={handleSendSms}
                 style={{ marginTop: 24 }}
               >
-                {'Начать зарабатывать'}
+                {loading ? 'Отправка...' : 'Начать зарабатывать'}
               </IonButton>
             </div>
           )}
@@ -184,20 +257,45 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <div className='onboarding-form'>
               <h2>Введите код из SMS</h2>
               <IonInputOtp
-                length={5}
+                length={6}
+                value={smsCode}
                 onChange={(e) =>
-                  setSmsCode((prev) => prev + (e.currentTarget?.value || ''))
+                  setSmsCode(
+                    (prev) => prev + (e.target as HTMLInputElement).value
+                  )
                 }
               >
-                Не получили код? <a href='#'>Отправить код заново</a>
+                Не получили код?{' '}
+                <a
+                  href='#'
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    await handleSendSms();
+                  }}
+                  style={{ color: '#1976d2', cursor: 'pointer' }}
+                >
+                  Отправить код заново
+                </a>
               </IonInputOtp>
+              {error && (
+                <IonText
+                  color='danger'
+                  style={{
+                    display: 'block',
+                    marginBottom: 8,
+                    textAlign: 'center',
+                  }}
+                >
+                  {error}
+                </IonText>
+              )}
               <IonButton
                 expand='block'
-                disabled={smsCode.length < 5}
+                disabled={smsCode.length < 5 || loading}
                 onClick={handleFinish}
                 style={{ marginTop: 24 }}
               >
-                Начать зарабатывать
+                {loading ? 'Проверка...' : 'Начать зарабатывать'}
               </IonButton>
             </div>
           )}
