@@ -1,6 +1,7 @@
 import React from 'react';
 import { IonButton, IonIcon, IonPage } from '@ionic/react';
 import { personAddOutline, informationCircleOutline } from 'ionicons/icons';
+import inviteLogo from '../assets//onboarding/inviteLogo.png'
 
 const InviteFriend: React.FC = () => (
   <IonPage
@@ -13,9 +14,9 @@ const InviteFriend: React.FC = () => (
   >
     <div>
       <img
-        src='/src/assets/onboarding/image-2.png'
+        src={inviteLogo}
         alt='Invite'
-        style={{ width: 180, margin: '0 auto 18px auto', display: 'block' }}
+        style={{ width: "100%", margin: '0 auto 18px auto', display: 'block' }}
       />
       <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 10 }}>
         Научи регистрировать друзей и зарабатывай
