@@ -84,7 +84,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
       }).unwrap();
       console.log(data, smsCode);
       if (data.access) {
-        localStorage.setItem('access', data.access);
+        localStorage.setItem('access', JSON.stringify(data));
       }
       onFinish();
     } catch (e: any) {

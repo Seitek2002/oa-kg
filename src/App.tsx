@@ -89,7 +89,15 @@ const App: React.FC = () => {
         <IonHeader className='header'>
           <img src={logo} alt='' style={{ height: 22 }} />
           <span>ОСАГО Агент КГ</span>
-          <span>Кыргызча</span>
+          <select
+            className="text-[#000] absolute right-0 top-0"
+            style={{ background: 'transparent' }}
+            defaultValue="kg"
+          >
+            <option value="ru">RU</option>
+            <option value="kg">KG</option>
+            <option value="en">ENG</option>
+          </select>
         </IonHeader>
         <IonTabs>
           <IonRouterOutlet>
