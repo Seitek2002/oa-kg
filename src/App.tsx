@@ -32,7 +32,6 @@ import OnboardingModal from './components/OnboardingModal';
 import Finances from './pages/Finances';
 
 import logo from './assets/logo.svg';
-import UsersList from './components/UsersList';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -109,9 +108,6 @@ const App: React.FC = () => {
             <Route exact path='/a/profile'>
               <Profile />
             </Route>
-            <Route exact path='/a/users'>
-              <UsersList />
-              </Route>
             <Route exact path='/a/profile/edit'>
               <ProfileEdit />
             </Route>
@@ -151,10 +147,6 @@ const App: React.FC = () => {
             <IonTabButton tab='profile' href='/a/profile'>
               <IonIcon aria-hidden='true' icon={personOutline} />
               <IonLabel>Профиль</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab='users' href='/a/users'>
-              <IonIcon aria-hidden='true' icon={peopleOutline} />
-              <IonLabel>Пользователи</IonLabel>
             </IonTabButton>
           </IonTabBar>
         </IonTabs>
