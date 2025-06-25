@@ -4,9 +4,6 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://jsonplaceholder.typicode.com/' }),
   endpoints: (builder) => ({
-    getUsers: builder.query<any[], void>({
-      query: () => 'users',
-    }),
     sendSms: builder.mutation<{ success: boolean }, { phoneNumber: string }>({
       query: ({ phoneNumber }) => ({
         url: 'https://oa.kg/api/auth/sms/send/',
@@ -15,7 +12,7 @@ export const api = createApi({
         body: new URLSearchParams({ phoneNumber }).toString(),
       }),
     }),
-    verifySms: builder.mutation<{ token?: string }, { phoneNumber: string; code: string }>({
+    verifySms: builder.mutation<{ access?: string, refresh?: string }, { phoneNumber: string; code: string }>({
       query: ({ phoneNumber, code }) => ({
         url: 'https://oa.kg/api/auth/sms/verify/',
         method: 'POST',
@@ -26,4 +23,4 @@ export const api = createApi({
   }),
 });
 
-export const { useGetUsersQuery, useSendSmsMutation, useVerifySmsMutation } = api;
+export const { useSendSmsMutation, useVerifySmsMutation } = api;

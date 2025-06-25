@@ -50,7 +50,6 @@
 }
 
 .onboarding-phoneNumber span {
-  width: 30%;
   font-size: 16px;
 }
 
@@ -61,11 +60,14 @@
 .onboarding-phoneNumber {
   display: flex;
   align-items: center;
+  justify-content: center;
   border: #171717 1px solid;
   padding: 0 16px;
   border-radius: 12px;
   margin-top: 24px;
   margin-bottom: 12px;
+  max-width: 60%;
+  margin: 0 auto;
 }
 
 .onboarding-sms {

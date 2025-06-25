@@ -4,10 +4,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import {
   IonContent,
   IonButton,
-  IonInput,
   IonItem,
   IonCheckbox,
   IonText,
+  IonInput,
   IonInputOtp,
 } from '@ionic/react';
 
@@ -52,7 +52,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const [phone, setPhone] = useState('');
   const [agree, setAgree] = useState(false);
   const [smsCode, setSmsCode] = useState('');
-  const [country, setCountry] = useState('+996');
   const [error, setError] = useState('');
   const [sendSms, { isLoading: isSending }] = useSendSmsMutation();
   const [verifySms, { isLoading: isVerifying }] = useVerifySmsMutation();
@@ -65,10 +64,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   const handleSendSms = async () => {
     setError('');
-    const num =
-      country === '+7-KZ' || country === '+7-RU'
-        ? '+7' + phone
-        : country + phone;
+    const num = '+996' + phone;
     try {
       await sendSms({ phoneNumber: num }).unwrap();
       setSmsCode('');
@@ -80,16 +76,16 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   const handleFinish = async () => {
     setError('');
-    const num =
-      country === '+7-KZ' || country === '+7-RU'
-        ? '+7' + phone
-        : country + phone;
+    const num = '+996' + phone;
     try {
-      const data = await verifySms({ phoneNumber: num, code: smsCode }).unwrap();
-      if (data.token) {
-        localStorage.setItem('token', data.token);
+      const data = await verifySms({
+        phoneNumber: num,
+        code: smsCode,
+      }).unwrap();
+      console.log(data, smsCode);
+      if (data.access) {
+        localStorage.setItem('access', data.access);
       }
-      localStorage.setItem('onboardingComplete', '1');
       onFinish();
     } catch (e: any) {
       setError(e?.data?.message || 'Ошибка проверки кода');
@@ -177,25 +173,23 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               <h2 className='onboarding-title'>Начните зарабатывать</h2>
               <p className='onboarding-subtitle'>Введите номер телефона</p>
               <div className='onboarding-phoneNumber'>
-                <select
-                  value={country}
-                  onChange={(e) => {
-                    setCountry(e.target.value);
-                    setPhone('');
-                  }}
-                  style={{ marginRight: 8, padding: 4, fontSize: 16 }}
-                >
-                  <option value='+996'>КР (+996)</option>
-                  <option value='+7-KZ'>Казахстан (+7)</option>
-                  <option value='+7-RU'>Россия (+7)</option>
-                  <option value='+998'>Узбекистан (+998)</option>
-                </select>
+                <span style={{ marginRight: 8, fontSize: 18 }}>+996</span>
                 <IonInput
                   type='tel'
                   placeholder='XXXXXXXXX'
                   value={phone}
-                  onIonChange={(e) => setPhone(e.detail.value!)}
-                  maxlength={country === '+998' ? 9 : 10}
+                  onIonInput={(e) => {
+                    const raw = (e.detail.value || '').replace(/\D/g, '');
+                    if (raw.length > 0 && raw[0] === '0') return;
+                    setPhone(raw.slice(0, 9));
+                  }}
+                  maxlength={9}
+                  style={{
+                    fontSize: 18,
+                    padding: 8,
+                    borderRadius: 4,
+                    width: 100,
+                  }}
                 />
               </div>
               <IonItem lines='none'>
@@ -235,11 +229,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               <IonInputOtp
                 length={6}
                 value={smsCode}
-                onChange={(e) =>
-                  setSmsCode(
-                    (prev) => prev + (e.target as HTMLInputElement).value
-                  )
-                }
+                onIonInput={(e) => setSmsCode(e.detail.value!)}
               >
                 Не получили код?{' '}
                 <a

@@ -71,7 +71,7 @@ const App: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    const completed = localStorage.getItem('onboardingComplete');
+    const completed = localStorage.getItem('access');
     setShowOnboarding(!completed);
   }, []);
 
@@ -142,7 +142,7 @@ const App: React.FC = () => {
             </IonTabButton>
             <IonTabButton tab='finances' href='/a/finances'>
               <IonIcon aria-hidden='true' icon={cardOutline} />
-              <IonLabel>Финансы 2</IonLabel>
+              <IonLabel>Финансы</IonLabel>
             </IonTabButton>
             <IonTabButton tab='profile' href='/a/profile'>
               <IonIcon aria-hidden='true' icon={personOutline} />
