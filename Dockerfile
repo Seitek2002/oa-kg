@@ -1,30 +1,22 @@
 FROM node:20.11.1-alpine as build
-
 WORKDIR /app
-
-# Копируем package files и устанавливаем зависимости
 COPY package*.json ./
 RUN npm install
-
-# Копируем исходный код и собираем
 COPY . .
 RUN npm run build
 
-# Используем минимальный образ для хранения статических файлов
-FROM alpine:latest
+# Используем nginx для раздачи статики
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
 
-WORKDIR /app
+# Создаем простой конфиг nginx
+RUN echo 'server { \
+    listen 80; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
-# Копируем собранные файлы
-COPY --from=build /app/dist ./
-
-# Создаем пользователя для безопасности
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
-
-# Меняем владельца файлов
-RUN chown -R nextjs:nodejs /app
-USER nextjs
-
-# Эта команда просто держит контейнер запущенным
-CMD ["tail", "-f", "/dev/null"]
+EXPOSE 80
