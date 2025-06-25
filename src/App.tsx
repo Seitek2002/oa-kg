@@ -23,8 +23,9 @@ import {
 import Osago from './pages/Osago/Osago';
 import Home from './pages/Home/Home';
 import Agents from './pages/Agents/Agents';
-import Profile from './pages/Profile';
 import ReferralInfo from './pages/Referral/ReferralInfo';
+import Profile from './pages/Profile/Profile';
+import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw';
 import OnboardingModal from './components/OnboardingModal';
@@ -110,6 +111,9 @@ const App: React.FC = () => {
             </Route>
             <Route exact path='/a/users'>
               <UsersList />
+              </Route>
+            <Route exact path='/a/profile/edit'>
+              <ProfileEdit />
             </Route>
             <Route exact path='/a/referral'>
               <ReferralInfo />
