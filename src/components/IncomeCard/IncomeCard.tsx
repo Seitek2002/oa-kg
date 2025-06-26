@@ -44,7 +44,6 @@ const IncomeCard: FC<IncomeCardProps> = ({
 
   const handleFetch = async () => {
     const res = await getUserInfo().unwrap();
-    console.log(localData === JSON.stringify(res));
     CompareLocaldata({
       oldData: localData,
       newData: res,
