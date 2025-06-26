@@ -34,10 +34,7 @@ export const getBaseQuery =
     const isAuthFree =
       url?.includes('/sms/send') || url?.includes('/sms/verify');
 
-    if (
-      result.meta?.response?.status === 401 &&
-      !isAuthFree
-    ) {
+    if (result.meta?.response?.status === 401 && !isAuthFree) {
       const refresh = localStorage.getItem('refresh');
       if (refresh) {
         // Пробуем обновить токен
@@ -61,12 +58,12 @@ export const getBaseQuery =
           result = await fetchQuery(args, api, extraOptions);
         } else {
           // refresh неудачен — удаляем токены и редиректим
-          // localStorage.removeItem('access');
-          // window.location.href = '/a/auth';
+          localStorage.removeItem('access');
+          window.location.href = '/a/auth';
         }
       } else {
-        // localStorage.removeItem('access');
-        // window.location.href = '/a/auth';
+        localStorage.removeItem('access');
+        window.location.href = '/a/auth';
       }
     }
 
