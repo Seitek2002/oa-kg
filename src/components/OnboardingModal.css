@@ -1,36 +1,6 @@
-.onboarding-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9999;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  padding: 0 24px;
-}
-
-.onboarding-modal {
-  width: 100vw;
-  height: 100vh;
-}
-
 .onboarding-checkbox {
   flex: none;
   color: #7B7F88;
-}
-
-.onboarding-modal .swiper-title {
-  font-size: 24px;
-  font-weight: 500;
-}
-
-.onboarding-modal p {
-  font-size: 16px;
-  color: #1CBE93;
 }
 
 .onboarding-modal .ion-content {
@@ -66,7 +36,6 @@
   border-radius: 12px;
   margin-top: 24px;
   margin-bottom: 12px;
-  max-width: 60%;
   margin: 0 auto;
 }
 
@@ -95,14 +64,6 @@
 
 .onboarding-modal p {
   margin: 0 0 8px 0;
-}
-
-.onboarding-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 16px 0 0 0;
-  gap: 8px;
 }
 
 .onboarding-dot {

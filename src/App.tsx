@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import {
@@ -12,6 +12,7 @@ import {
   IonTabs,
   setupIonicReact,
 } from '@ionic/react';
+import { useLocation } from 'react-router-dom';
 import {
   homeOutline,
   shieldCheckmarkOutline,
@@ -28,7 +29,8 @@ import Profile from './pages/Profile/Profile';
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw';
-import OnboardingModal from './components/OnboardingModal';
+import Onboarding from './pages/Onboarding/Onboarding';
+import Auth from './pages/Auth/Auth';
 import Finances from './pages/Finances';
 
 import logo from './assets/logo.svg';
@@ -49,92 +51,80 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-// import '@ionic/react/css/palettes/dark.system.css';
-
 /* Theme variables */
 import './theme/variables.css';
-
 import './app.css';
 
 setupIonicReact();
 
-const App: React.FC = () => {
-  const [showOnboarding, setShowOnboarding] = useState(false);
+const isAuthorized = () => {
+  // Можно доработать: проверять валидность токена
+  return !!localStorage.getItem('access');
+};
 
-  useEffect(() => {
-    const completed = localStorage.getItem('access');
-    setShowOnboarding(!completed);
-  }, []);
+type ProtectedRouteProps = {
+  component: React.ComponentType<any>;
+  path: string;
+  exact?: boolean;
+};
 
-  const handleOnboardingFinish = () => {
-    setShowOnboarding(false);
-  };
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      isAuthorized() ? (
+        <Component {...props} />
+      ) : (
+        <Redirect to="/a/onboarding" />
+      )
+    }
+  />
+);
+
+const AppTabs: React.FC = () => {
+  const location = useLocation();
+  const hideTabBar = location.pathname === '/a/onboarding' || location.pathname === '/a/auth';
+
+  const [lang, setLang] = React.useState<'kg' | 'ru'>('kg');
 
   return (
-    <IonApp>
-      <OnboardingModal
-        isOpen={showOnboarding}
-        onFinish={handleOnboardingFinish}
-      />
-      <IonReactRouter>
-        <IonHeader className='header'>
-          <img src={logo} alt='' style={{ height: 22 }} />
-          <span>ОСАГО Агент КГ</span>
-          <select
-            className="text-[#000] absolute right-0 top-0"
-            style={{ background: 'transparent' }}
-            defaultValue="kg"
-          >
-            <option value="ru">RU</option>
-            <option value="kg">KG</option>
-            <option value="en">ENG</option>
-          </select>
-        </IonHeader>
-        <IonTabs>
-          <IonRouterOutlet>
-            <Route exact path='/a/home'>
-              <Home />
-            </Route>
-            <Route exact path='/a/osago'>
-              <Osago />
-            </Route>
-            <Route exact path='/a/agents'>
-              <Agents />
-            </Route>
-            <Route exact path='/a/finances'>
-              <Finances />
-            </Route>
-            <Route exact path='/a/profile'>
-              <Profile />
-            </Route>
-            <Route exact path='/a/profile/edit'>
-              <ProfileEdit />
-            </Route>
-            <Route exact path='/a/referral'>
-              <ReferralInfo />
-            </Route>
-            <Route exact path='/a/invite'>
-              <InviteFriend />
-            </Route>
-            <Route exact path='/a/withdraw'>
-              <Withdraw />
-            </Route>
-            <Route exact path='/a/'>
-              <Redirect to='/a/home' />
-            </Route>
-            <Route exact path='/'>
-              <Redirect to='/a/home' />
-            </Route>
-          </IonRouterOutlet>
+    <>
+      <IonHeader className='header'>
+        <img src={logo} alt='' style={{ height: 22 }} />
+        <span>ОСАГО Агент КГ</span>
+        <span
+          className="text-[#000] absolute right-0 top-0 cursor-pointer"
+          style={{ background: 'transparent', padding: 8 }}
+          onClick={() => setLang(lang === 'kg' ? 'ru' : 'kg')}
+        >
+          {lang === 'kg' ? 'Кыргызча' : 'Русский'}
+        </span>
+      </IonHeader>
+      <IonTabs>
+        <IonRouterOutlet>
+          <Route exact path='/a/onboarding'>
+            <Onboarding />
+          </Route>
+          <Route exact path='/a/auth'>
+            <Auth />
+          </Route>
+          <ProtectedRoute exact path='/a/home' component={Home} />
+          <ProtectedRoute exact path='/a/osago' component={Osago} />
+          <ProtectedRoute exact path='/a/agents' component={Agents} />
+          <ProtectedRoute exact path='/a/finances' component={Finances} />
+          <ProtectedRoute exact path='/a/profile' component={Profile} />
+          <ProtectedRoute exact path='/a/profile/edit' component={ProfileEdit} />
+          <ProtectedRoute exact path='/a/referral' component={ReferralInfo} />
+          <ProtectedRoute exact path='/a/invite' component={InviteFriend} />
+          <ProtectedRoute exact path='/a/withdraw' component={Withdraw} />
+          <Route exact path='/a/'>
+            <Redirect to='/a/home' />
+          </Route>
+          <Route exact path='/'>
+            <Redirect to='/a/home' />
+          </Route>
+        </IonRouterOutlet>
+        {!hideTabBar && (
           <IonTabBar slot='bottom'>
             <IonTabButton tab='home' href='/a/home'>
               <IonIcon aria-hidden='true' icon={homeOutline} />
@@ -157,7 +147,17 @@ const App: React.FC = () => {
               <IonLabel>Профиль</IonLabel>
             </IonTabButton>
           </IonTabBar>
-        </IonTabs>
+        )}
+      </IonTabs>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <AppTabs />
       </IonReactRouter>
     </IonApp>
   );

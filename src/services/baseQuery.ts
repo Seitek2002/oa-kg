@@ -63,12 +63,12 @@ export const getBaseQuery =
           // refresh неудачен — удаляем токены и редиректим
           localStorage.removeItem('token');
           localStorage.removeItem('refresh');
-          window.location.href = '/a/home';
+          window.location.href = '/a/auth';
         }
       } else {
         localStorage.removeItem('token');
         localStorage.removeItem('refresh');
-        window.location.href = '/a/home';
+        window.location.href = '/a/auth';
       }
     }
 

@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { useSendSmsMutation, useVerifySmsMutation } from '../services/api';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import {
   IonContent,
   IonButton,
@@ -10,57 +8,21 @@ import {
   IonInput,
   IonInputOtp,
 } from '@ionic/react';
+import { useSendSmsMutation, useVerifySmsMutation } from '../../services/api';
+import { useHistory } from 'react-router-dom';
 
-import img1 from '../assets/onboarding/image-1.png';
-import img2 from '../assets/onboarding/image-2.png';
-import img3 from '../assets/onboarding/image-3.png';
+// import '../../components/OnboardingModal.css';
+import './style.scss';
 
-import 'swiper/css';
-import './OnboardingModal.css';
-
-const slideData = [
-  {
-    image: img1,
-    title: 'Помоги другим оформить ОСАГО и заработай до 100 000 сом',
-    subtitle: 'Вознаграждение 10% от ОСАГО',
-  },
-  {
-    image: img2,
-    title: 'Научи регистрировать друзей и зарабатывай пассивно от их продаж',
-    subtitle: 'Вознаграждение 5% от ОСАГО друзей',
-  },
-  {
-    image: img3,
-    title: 'Все легально! Стань агентом по продаже ОСАГО за 2 минуты',
-    subtitle: 'Вознаграждение 5% от ОСАГО друзей',
-    extra:
-      'Агент ОСАГО - маркетинговая платформа компании ОСОО "Агент КейДжи" по ОСАГО. ОСОО "Агент КейДжи" является официальным партнером ЗАО "Басай Иншуренс"',
-  },
-];
-
-type OnboardingModalProps = {
-  isOpen: boolean;
-  onFinish: () => void;
-};
-
-const OnboardingModal: React.FC<OnboardingModalProps> = ({
-  isOpen,
-  onFinish,
-}) => {
-  const [step, setStep] = useState(0);
-  const [currentSlide, setCurrentSlide] = useState(0);
+const Auth: React.FC = () => {
+  const [step, setStep] = useState(1); // 1: номер, 2: код
   const [phone, setPhone] = useState('');
   const [agree, setAgree] = useState(false);
   const [smsCode, setSmsCode] = useState('');
   const [error, setError] = useState('');
   const [sendSms, { isLoading: isSending }] = useSendSmsMutation();
   const [verifySms, { isLoading: isVerifying }] = useVerifySmsMutation();
-
-  if (!isOpen) return null;
-
-  const handleSkip = () => {
-    setStep(3);
-  };
+  const history = useHistory();
 
   const handleSendSms = async () => {
     setError('');
@@ -68,13 +30,13 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
     try {
       await sendSms({ phoneNumber: num }).unwrap();
       setSmsCode('');
-      setStep(4);
+      setStep(2);
     } catch (e: any) {
-      setError(e?.data?.message || 'Ошибка отправки SMS');
+      setError(e?.data?.error || 'Ошибка отправки SMS');
     }
   };
 
-  const handleFinish = async () => {
+  const handleVerify = async () => {
     setError('');
     const num = '+996' + phone;
     try {
@@ -82,93 +44,21 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
         phoneNumber: num,
         code: smsCode,
       }).unwrap();
-      console.log(data, smsCode);
       if (data.access) {
         localStorage.setItem('access', JSON.stringify(data));
       }
-      onFinish();
+      // После успешной авторизации можно редиректить или закрывать модалку
+      history.replace('/a/home');
     } catch (e: any) {
       setError(e?.data?.message || 'Ошибка проверки кода');
     }
   };
 
-  // Кастомная пагинация
-  const renderPagination = () => (
-    <div className='onboarding-pagination'>
-      {slideData.map((_, idx) => (
-        <span
-          key={idx}
-          className={`onboarding-dot${currentSlide === idx ? ' active' : ''}`}
-        />
-      ))}
-    </div>
-  );
-
   return (
-    <div className='onboarding-overlay onboarding-modal'>
-      <IonContent scrollY={false}>
-        <div className='ion-content'>
-          {step <= 2 && (
-            <>
-              <Swiper
-                slidesPerView={1}
-                onSlideChange={(swiper) => {
-                  setCurrentSlide(swiper.activeIndex);
-                  setStep(swiper.activeIndex);
-                }}
-                initialSlide={currentSlide}
-                speed={400}
-                allowTouchMove={true}
-              >
-                {slideData.map((slide, idx) => (
-                  <SwiperSlide key={idx}>
-                    <img
-                      src={slide.image}
-                      alt=''
-                      style={{
-                        width: '100%',
-                        maxHeight: 200,
-                        objectFit: 'contain',
-                      }}
-                    />
-                    {slide.extra && (
-                      <IonText color='medium' style={{ textAlign: 'center' }}>
-                        <span
-                          style={{
-                            fontSize: 14,
-                            display: 'block',
-                            marginTop: 12,
-                          }}
-                        >
-                          {slide.extra}
-                        </span>
-                      </IonText>
-                    )}
-                    <h2 style={{ marginTop: 24 }} className='swiper-title'>
-                      {slide.title}
-                    </h2>
-                    <IonText color='primary'>
-                      <p>{slide.subtitle}</p>
-                    </IonText>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-              {renderPagination()}
-              <div style={{ background: 'white', width: '100%' }}>
-                <IonButton
-                  expand='block'
-                  onClick={handleSkip}
-                  style={{ marginTop: 32 }}
-                >
-                  Начать зарабатывать
-                </IonButton>
-                <IonButton fill='clear' expand='block' onClick={handleSkip}>
-                  Пропустить
-                </IonButton>
-              </div>
-            </>
-          )}
-          {step === 3 && (
+    <IonContent scrollY={false}>
+      <div className='ion-content'>
+        <div style={{ padding: '120px 24px 0 24px', textAlign: 'center' }}>
+          {step === 1 && (
             <div className='onboarding-form'>
               <h2 className='onboarding-title'>Начните зарабатывать</h2>
               <p className='onboarding-subtitle'>Введите номер телефона</p>
@@ -188,7 +78,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
                     fontSize: 18,
                     padding: 8,
                     borderRadius: 4,
-                    width: 100,
                   }}
                 />
               </div>
@@ -223,7 +112,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </IonButton>
             </div>
           )}
-          {step === 4 && (
+          {step === 2 && (
             <div className='onboarding-form'>
               <h2>Введите код из SMS</h2>
               <IonInputOtp
@@ -258,7 +147,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               <IonButton
                 expand='block'
                 disabled={smsCode.length < 5 || isVerifying}
-                onClick={handleFinish}
+                onClick={handleVerify}
                 style={{ marginTop: 24 }}
               >
                 {isVerifying ? 'Проверка...' : 'Начать зарабатывать'}
@@ -266,9 +155,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
             </div>
           )}
         </div>
-      </IonContent>
-    </div>
+      </div>
+    </IonContent>
   );
 };
 
-export default OnboardingModal;
+export default Auth;
