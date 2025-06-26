@@ -119,6 +119,8 @@ const AppTabs: React.FC = () => {
           <ProtectedRoute exact path='/a/referral' component={ReferralInfo} />
           <ProtectedRoute exact path='/a/invite' component={InviteFriend} />
           <ProtectedRoute exact path='/a/withdraw' component={Withdraw} />
+          <ProtectedRoute exact path='/a/profile/identification' component={ProfileIdentification} />
+          <ProtectedRoute exact path='/a/profile/identification/passport' component={ProfileIdentificationPassport} />
           <Route exact path='/a/'>
             <Redirect to='/a/home' />
           </Route>
