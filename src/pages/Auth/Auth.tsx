@@ -63,7 +63,7 @@ const Auth: React.FC = () => {
               <h2 className='onboarding-title'>Начните зарабатывать</h2>
               <p className='onboarding-subtitle'>Введите номер телефона</p>
               <div className='onboarding-phoneNumber'>
-                <span style={{ marginRight: 8, fontSize: 18 }}>+996</span>
+                <span style={{ marginRight: 8, fontSize: 22 }}>+996</span>
                 <IonInput
                   type='tel'
                   placeholder='XXXXXXXXX'
@@ -75,20 +75,35 @@ const Auth: React.FC = () => {
                   }}
                   maxlength={9}
                   style={{
-                    fontSize: 18,
+                    fontSize: 22,
                     padding: 8,
                     borderRadius: 4,
+                    width: 140
                   }}
                 />
               </div>
-              <IonItem lines='none'>
+              <IonItem style={{ width: '100%' }}>
                 <IonCheckbox
                   className='onboarding-checkbox'
                   checked={agree}
                   onIonChange={(e) => setAgree(e.detail.checked)}
                   labelPlacement='end'
                 >
-                  Согласен с условиями оферты OA.KG
+                  Согласен с условиями{' '}
+                  <a
+                    href='/ПУБЛИЧНАЯ ОФЕРТА для субагентов.docx'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{
+                      textDecoration: 'underline',
+                      color: '#1976d2',
+                      marginLeft: 4,
+                      whiteSpace: 'break-spaces',
+                    }}
+                  >
+                    публичной оферты
+                  </a>{' '}
+                  OA.KG
                 </IonCheckbox>
               </IonItem>
               <p className='onboarding-sms'>

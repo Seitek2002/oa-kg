@@ -9,12 +9,13 @@ import {
   IonPage,
   IonRow,
 } from '@ionic/react';
-import { personAddOutline, helpCircleOutline } from 'ionicons/icons';
+import { helpCircleOutline } from 'ionicons/icons';
 import IncomeCard from '../../components/IncomeCard/IncomeCard';
 import car from '../../assets/car.svg';
 import { useHistory } from 'react-router';
 
 import './styles.scss';
+import TeamCard from '../../components/TeamCard/TeamCard';
 
 const Home: React.FC = () => {
   const history = useHistory();
@@ -63,36 +64,7 @@ const Home: React.FC = () => {
         </IonCard>
 
         {/* Моя команда */}
-        <IonCard className='card-block team-card'>
-          <IonCardContent>
-            <h2 className='card-section-title'>Моя команда</h2>
-            <IonGrid>
-              <IonRow>
-                <IonCol size='6'>
-                  <div className='stat-card'>
-                    <p className='stat-title'>Ваши агенты</p>
-                    <p className='stat-number'>4</p>
-                    <p className='stat-info'>Всего агентов 3 402</p>
-                  </div>
-                </IonCol>
-                <IonCol size='6'>
-                  <div className='stat-card'>
-                    <p className='stat-title'>Доход агентов</p>
-                    <p className='stat-number'>13 700</p>
-                    <p className='stat-info'>В среднем 2 030 сом</p>
-                  </div>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-            <IonButton className='btn-invite' fill='solid'>
-              <IonIcon slot='start' icon={personAddOutline} />
-              Пригласить агента
-            </IonButton>
-            <p className='card-footer-text'>
-              Вы заработаете 10% от всех ОСАГО агентов
-            </p>
-          </IonCardContent>
-        </IonCard>
+        <TeamCard />
 
         <IonButton className='btn-questions' expand='block' fill='outline'>
           <IonIcon slot='start' icon={helpCircleOutline} />У меня есть вопросы

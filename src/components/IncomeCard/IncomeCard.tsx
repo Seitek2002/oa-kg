@@ -63,12 +63,12 @@ const IncomeCard: FC<IncomeCardProps> = ({
           Доступно
         </IonCardSubtitle>
         <IonCardTitle className='incomeCard-title'>
-          <b>{+data?.balance} сом</b>
+          <b>{data?.balance} сом</b>
         </IonCardTitle>
       </IonCardHeader>
       <IonCardContent>
         <span style={{ color: '#AAD2FF' }}>
-          Вы заработали за все время {+data?.totalIncome} сом
+          Вы заработали за все время {data?.totalIncome} сом
         </span>
       </IonCardContent>
       <IonCardContent>

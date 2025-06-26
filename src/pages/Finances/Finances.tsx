@@ -1,11 +1,5 @@
-import {
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonPage,
-} from '@ionic/react';
+import { IonPage } from '@ionic/react';
+import IncomeCard from '../../components/IncomeCard/IncomeCard';
 import TransactionStatusCard from '../../components/TransactionStatusCard/TransactionStatusCard';
 
 import './styles.scss';
@@ -14,22 +8,7 @@ const Finances = () => {
   return (
     <IonPage className='finance-page'>
       <div>
-        <IonCard color='white' className='finance-card incomeCard'>
-          <IonCardHeader>
-            <IonCardSubtitle className='finance-card-subtitle'>
-              Доступно
-            </IonCardSubtitle>
-            <IonCardTitle className='finance-card-title'>
-              24 000 сом
-            </IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            Вы заработали за все время 1 400 000 сом
-          </IonCardContent>
-          <IonCardContent>
-            <button className='finance-button'>Вывести деньги</button>
-          </IonCardContent>
-        </IonCard>
+        <IncomeCard />
         <div className='finance-history'>
           <TransactionStatusCard
             type='pending'
