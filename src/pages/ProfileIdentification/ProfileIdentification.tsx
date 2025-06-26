@@ -94,7 +94,6 @@ const ProfileIdentification = () => {
             ref={fileRefs.front}
             type='file'
             accept='image/*'
-            capture='environment'
             style={{ display: 'none' }}
             onChange={(e) => handleFileChange('front', e)}
           />
@@ -135,7 +134,6 @@ const ProfileIdentification = () => {
             ref={fileRefs.back}
             type='file'
             accept='image/*'
-            capture='environment'
             style={{ display: 'none' }}
             onChange={(e) => handleFileChange('back', e)}
           />
