@@ -69,6 +69,7 @@ export interface UserMeResponse {
   osagoCount: number;
   agentsCount: number;
   referralLink: string;
+  identificationStatus: string;
 }
 
 export interface UserMeUpdateRequest {

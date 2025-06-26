@@ -19,7 +19,7 @@ import './styles.scss';
 
 const Home: React.FC = () => {
   const history = useHistory();
-  // const [text, setText] = React.useState('seitek');
+  // const [text, setText] = React.useState('{title: "seitek"}');
 
   // useEffect(() => {
   //   Test('bekjan', setText, localData);

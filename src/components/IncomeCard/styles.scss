@@ -2,13 +2,21 @@
   border-radius: 12px;
   background: #0072de;
   color: white;
+  margin: 0;
+
   &-subtitle {
     font-size: 20px;
   }
+
   &-title {
     font-size: 36px;
   }
+
   &-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     color: #0072de;
     background: white;
     width: 100%;
