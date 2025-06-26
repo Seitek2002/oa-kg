@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import {
   IonAvatar,
   IonButton,
-  IonIcon,
   IonInput,
-  IonItem,
   IonLabel,
   IonPage,
 } from '@ionic/react';
-import { chevronDownOutline } from 'ionicons/icons';
 import avatar from '../../assets/avatar-default.svg';
 import { z } from 'zod';
 
@@ -18,14 +15,12 @@ const initialFormState = {
   firstName: '',
   lastName: '',
   patronymic: '',
-  phone: '',
 };
 
 const formDataSchema = z.object({
   firstName: z.string().min(2, { message: 'Минимум 2 символа' }),
   lastName: z.string().min(2, { message: 'Минимум 2 символа' }),
   patronymic: z.string().min(2, { message: 'Минимум 2 символа' }),
-  phone: z.string(),
 });
 
 type FormData = z.infer<typeof formDataSchema>;
@@ -123,32 +118,7 @@ const ProfileEdit = () => {
             </span>
           )}
         </div>
-        <div className='profile-edit-group'>
-          <IonLabel className='profile-edit-label'>Номер телефона</IonLabel>
-          <IonItem className='profile-edit-phone' lines='none'>
-            <span className='profile-edit-phone-country'>
-              КР (+996) <IonIcon icon={chevronDownOutline} />
-            </span>
-            <IonInput
-              name='phone'
-              className='profile-edit-phone-number'
-              placeholder='500 604 644'
-              value={userFormData.phone}
-              onIonChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  phone: e.detail.value || '',
-                }))
-              }
-            />
-          </IonItem>
-          {errors && errors?.phone?._errors && (
-            <span className='error'>{errors.phone._errors.join(', ')}</span>
-          )}
-          <div className='profile-edit-hint'>
-            Для изменения номера обратитесь в службу поддержки
-          </div>
-        </div>
+
         <IonButton
           disabled={!!errors}
           type='submit'

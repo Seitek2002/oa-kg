@@ -27,6 +27,8 @@ import Agents from './pages/Agents/Agents';
 import ReferralInfo from './pages/Referral/ReferralInfo';
 import Profile from './pages/Profile/Profile';
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
+import ProfileIdentification from './pages/ProfileIdentification/ProfileIdentification';
+import ProfileIdentificationPassport from './pages/ProfileIdentificationPassport/ProfileIdentificationPassport';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw';
 import Onboarding from './pages/Onboarding/Onboarding';
