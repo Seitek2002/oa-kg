@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { IonAvatar, IonButton, IonIcon, IonPage } from '@ionic/react';
+import {
+  IonAvatar,
+  IonButton,
+  IonIcon,
+  IonPage,
+  useIonRouter,
+} from '@ionic/react';
 import {
   chevronForwardOutline,
   createOutline,
@@ -12,10 +18,15 @@ import helpQuestion from '../../assets/helpQuestionFilled.svg';
 import './styles.scss';
 
 const Profile: React.FC = () => {
-  const [isIdentified, setIsIdentified] = useState<boolean>(false);
+  const navigate = useIonRouter();
+  const [isIdentified] = useState<boolean>(false);
 
-  const click = () => {
-    setIsIdentified(!isIdentified);
+  const editClick = () => {
+    navigate.push('profile/edit');
+  };
+
+  const identificationClick = () => {
+    navigate.push('profile/identification');
   };
 
   return (
@@ -25,7 +36,7 @@ const Profile: React.FC = () => {
           <IonAvatar className='profile-avatar'>
             <img src={avatar} alt='Avatar' />
             <IonIcon
-              onClick={click}
+              onClick={editClick}
               className='profile-edit'
               icon={createOutline}
             ></IonIcon>
@@ -35,6 +46,7 @@ const Profile: React.FC = () => {
             className={`profile-status ${
               isIdentified ? 'identified' : 'not-identified'
             }`}
+            onClick={identificationClick}
           >
             {isIdentified ? 'Идентифицирован' : 'Не идентифицирован'}
           </span>

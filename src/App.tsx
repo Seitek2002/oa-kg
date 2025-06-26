@@ -26,6 +26,8 @@ import Agents from './pages/Agents/Agents';
 import ReferralInfo from './pages/Referral/ReferralInfo';
 import Profile from './pages/Profile/Profile';
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
+import ProfileIdentification from './pages/ProfileIdentification/ProfileIdentification';
+import ProfileIdentificationPassport from './pages/ProfileIdentificationPassport/ProfileIdentificationPassport';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw';
 import OnboardingModal from './components/OnboardingModal';
@@ -118,6 +120,12 @@ const App: React.FC = () => {
             </Route>
             <Route exact path='/a/profile/edit'>
               <ProfileEdit />
+            </Route>
+            <Route exact path='/a/profile/identification'>
+              <ProfileIdentification />
+            </Route>
+            <Route exact path='/a/profile/identification/passport'>
+              <ProfileIdentificationPassport />
             </Route>
             <Route exact path='/a/referral'>
               <ReferralInfo />
