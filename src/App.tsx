@@ -140,7 +140,7 @@ const AppTabs: React.FC = () => {
             </IonTabButton>
             <IonTabButton tab='agents' href='/a/agents'>
               <IonIcon aria-hidden='true' icon={peopleOutline} />
-              <IonLabel>Агенты</IonLabel>
+              <IonLabel>Команда</IonLabel>
             </IonTabButton>
             <IonTabButton tab='finances' href='/a/finances'>
               <IonIcon aria-hidden='true' icon={cardOutline} />
