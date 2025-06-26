@@ -51,6 +51,7 @@ export const {
   useSendSmsMutation,
   useVerifySmsMutation,
   useGetCurrentUserQuery,
+  useLazyGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
   usePatchCurrentUserMutation,
 } = api;

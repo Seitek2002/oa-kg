@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import {
   IonCard,
   IonCardHeader,
@@ -8,6 +8,8 @@ import {
 } from '@ionic/react';
 
 import './styles.scss';
+import { useLazyGetCurrentUserQuery } from '../../services/api';
+import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 interface IncomeCardProps {
   amount?: string;
@@ -16,10 +18,45 @@ interface IncomeCardProps {
 }
 
 const IncomeCard: FC<IncomeCardProps> = ({
-  amount,
-  totalEarned,
   onWithdraw,
 }) => {
+  const localData =
+    localStorage.getItem('usersInfo') ||
+    `{
+      "id": 0,
+      "firstName": "",
+      "lastName": "",
+      "middleName": "",
+      "phoneNumber": "+996",
+      "balance": "0",
+      "totalIncome": "0",
+      "osagoIncome": "0",
+      "agentsIncome": "0",
+      "osagoCount": 0,
+      "agentsCount": 0,
+      "referralLink": "string",
+      "identificationStatus": "not_submitted"
+    }`;
+
+  const [data, setData] = useState(JSON.parse(localData));
+
+  const [getUserInfo] = useLazyGetCurrentUserQuery();
+
+  const handleFetch = async () => {
+    const res = await getUserInfo().unwrap();
+    console.log(localData === JSON.stringify(res));
+    CompareLocaldata({
+      oldData: localData,
+      newData: res,
+      localKey: 'usersInfo',
+      setState: setData,
+    });
+  };
+
+  useEffect(() => {
+    handleFetch();
+  }, []);
+
   return (
     <IonCard color='white' className='incomeCard'>
       <IonCardHeader>
@@ -27,12 +64,12 @@ const IncomeCard: FC<IncomeCardProps> = ({
           Доступно
         </IonCardSubtitle>
         <IonCardTitle className='incomeCard-title'>
-          <b>{amount} сом</b>
+          <b>{+data?.balance} сом</b>
         </IonCardTitle>
       </IonCardHeader>
       <IonCardContent>
         <span style={{ color: '#AAD2FF' }}>
-          Вы заработали за все время {totalEarned} сом
+          Вы заработали за все время {+data?.totalIncome} сом
         </span>
       </IonCardContent>
       <IonCardContent>

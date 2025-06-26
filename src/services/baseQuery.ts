@@ -12,7 +12,7 @@ export const getBaseQuery =
       baseUrl: import.meta.env.VITE_BASE_URL,
       credentials: 'same-origin',
       prepareHeaders: (headers, { endpoint }) => {
-        const token = localStorage.getItem('token');
+        const token = JSON.parse(localStorage.getItem('access') || '{}');
         const url = typeof args === 'string' ? args : args.url;
 
         // Не добавляем токен для /sms/send и /sms/verify
@@ -20,7 +20,7 @@ export const getBaseQuery =
           url?.includes('/sms/send') || url?.includes('/sms/verify');
 
         if (token && !isAuthFree) {
-          headers.set('Authorization', `Bearer ${token}`);
+          headers.set('Authorization', `Bearer ${token.access}`);
         }
         headers.set('Accept', 'application/json');
         return headers;
@@ -56,19 +56,17 @@ export const getBaseQuery =
           typeof refreshResult.data === 'object' &&
           'access' in refreshResult.data
         ) {
-          localStorage.setItem('token', refreshResult.data.access as string);
+          localStorage.setItem('access', refreshResult.data.access as string);
           // Повторяем исходный запрос с новым токеном
           result = await fetchQuery(args, api, extraOptions);
         } else {
           // refresh неудачен — удаляем токены и редиректим
-          localStorage.removeItem('token');
-          localStorage.removeItem('refresh');
-          window.location.href = '/a/auth';
+          // localStorage.removeItem('access');
+          // window.location.href = '/a/auth';
         }
       } else {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh');
-        window.location.href = '/a/auth';
+        // localStorage.removeItem('access');
+        // window.location.href = '/a/auth';
       }
     }
 

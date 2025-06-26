@@ -15,22 +15,15 @@ import car from '../../assets/car.svg';
 import { useHistory } from 'react-router';
 
 import './styles.scss';
-// import { Test } from './Test';
 
 const Home: React.FC = () => {
   const history = useHistory();
-  // const [text, setText] = React.useState('{title: "seitek"}');
-
-  // useEffect(() => {
-  //   Test('bekjan', setText, localData);
-  //   console.log(text);
-  // }, [text])
 
   return (
     <IonPage style={{ padding: 16, background: '#f6f8fa', overflow: 'auto' }}>
       <div>
         {/* Баланс */}
-        <IncomeCard amount='22 000' totalEarned='1 400 000' />
+        <IncomeCard />
 
         <IonCard className='card-block osago-card'>
           <IonCardContent>
