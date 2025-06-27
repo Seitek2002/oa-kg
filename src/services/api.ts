@@ -29,7 +29,10 @@ export const api = createApi({
         body: new URLSearchParams(body as Record<string, string>).toString(),
       }),
     }),
-    verifySms: builder.mutation<{ access?: string, refresh?: string }, { phoneNumber: string; code: string }>({
+    verifySms: builder.mutation<
+      { access?: string; refresh?: string },
+      { phoneNumber: string; code: string }
+    >({
       query: ({ phoneNumber, code }) => ({
         url: 'https://oa.kg/api/auth/sms/verify/',
         method: 'POST',
@@ -44,6 +47,28 @@ export const api = createApi({
         headers: { 'Content-Type': 'application/json' },
       }),
     }),
+    ocrCreate: builder.mutation<OcrResponse, OcrRequest>({
+      query: ({ documentType, frontImage, backImage }) => {
+        const formData = new FormData();
+
+        formData.append('frontImage', frontImage);
+        formData.append('backImage', backImage);
+
+        return {
+          url: '/api/ocr/',
+          method: 'POST',
+          body: formData,
+          params: { documentType },
+        };
+      },
+    }),
+    createIdentification: builder.mutation<OcrPassportData, FormData>({
+      query: (body) => ({
+        url: '/api/users/identification/',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -54,6 +79,8 @@ export const {
   useLazyGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
   usePatchCurrentUserMutation,
+  useOcrCreateMutation,
+  useCreateIdentificationMutation
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -77,4 +104,29 @@ export interface UserMeUpdateRequest {
   firstName?: string;
   lastName?: string;
   middleName?: string;
+}
+
+export interface OcrRequest {
+  documentType: 'passport' | 'driver_license' | 'vehicle_cert';
+  frontImage: File;
+  backImage: File;
+}
+export interface OcrPassportData {
+  surname: string;
+  name: string;
+  patronymic: string;
+  gender: string;
+  birthDate: string;
+  documentNumber: string;
+  expiryDate: string;
+  authority: string;
+  issueDate: string;
+  birthPlace: string;
+  personalNumber: string;
+  ethnicity: string;
+}
+
+export interface OcrResponse {
+  id: number;
+  data: OcrPassportData;
 }
