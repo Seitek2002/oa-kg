@@ -49,9 +49,7 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
           <IonCardTitle className='transactionStatusCard-title'>
             {title}
           </IonCardTitle>
-          <p className={`transactionStatusCard-amount ${type}`}>
-            {amount}
-          </p>
+          <p className={`transactionStatusCard-amount ${type}`}>{amount}</p>
         </IonCardHeader>
       )}
       <IonCardContent>
@@ -74,7 +72,7 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
             Сумма: <span>{amount}</span>
           </p>
         )}
-        {type === 'pending' && status === 'created' && (
+        {status === 'created' && (
           <p className='transactionDetails-item status-item'>
             Статус: <span className='status'>На рассмотрении</span>
           </p>
