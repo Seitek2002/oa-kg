@@ -121,18 +121,18 @@ const Auth: React.FC = () => {
               ) : (
                 ''
               )}
-              <div
-                style={{
-                  textAlign: 'left',
-                  paddingTop: 16,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                }}
-              >
-                Реферальный код:
-                {pathname.split('/')[3] && (
+              {pathname.split('/')[3] && (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    paddingTop: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                  }}
+                >
+                  Реферальный код:
                   <IonInput
                     readonly
                     fill='outline'
@@ -143,8 +143,8 @@ const Auth: React.FC = () => {
                       minHeight: 20,
                     }}
                   />
-                )}
-              </div>
+                </div>
+              )}
               {error && (
                 <IonText
                   color='danger'
