@@ -30,7 +30,7 @@ const Profile: React.FC = () => {
   };
 
   const identificationClick = () => {
-    if (user?.identificationStatus !== 'approved') {
+    if (user?.identificationStatus === 'not_submitted') {
       navigate.push('profile/identification');
     } else {
       window.open(
@@ -73,7 +73,10 @@ const Profile: React.FC = () => {
           </span>
         </div>
         <div className='profile-actions'>
-          <div className='profile-action' onClick={() => navigate.push('/a/instruction')}>
+          <div
+            className='profile-action'
+            onClick={() => navigate.push('/a/instruction')}
+          >
             <div className='profile-action__icon profile-action__icon--blue'>
               <IonIcon icon={helpBuoy} />
             </div>
@@ -90,7 +93,10 @@ const Profile: React.FC = () => {
               className='profile-action__arrow'
             />
           </div>
-          <div className='profile-action' onClick={() => navigate.push('/a/faq')}>
+          <div
+            className='profile-action'
+            onClick={() => navigate.push('/a/faq')}
+          >
             <div className='profile-action__icon profile-action__icon--gray'>
               <IonIcon icon={helpQuestion} />
             </div>
@@ -111,13 +117,13 @@ const Profile: React.FC = () => {
             expand='block'
             fill='outline'
           >
-            {user?.identificationStatus === 'approved' && (
+            {(user?.identificationStatus === 'approved' ||
+              user?.identificationStatus === 'pending') && (
               <IonIcon slot='start' icon={helpCircleOutline} />
             )}
-            {user?.identificationStatus === 'approved' ||
-            user?.identificationStatus === 'pending'
-              ? 'У меня есть вопросы'
-              : 'Пройти идентификацию'}
+            {user?.identificationStatus === 'not_submitted'
+              ? 'Пройти идентификацию'
+              : 'У меня есть вопросы'}
           </IonButton>
           <div className='profile-contacts'>
             <h2>Наши контакты</h2>
