@@ -112,6 +112,13 @@ export const api = createApi({
         };
       },
     }),
+    getWithdrawalMethods: builder.query<WithdrawalMethod[], void>({
+      query: () => ({
+        url: 'https://oa.kg/api/withdrawal-methods/',
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
   }),
 });
 
@@ -130,6 +137,8 @@ export const {
   useLazyGetReferralsQuery,
   useGetOperationsQuery,
   useLazyGetOperationsQuery,
+  useGetWithdrawalMethodsQuery,
+  useLazyGetWithdrawalMethodsQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -204,6 +213,13 @@ export interface Operation {
   type: string;
   createdAt: string;
   amount: string;
+  amountDisplay?: string;
   status: string;
   comment: string;
+}
+
+export interface WithdrawalMethod {
+  id: number;
+  name: string;
+  image: string;
 }

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IonPage, IonButton, IonInput, IonIcon } from '@ionic/react';
 import { timeOutline } from 'ionicons/icons';
+import { useLazyGetWithdrawalMethodsQuery, WithdrawalMethod, useLazyGetOperationsQuery, Operation } from '../../services/api';
+import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 import bakaiLogo from '../../assets/bakai-logo.svg';
 import mbankLogo from '../../assets/mbank-logo.svg';
@@ -8,58 +10,69 @@ import oMoneyLogo from '../../assets/OMoney-logo.svg';
 
 import './styles.scss';
 
-const banks = [
-  {
-    value: 'BakAi',
-    label: 'BakAi',
-    icon: bakaiLogo,
-  },
-  {
-    value: 'MBank',
-    label: 'Mbank',
-    icon: mbankLogo,
-  },
-  {
-    value: 'O! Деньги',
-    label: 'O! Деньги',
-    icon: oMoneyLogo,
-  },
-];
-
-const history = [
-  {
-    id: 3248,
-    date: '12:00 01.06.2025',
-    requisit: '+996555112233 - MBANK',
-    amount: 1000,
-    status: 'success', // success | pending | declined
-    statusText: 'Успешный вывод',
-    comment: 'Вывод',
-  },
-  {
-    id: 3249,
-    date: '12:00 01.06.2025',
-    requisit: '+996555112233 - O! Деньги',
-    amount: 1000,
-    status: 'pending',
-    statusText: 'На рассмотрении',
-    comment: 'Вывод',
-  },
-  {
-    id: 3249,
-    date: '12:00 01.06.2025',
-    requisit: '+996555112233 - BakAi',
-    amount: 1000,
-    status: 'declined',
-    statusText: 'Отказано',
-    comment: 'Вывод',
-  },
-];
+function formatDate(dateStr: string) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+  return `${hours}:${minutes} ${day}.${month}.${year}`;
+}
 
 const Withdraw: React.FC = () => {
   const [phone, setPhone] = useState('');
-  const [selectedBank, setSelectedBank] = useState('BakAi');
+  const [selectedBank, setSelectedBank] = useState('');
   const [amount, setAmount] = useState('1000');
+
+  // Банки
+  const localData = localStorage.getItem('withdrawalMethods') || '[]';
+  const [data, setData] = useState<WithdrawalMethod[]>(JSON.parse(localData));
+  const [getWithdrawalMethods] = useLazyGetWithdrawalMethodsQuery();
+
+  const handleFetch = async () => {
+    const res = await getWithdrawalMethods().unwrap();
+    CompareLocaldata({
+      oldData: localData,
+      newData: res,
+      localKey: 'withdrawalMethods',
+      setState: (data: any) => setData(Array.isArray(data) ? data : []),
+    });
+  };
+
+  useEffect(() => {
+    handleFetch();
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    // Выбрать первый банк по умолчанию после загрузки
+    if (data.length > 0 && !selectedBank) {
+      setSelectedBank(data[0].name);
+    }
+  }, [data, selectedBank]);
+
+  // История операций (выводов)
+  const localHistory = localStorage.getItem('operations') || '[]';
+  const [history, setHistory] = useState<Operation[]>(JSON.parse(localHistory));
+  const [getOperations] = useLazyGetOperationsQuery();
+
+  const handleFetchHistory = async () => {
+    const res = await getOperations({ type: 'withdrawal' }).unwrap();
+    CompareLocaldata({
+      oldData: localHistory,
+      newData: res,
+      localKey: 'operations',
+      setState: (data: any) => setHistory(Array.isArray(data) ? data : []),
+    });
+  };
+
+  useEffect(() => {
+    handleFetchHistory();
+    // eslint-disable-next-line
+  }, []);
 
   const handleWithdraw = () => {
     console.log(`Вывести ${amount} сом на ${selectedBank}, номер ${phone}`);
@@ -78,8 +91,8 @@ const Withdraw: React.FC = () => {
               className='withdraw-phone-input'
               value={phone}
               placeholder='XXX XXX XXX'
-              inputmode='tel'
-              maxlength={9}
+              inputMode='tel'
+              maxLength={9}
               onIonChange={(e) => setPhone(e.detail.value!)}
               style={{
                 background: 'transparent',
@@ -109,22 +122,22 @@ const Withdraw: React.FC = () => {
 
           <div className='withdraw-label'>Куда</div>
           <div className='withdraw-bank-list'>
-            {banks.map((bank) => (
+            {data.map((bank) => (
               <div
-                key={bank.value}
+                key={bank.id}
                 className={
                   'withdraw-bank-item' +
-                  (selectedBank === bank.value ? ' selected' : '')
+                  (selectedBank === bank.name ? ' selected' : '')
                 }
-                onClick={() => setSelectedBank(bank.value)}
+                onClick={() => setSelectedBank(bank.name)}
               >
                 <span className='withdraw-bank-radio'></span>
                 <img
-                  src={bank.icon}
-                  alt={bank.label}
+                  src={bank.image}
+                  alt={bank.name}
                   className='withdraw-bank-icon'
                 />
-                <span className='withdraw-bank-label'>{bank.label}</span>
+                <span className='withdraw-bank-label'>{bank.name}</span>
               </div>
             ))}
           </div>
@@ -143,7 +156,7 @@ const Withdraw: React.FC = () => {
           {history.map((item) => (
             <div
               className='withdraw-history-card'
-              key={item.id + item.status + item.requisit}
+              key={item.id + item.status + item.createdAt}
             >
               <div className='withdraw-history-row'>
                 <span className='withdraw-history-id'>№{item.id}</span>
@@ -152,17 +165,14 @@ const Withdraw: React.FC = () => {
                     className='withdraw-history-icon'
                     icon={timeOutline}
                   />{' '}
-                  {item.date}
+                  {formatDate(item.createdAt)}
                 </span>
               </div>
               <div className='withdraw-history-info'>
-                Реквизит: <span>{item.requisit}</span>
-              </div>
-              <div className='withdraw-history-info'>
-                Сумма: <span>{item.amount} сом</span>
+                Сумма: <span>{item.amountDisplay} сом</span>
               </div>
               <div className={`withdraw-history-status ${item.status}`}>
-                Статус: <span>{item.statusText}</span>
+                Статус: <span>{item.status}</span>
               </div>
               <div className='withdraw-history-info'>
                 Комментарий: {item.comment}
