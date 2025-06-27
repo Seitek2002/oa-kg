@@ -97,7 +97,7 @@ const InviteFriend: React.FC = () => {
         </IonButton>
         <div
           style={{
-            background: '#f6f8fa',
+            background: '#F2F5FF',
             borderRadius: 10,
             padding: '10px 12px',
             color: '#3b4a5a',
@@ -111,9 +111,9 @@ const InviteFriend: React.FC = () => {
         >
           <IonIcon
             icon={informationCircleOutline}
-            style={{ color: '#3880ff', fontSize: 20, marginTop: 2 }}
+            style={{ color: '#3880ff', fontSize: 20, marginTop: 2, width: 24, height: 24 }}
           />
-          <span>
+          <span style={{ fontSize: 12, width: '80%' }}>
             Отправьте реферальную ссылку – промокод подставится автоматически
             после перехода по ней. Отправьте код – клиенту/партнеру необходимо
             будет ввести его в специальное поле.
