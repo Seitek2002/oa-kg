@@ -84,8 +84,9 @@ const InviteFriend: React.FC = () => {
             const link = data?.referralLink || '';
             if (navigator.share) {
               navigator.share({
-                title: 'Реферальная ссылка',
-                text: link ? link : 'тут должна быть ссылка',
+                title: 'Приглашение в команду',
+                text: 'Приглашаю тебя в мою команду! Давай зарабатывать вместе на ОСАГО',
+                url: link,
               });
             } else {
               alert(link ? link : 'тут должна быть ссылка');

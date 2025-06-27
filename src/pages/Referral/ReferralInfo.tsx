@@ -84,8 +84,8 @@ const ReferralInfo: FC = () => {
           onClick={() => {
             if (navigator.share) {
               navigator.share({
-                title: 'Приглашение в команду',
-                text: 'Приглашаю тебя в мою команду! Давай зарабатывать вместе на ОСАГО',
+                title: 'Бакаи Иншуренс',
+                text: 'Онлайн оператор страховки ОСАГО',
                 url: data.referralLink,
               });
             } else {
