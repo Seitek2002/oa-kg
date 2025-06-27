@@ -2,6 +2,16 @@
   padding: 16px;
   background: #f6f8fa;
   overflow: auto;
+  z-index: 1;
+
+  .agents-bottom {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #f9f9f9;
+  }
 
   .search-bar {
     background: #fff;
@@ -13,6 +23,7 @@
     margin-bottom: 24px;
     height: 48px;
     border: 1.5px solid #e0e4ea;
+    z-index: 10;
 
     .search-icon {
       font-size: 22px;
@@ -103,6 +114,7 @@
     font-weight: 500;
     border-radius: 12px;
     margin-bottom: 8px;
+    width: 100%;
     --background: #1cbe93;
     --padding-top: 14px;
     --padding-bottom: 14px;

@@ -64,7 +64,7 @@ const Home: React.FC = () => {
         </IonCard>
 
         {/* Моя команда */}
-        <TeamCard />
+        <TeamCard showButton={true} />
 
         <IonButton className='btn-questions' expand='block' fill='outline'>
           <IonIcon slot='start' icon={helpCircleOutline} />У меня есть вопросы

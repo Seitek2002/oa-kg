@@ -20,7 +20,7 @@ function calculateAverageIncome(totalIncome, numberOfAgents) {
   return (totalIncome / numberOfAgents).toFixed(2);
 }
 
-const TeamCard = () => {
+const TeamCard = ({ showButton }: { showButton?: boolean }) => {
   const history = useHistory();
   const localData =
     localStorage.getItem('usersInfo') ||
@@ -59,7 +59,10 @@ const TeamCard = () => {
   }, []);
 
   return (
-    <IonCard className='card-block team-card'>
+    <IonCard
+      className='card-block team-card'
+      style={{ overflow: 'visible', zIndex: 1 }}
+    >
       <IonCardContent>
         <h2 className='card-section-title'>Моя команда</h2>
         <IonGrid>
@@ -87,19 +90,23 @@ const TeamCard = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
-        <IonButton
-          className='btn-invite'
-          fill='solid'
-          onClick={() => {
-            history.push('/a/invite');
-          }}
-        >
-          <IonIcon slot='start' icon={personAddOutline} />
-          Пригласить агента
-        </IonButton>
-        <p className='card-footer-text'>
-          Вы заработаете 10% от всех ОСАГО агентов
-        </p>
+        {showButton && (
+          <>
+            <IonButton
+              className='btn-invite'
+              fill='solid'
+              onClick={() => {
+                history.push('/a/invite');
+              }}
+            >
+              <IonIcon slot='start' icon={personAddOutline} />
+              Пригласить агента
+            </IonButton>
+            <p className='card-footer-text'>
+              Вы заработаете 10% от всех ОСАГО агентов
+            </p>
+          </>
+        )}
       </IonCardContent>
     </IonCard>
   );
