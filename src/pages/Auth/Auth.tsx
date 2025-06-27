@@ -9,12 +9,13 @@ import {
   IonInputOtp,
 } from '@ionic/react';
 import { useSendSmsMutation, useVerifySmsMutation } from '../../services/api';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 // import '../../components/OnboardingModal.css';
 import './style.scss';
 
 const Auth: React.FC = () => {
+  const { pathname } = useLocation();
   const [step, setStep] = useState(1); // 1: номер, 2: код
   const [phone, setPhone] = useState('');
   const [agree, setAgree] = useState(false);
@@ -39,18 +40,25 @@ const Auth: React.FC = () => {
   const handleVerify = async () => {
     setError('');
     const num = '+996' + phone;
+    const send: { phoneNumber: string; code: string; referralCode?: string } = {
+      phoneNumber: num,
+      code: smsCode,
+      referralCode: undefined,
+    };
+
+    if (pathname.split('/')[3]) {
+      send.referralCode = pathname.split('/')[3];
+    }
+
     try {
-      const data = await verifySms({
-        phoneNumber: num,
-        code: smsCode,
-      }).unwrap();
+      const data = await verifySms({ ...send }).unwrap();
       if (data.access) {
         localStorage.setItem('access', JSON.stringify(data));
       }
       // После успешной авторизации можно редиректить или закрывать модалку
       history.replace('/a/home');
     } catch (e: any) {
-      setError(e?.data?.message || 'Ошибка проверки кода');
+      setError(e?.data?.error || 'Ошибка проверки кода');
     }
   };
 
@@ -78,7 +86,7 @@ const Auth: React.FC = () => {
                     fontSize: 22,
                     padding: 8,
                     borderRadius: 4,
-                    width: 140
+                    width: 140,
                   }}
                 />
               </div>
@@ -106,9 +114,37 @@ const Auth: React.FC = () => {
                   OA.KG
                 </IonCheckbox>
               </IonItem>
-              <p className='onboarding-sms'>
-                На номер телефона указанный выше будет отправлен СМС код
-              </p>
+              {isSending ? (
+                <p className='onboarding-sms'>
+                  На номер телефона указанный выше будет отправлен СМС код
+                </p>
+              ) : (
+                ''
+              )}
+              <div
+                style={{
+                  textAlign: 'left',
+                  paddingTop: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                }}
+              >
+                Реферальный код:
+                {pathname.split('/')[3] && (
+                  <IonInput
+                    readonly
+                    fill='outline'
+                    value={pathname.split('/')[3]}
+                    style={{
+                      width: 140,
+                      height: 30,
+                      minHeight: 20,
+                    }}
+                  />
+                )}
+              </div>
               {error && (
                 <IonText
                   color='danger'

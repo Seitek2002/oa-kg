@@ -11,9 +11,13 @@
   display: flex;
   align-items: center;
   padding: 0 12px;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
   height: 48px;
   border: 1.5px solid #e0e4ea;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .search-icon {
@@ -91,14 +95,15 @@
 }
 
 .bottom-button-wrapper {
-  position: fixed;
+  position: sticky;
+  bottom: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  padding: 16px;
-  background: transparent;
-  z-index: 10; 
-  img{
+  background: #F9F9FA;
+  z-index: 10;
+  margin-bottom: 20px;
+
+  img {
     margin: 0 8px;
   }
 }

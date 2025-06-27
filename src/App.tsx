@@ -110,6 +110,9 @@ const AppTabs: React.FC = () => {
           <Route exact path='/a/auth'>
             <Auth />
           </Route>
+          <Route exact path='/a/auth/:id'>
+            <Auth />
+          </Route>
           <ProtectedRoute exact path='/a/home' component={Home} />
           <ProtectedRoute exact path='/a/osago' component={Osago} />
           <ProtectedRoute exact path='/a/agents' component={Agents} />

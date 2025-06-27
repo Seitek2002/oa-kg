@@ -29,17 +29,40 @@ export const api = createApi({
         body: new URLSearchParams(body as Record<string, string>).toString(),
       }),
     }),
-    verifySms: builder.mutation<{ access?: string, refresh?: string }, { phoneNumber: string; code: string }>({
-      query: ({ phoneNumber, code }) => ({
-        url: 'https://oa.kg/api/auth/sms/verify/',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ phoneNumber, code }).toString(),
-      }),
+    verifySms: builder.mutation<
+      { access?: string; refresh?: string },
+      { phoneNumber: string; code: string; referralCode?: string }
+    >({
+      query: ({ phoneNumber, code, referralCode }) => {
+        const pattern = referralCode
+          ? new URLSearchParams({
+              phoneNumber,
+              code,
+              referralCode,
+            })
+          : new URLSearchParams({
+              phoneNumber,
+              code,
+            });
+
+        return {
+          url: 'https://oa.kg/api/auth/sms/verify/',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: pattern.toString(),
+        };
+      },
     }),
     getCurrentUser: builder.query<UserMeResponse, void>({
       query: () => ({
         url: 'https://oa.kg/api/users/me/',
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
+    getPolicies: builder.query<Policy[], void>({
+      query: () => ({
+        url: 'https://oa.kg/api/policies/me/',
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       }),
@@ -54,6 +77,8 @@ export const {
   useLazyGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
   usePatchCurrentUserMutation,
+  useGetPoliciesQuery,
+  useLazyGetPoliciesQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -70,6 +95,7 @@ export interface UserMeResponse {
   osagoCount: number;
   agentsCount: number;
   referralLink: string;
+  authReferralLink: string;
   identificationStatus: string;
 }
 
@@ -77,4 +103,13 @@ export interface UserMeUpdateRequest {
   firstName?: string;
   lastName?: string;
   middleName?: string;
+}
+
+export interface Policy {
+  id: number;
+  fullName: string;
+  startDate: string;
+  endDate: string;
+  vehicle: string | null;
+  policyPdfUrl: string;
 }
