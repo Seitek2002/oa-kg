@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   IonAvatar,
   IonButton,
@@ -41,6 +41,12 @@ const Profile: React.FC = () => {
     }
   };
 
+  const fullName = useMemo(() => {
+    return user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName} ${user.middleName}`
+      : null;
+  }, [user?.firstName, user?.lastName, user?.middleName]);
+
   return (
     <IonPage className='profile-page'>
       <div>
@@ -53,7 +59,7 @@ const Profile: React.FC = () => {
               icon={createOutline}
             ></IonIcon>
           </IonAvatar>
-          <span className='profile-name'>{user?.phoneNumber}</span>
+          <span className='profile-name'>{fullName || user?.phoneNumber}</span>
           <span
             className={`profile-status ${
               user?.identificationStatus === 'approved'
@@ -108,7 +114,8 @@ const Profile: React.FC = () => {
             {user?.identificationStatus === 'approved' && (
               <IonIcon slot='start' icon={helpCircleOutline} />
             )}
-            {user?.identificationStatus === 'approved' || user?.identificationStatus === 'pending'
+            {user?.identificationStatus === 'approved' ||
+            user?.identificationStatus === 'pending'
               ? 'У меня есть вопросы'
               : 'Пройти идентификацию'}
           </IonButton>
