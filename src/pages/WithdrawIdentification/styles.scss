@@ -1,0 +1,43 @@
+.withdraw-identification-page {
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .withdraw-identification-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 24px;
+  }
+
+  .withdraw-identification-img {
+    width: 200px;
+    height: 186px;
+    object-fit: contain;
+    margin-bottom: 24px;
+  }
+
+  .withdraw-identification-text {
+    font-size: 17px;
+    color: #171717;
+    text-align: center;
+    margin-bottom: 175px;
+    font-weight: 400;
+  }
+
+  .withdraw-identification-btn {
+    width: 100%;
+    height: 50px;
+    font-size: 20px;
+    font-weight: 500;
+    text-transform: none;
+    --background: #0072de;
+    --border-radius: 12px;
+  }
+}

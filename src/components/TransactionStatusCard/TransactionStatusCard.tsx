@@ -56,7 +56,7 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
         <div
           className={`transactionStatusCard-header transactionDetails  ${type}`}
         >
-          <h2>{transactionId}</h2>
+          <h2>№{transactionId}</h2>
           <p className='transactionDetails-item'>
             <IonIcon icon={timeOutline} /> {timestamp}
           </p>

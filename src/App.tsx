@@ -32,6 +32,8 @@ import ProfileIdentificationPassport from './pages/ProfileIdentificationPassport
 import IdentificationProcess from './pages/IdentificationProcess/IdentificationProcess';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw/Withdraw';
+import WithdrawIdentification from './pages/WithdrawIdentification/WithdrawIdentification';
+import WithdrawInfo from './pages/WithdrawInfo/WithdrawInfo';
 import Onboarding from './pages/Onboarding/Onboarding';
 import Auth from './pages/Auth/Auth';
 import Finances from './pages/Finances';
@@ -123,6 +125,8 @@ const AppTabs: React.FC = () => {
           <ProtectedRoute exact path='/a/referral' component={ReferralInfo} />
           <ProtectedRoute exact path='/a/invite' component={InviteFriend} />
           <ProtectedRoute exact path='/a/withdraw' component={Withdraw} />
+          <ProtectedRoute exact path='/a/withdraw/identification' component={WithdrawIdentification} />
+          <ProtectedRoute exact path='/a/withdraw/info' component={WithdrawInfo} />
           <ProtectedRoute exact path='/a/profile/identification' component={ProfileIdentification} />
           <ProtectedRoute exact path='/a/profile/identification/passport' component={ProfileIdentificationPassport} />
           <ProtectedRoute exact path='/a/profile/identification/process' component={IdentificationProcess} />
