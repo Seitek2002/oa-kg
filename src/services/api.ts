@@ -94,6 +94,24 @@ export const api = createApi({
         body,
       }),
     }),
+    getOperations: builder.query<Operation[], { type?: string } | void>({
+      query: (params) => {
+        const url = 'https://oa.kg/api/operations/me/';
+        if (params && params.type) {
+          return {
+            url,
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            params: { type: params.type },
+          };
+        }
+        return {
+          url,
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        };
+      },
+    }),
   }),
 });
 
@@ -110,6 +128,8 @@ export const {
   useCreateIdentificationMutation,
   useGetReferralsQuery,
   useLazyGetReferralsQuery,
+  useGetOperationsQuery,
+  useLazyGetOperationsQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -177,4 +197,13 @@ export interface Referral {
   dateJoined: string;
   osagoCount: number;
   osagoIncome: string;
+}
+
+export interface Operation {
+  id: number;
+  type: string;
+  createdAt: string;
+  amount: string;
+  status: string;
+  comment: string;
 }
