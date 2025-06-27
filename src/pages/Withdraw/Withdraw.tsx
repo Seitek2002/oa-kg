@@ -88,7 +88,7 @@ const Withdraw: React.FC = () => {
               value={phone}
               placeholder='XXX XXX XXX'
               inputMode='tel'
-              maxLength={9}
+              maxlength={9}
               onIonChange={(e) => setPhone(e.detail.value!)}
               style={{
                 background: 'transparent',
