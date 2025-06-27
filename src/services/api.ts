@@ -73,7 +73,7 @@ export const api = createApi({
         formData.append('frontImage', frontImage);
         formData.append('backImage', backImage);
         return {
-          url: '/api/ocr/',
+          url: 'https://oa.kg/api/ocr/',
           method: 'POST',
           body: formData,
           params: { documentType },
@@ -89,7 +89,7 @@ export const api = createApi({
     }),
     createIdentification: builder.mutation<unknown, FormData>({
       query: (body) => ({
-        url: '/api/users/identification/',
+        url: 'https://oa.kg/api/users/identification/',
         method: 'POST',
         body,
       }),
