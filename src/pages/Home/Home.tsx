@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, useEffect, useState } from 'react';
 import {
   IonButton,
   IonCard,
@@ -10,15 +10,60 @@ import {
   IonRow,
 } from '@ionic/react';
 import { helpCircleOutline } from 'ionicons/icons';
-import IncomeCard from '../../components/IncomeCard/IncomeCard';
-import car from '../../assets/car.svg';
 import { useHistory } from 'react-router';
+import IncomeCard from '../../components/IncomeCard/IncomeCard';
+import TeamCard from '../../components/TeamCard/TeamCard';
+import { useLazyGetCurrentUserQuery } from '../../services/api';
+import { CompareLocaldata } from '../../helpers/CompareLocaldata';
+
+import car from '../../assets/car.svg';
 
 import './styles.scss';
-import TeamCard from '../../components/TeamCard/TeamCard';
 
-const Home: React.FC = () => {
+function calculateAverageIncome(totalIncome: number, numberOfAgents: number) {
+  if (numberOfAgents === 0) {
+    return 0;
+  }
+  return (totalIncome / numberOfAgents).toFixed(2);
+}
+
+const Home: FC = () => {
   const history = useHistory();
+  const localData =
+    localStorage.getItem('usersInfo') ||
+    `{
+        "id": 0,
+        "firstName": "",
+        "lastName": "",
+        "middleName": "",
+        "phoneNumber": "+996",
+        "balance": "0",
+        "totalIncome": "0",
+        "osagoIncome": "0",
+        "agentsIncome": "0",
+        "osagoCount": 0,
+        "agentsCount": 0,
+        "referralLink": "string",
+        "identificationStatus": "not_submitted"
+      }`;
+
+  const [data, setData] = useState(JSON.parse(localData));
+
+  const [getUserInfo] = useLazyGetCurrentUserQuery();
+
+  const handleFetch = async () => {
+    const res = await getUserInfo().unwrap();
+    CompareLocaldata({
+      oldData: localData,
+      newData: res,
+      localKey: 'usersInfo',
+      setState: setData,
+    });
+  };
+
+  useEffect(() => {
+    handleFetch();
+  }, []);
 
   return (
     <IonPage style={{ padding: 16, background: '#f6f8fa', overflow: 'auto' }}>
@@ -34,16 +79,21 @@ const Home: React.FC = () => {
                 <IonCol size='6'>
                   <div className='stat-card'>
                     <p className='stat-title'>Ваши ОСАГО</p>
-                    <p className='stat-number'>21</p>
+                    <p className='stat-number'>{data.osagoCount}</p>
                     <p className='stat-info'>В среднем агент продает 12 штук</p>
                   </div>
                 </IonCol>
                 <IonCol size='6'>
                   <div className='stat-card'>
                     <p className='stat-title'>Доход агентов</p>
-                    <p className='stat-number'>17 000</p>
+                    <p className='stat-number'>{+data?.agentsIncome}</p>
                     <p className='stat-info'>
-                      В среднем зарабатывают 2 030 сом
+                      В среднем зарабатывают{' '}
+                      {calculateAverageIncome(
+                        data?.agentsIncome,
+                        data?.agentsCount
+                      )}{' '}
+                      сом
                     </p>
                   </div>
                 </IonCol>
