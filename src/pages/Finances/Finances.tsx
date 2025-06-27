@@ -41,13 +41,10 @@ const Finances: React.FC = () => {
         )}
 
         {data.map((op) => {
-          let cardType: 'withdrawal' | 'deposit' | 'pending' = 'pending';
-          if (op.type === 'withdrawal') cardType = 'withdrawal';
-          else if (op.type === 'deposit') cardType = 'deposit';
           return (
             <TransactionStatusCard
               key={op.id}
-              type={cardType}
+              type={op.type}
               transactionId={`№${op.id}`}
               timestamp={op.createdAt}
               amount={op.amount}

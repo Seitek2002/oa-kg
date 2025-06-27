@@ -35,7 +35,7 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
 }) => {
   return (
     <IonCard className='transactionStatusCard'>
-      {type === 'pending' && (
+      {status === 'created' && (
         <IonCardHeader className='transactionStatusCard-header'>
           <IonImg className='clock' src={clock} alt='Clock' />
           <div className='transactionHeader'>
@@ -50,7 +50,7 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
             {title}
           </IonCardTitle>
           <p className={`transactionStatusCard-amount ${type}`}>
-            {type === 'deposit' ? '+' : '-'} {amount}
+            {amount}
           </p>
         </IonCardHeader>
       )}
@@ -74,7 +74,7 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
             Сумма: <span>{amount}</span>
           </p>
         )}
-        {type === 'pending' && status && (
+        {type === 'pending' && status === 'created' && (
           <p className='transactionDetails-item status-item'>
             Статус: <span className='status'>На рассмотрении</span>
           </p>

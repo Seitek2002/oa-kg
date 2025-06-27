@@ -210,7 +210,7 @@ export interface Referral {
 
 export interface Operation {
   id: number;
-  type: string;
+  type: 'withdrawal' | 'deposit';
   createdAt: string;
   amount: string;
   amountDisplay?: string;

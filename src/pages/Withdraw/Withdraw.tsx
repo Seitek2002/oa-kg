@@ -4,10 +4,6 @@ import { timeOutline } from 'ionicons/icons';
 import { useLazyGetWithdrawalMethodsQuery, WithdrawalMethod, useLazyGetOperationsQuery, Operation } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
-import bakaiLogo from '../../assets/bakai-logo.svg';
-import mbankLogo from '../../assets/mbank-logo.svg';
-import oMoneyLogo from '../../assets/OMoney-logo.svg';
-
 import './styles.scss';
 
 function formatDate(dateStr: string) {
@@ -38,7 +34,7 @@ const Withdraw: React.FC = () => {
       oldData: localData,
       newData: res,
       localKey: 'withdrawalMethods',
-      setState: (data: any) => setData(Array.isArray(data) ? data : []),
+      setState: (data) => setData(Array.isArray(data) ? data : []),
     });
   };
 
@@ -65,7 +61,7 @@ const Withdraw: React.FC = () => {
       oldData: localHistory,
       newData: res,
       localKey: 'operations',
-      setState: (data: any) => setHistory(Array.isArray(data) ? data : []),
+      setState: (data) => setHistory(Array.isArray(data) ? data : []),
     });
   };
 
