@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   IonAvatar,
   IonButton,
@@ -11,6 +11,9 @@ import {
   createOutline,
   helpCircleOutline,
 } from 'ionicons/icons';
+
+import { useGetCurrentUserQuery } from '../../services/api';
+
 import avatar from '../../assets/avatar-default.svg';
 import helpBuoy from '../../assets/helpBuoyFilled.svg';
 import helpQuestion from '../../assets/helpQuestionFilled.svg';
@@ -19,14 +22,19 @@ import './styles.scss';
 
 const Profile: React.FC = () => {
   const navigate = useIonRouter();
-  const [isIdentified] = useState<boolean>(false);
+
+  const { data: user } = useGetCurrentUserQuery();
 
   const editClick = () => {
     navigate.push('profile/edit');
   };
 
   const identificationClick = () => {
-    navigate.push('profile/identification');
+    if (user?.identificationStatus === 'pending') {
+      navigate.push('profile/identification');
+    }
+    // redirect to telegram group if user is identified
+    navigate.push('profile/questions');
   };
 
   return (
@@ -44,11 +52,14 @@ const Profile: React.FC = () => {
           <span className='profile-name'>+996500604644</span>
           <span
             className={`profile-status ${
-              isIdentified ? 'identified' : 'not-identified'
+              user?.identificationStatus !== 'pending'
+                ? 'identified'
+                : 'not-identified'
             }`}
-            onClick={identificationClick}
           >
-            {isIdentified ? 'Идентифицирован' : 'Не идентифицирован'}
+            {user?.identificationStatus !== 'pending'
+              ? 'Идентифицирован'
+              : 'Не идентифицирован'}
           </span>
         </div>
         <div className='profile-actions'>
@@ -84,8 +95,18 @@ const Profile: React.FC = () => {
               className='profile-action__arrow'
             />
           </div>
-          <IonButton className='btn-questions' expand='block' fill='outline'>
-            <IonIcon slot='start' icon={helpCircleOutline} />У меня есть вопросы
+          <IonButton
+            onClick={identificationClick}
+            className='btn-questions'
+            expand='block'
+            fill='outline'
+          >
+            {user?.identificationStatus !== 'pending' && (
+              <IonIcon slot='start' icon={helpCircleOutline} />
+            )}
+            {user?.identificationStatus === 'pending'
+              ? 'Пройти идентификация'
+              : 'У меня есть вопросы'}
           </IonButton>
           <div className='profile-contacts'>
             <h2>Наши контакты</h2>
@@ -93,7 +114,12 @@ const Profile: React.FC = () => {
               Кыргызская Руспублика, г. Бишкек, ул. Турусбекова, 109/1, 1 этаж,
               офис 116 (БЦ «Азия Трейд Компани»)
             </p>
-            <IonButton className='btn-questions' expand='block' fill='outline'>
+            <IonButton
+              href='tel:+996777394080'
+              className='btn-questions'
+              expand='block'
+              fill='outline'
+            >
               Позвонить
             </IonButton>
           </div>

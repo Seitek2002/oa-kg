@@ -6,16 +6,13 @@ import {
   IonLabel,
   IonPage,
 } from '@ionic/react';
+
+import { useGetCurrentUserQuery } from '../../services/api';
+
 import avatar from '../../assets/avatar-default.svg';
 import { z } from 'zod';
 
 import './styles.scss';
-
-const initialFormState = {
-  firstName: '',
-  lastName: '',
-  patronymic: '',
-};
 
 const formDataSchema = z.object({
   firstName: z.string().min(2, { message: 'Минимум 2 символа' }),
@@ -26,7 +23,15 @@ const formDataSchema = z.object({
 type FormData = z.infer<typeof formDataSchema>;
 
 const ProfileEdit = () => {
+  const { data: user } = useGetCurrentUserQuery();
+
   const [userFormData, setFormData] = useState<Partial<FormData>>({});
+
+  const initialFormState = {
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    patronymic: user?.middleName || '',
+  };
 
   const formData = {
     ...initialFormState,

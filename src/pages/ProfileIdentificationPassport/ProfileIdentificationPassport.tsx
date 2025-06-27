@@ -20,7 +20,7 @@ import { identificationKeys, identificationSchema } from './schema';
 import './styles.scss';
 
 const ProfileIdentificationPassport = () => {
-  const [createIdentification, { isLoading, isError }] =
+  const [createIdentification, { isLoading, isSuccess, isError }] =
     useCreateIdentificationMutation();
   const navigate = useIonRouter();
   const { images, passportData } = useAppSelector(
@@ -118,7 +118,14 @@ const ProfileIdentificationPassport = () => {
         message: 'Ошибка при отправке данных. Пожалуйста, попробуйте еще раз.',
       });
     }
-  }, [isError]);
+    if (isSuccess) {
+      setToast({
+        open: true,
+        message: 'Данные успешно отправлены. Спасибо!',
+      });
+      navigate.push('/a/profile/identification/process');
+    }
+  }, [isError, isSuccess, navigate]);
 
   return (
     <IonPage className='passport-page'>
