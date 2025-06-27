@@ -108,7 +108,7 @@ const Profile: React.FC = () => {
             {user?.identificationStatus === 'approved' && (
               <IonIcon slot='start' icon={helpCircleOutline} />
             )}
-            {user?.identificationStatus === 'approved'
+            {user?.identificationStatus === 'approved' || user?.identificationStatus === 'pending'
               ? 'У меня есть вопросы'
               : 'Пройти идентификацию'}
           </IonButton>
