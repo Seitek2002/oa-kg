@@ -62,7 +62,16 @@ const ReferralInfo: FC = () => {
         <div className='referral-title'>Ваш реферальный код</div>
         <div className='referral-code'>{data?.id}</div>
 
-        <IonButton expand='block' color='primary' className='referral-btn'>
+        <IonButton
+          expand='block'
+          color='primary'
+          className='referral-btn'
+          onClick={() => {
+            if (data?.referralLink) {
+              window.location.href = data.referralLink;
+            }
+          }}
+        >
           <img src={car} alt='car' />
           Оформить ОСАГО другому человеку
         </IonButton>
