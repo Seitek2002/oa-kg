@@ -31,7 +31,7 @@ const Finances: React.FC = () => {
       oldData: localData,
       newData: res,
       localKey: 'operations',
-      setState: (data: any) => setData(Array.isArray(data) ? data : []),
+      setState: (data) => setData(Array.isArray(data) ? data : []),
     });
   };
 
