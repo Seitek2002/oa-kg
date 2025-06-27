@@ -29,6 +29,7 @@ import Profile from './pages/Profile/Profile';
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 import ProfileIdentification from './pages/ProfileIdentification/ProfileIdentification';
 import ProfileIdentificationPassport from './pages/ProfileIdentificationPassport/ProfileIdentificationPassport';
+import IdentificationProcess from './pages/IdentificationProcess/IdentificationProcess';
 import InviteFriend from './pages/InviteFriend';
 import Withdraw from './pages/Withdraw';
 import Onboarding from './pages/Onboarding/Onboarding';
@@ -124,6 +125,7 @@ const AppTabs: React.FC = () => {
           <ProtectedRoute exact path='/a/withdraw' component={Withdraw} />
           <ProtectedRoute exact path='/a/profile/identification' component={ProfileIdentification} />
           <ProtectedRoute exact path='/a/profile/identification/passport' component={ProfileIdentificationPassport} />
+          <ProtectedRoute exact path='/a/profile/identification/process' component={IdentificationProcess} />
           <Route exact path='/a/'>
             <Redirect to='/a/home' />
           </Route>
