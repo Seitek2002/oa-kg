@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { IonPage, IonButton, IonInput, IonIcon } from '@ionic/react';
+import {
+  IonPage,
+  IonButton,
+  IonInput,
+  IonIcon,
+  useIonRouter,
+} from '@ionic/react';
 import { timeOutline } from 'ionicons/icons';
 import { useLazyGetWithdrawalMethodsQuery, WithdrawalMethod, useLazyGetOperationsQuery, Operation } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 import './styles.scss';
+import { useGetCurrentUserQuery } from '../../services/api';
 
 function formatDate(dateStr: string) {
   if (!dateStr) return '';
@@ -19,6 +26,10 @@ function formatDate(dateStr: string) {
 }
 
 const Withdraw: React.FC = () => {
+  const navigate = useIonRouter();
+
+  const { data: user } = useGetCurrentUserQuery();
+
   const [phone, setPhone] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
   const [amount, setAmount] = useState('1000');
@@ -71,7 +82,11 @@ const Withdraw: React.FC = () => {
   }, []);
 
   const handleWithdraw = () => {
-    console.log(`Вывести ${amount} сом на ${selectedBank}, номер ${phone}`);
+    if (user?.identificationStatus !== 'verified') {
+      navigate.push('/a/withdraw/identification');
+      return;
+    }
+    navigate.push('/a/withdraw/info', 'forward', 'replace');
   };
 
   return (
@@ -82,7 +97,7 @@ const Withdraw: React.FC = () => {
 
           <div className='withdraw-label'>Номер телефона</div>
           <div className='withdraw-phone'>
-            <span>(+996)</span>
+            <span>+996</span>
             <IonInput
               className='withdraw-phone-input'
               value={phone}
@@ -97,6 +112,7 @@ const Withdraw: React.FC = () => {
                 fontSize: 16,
                 fontWeight: 500,
                 padding: 0,
+                width: '100%',
               }}
             />
           </div>
