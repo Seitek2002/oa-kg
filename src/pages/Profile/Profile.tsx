@@ -73,7 +73,7 @@ const Profile: React.FC = () => {
           </span>
         </div>
         <div className='profile-actions'>
-          <div className='profile-action'>
+          <div className='profile-action' onClick={() => navigate.push('/a/instruction')}>
             <div className='profile-action__icon profile-action__icon--blue'>
               <IonIcon icon={helpBuoy} />
             </div>
@@ -90,7 +90,7 @@ const Profile: React.FC = () => {
               className='profile-action__arrow'
             />
           </div>
-          <div className='profile-action'>
+          <div className='profile-action' onClick={() => navigate.push('/a/faq')}>
             <div className='profile-action__icon profile-action__icon--gray'>
               <IonIcon icon={helpQuestion} />
             </div>

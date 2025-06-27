@@ -37,6 +37,8 @@ import WithdrawInfo from './pages/WithdrawInfo/WithdrawInfo';
 import Onboarding from './pages/Onboarding/Onboarding';
 import Auth from './pages/Auth/Auth';
 import Finances from './pages/Finances';
+import Instruction from './pages/Instruction/Instruction';
+import Faq from './pages/Faq/Faq';
 
 import logo from './assets/logo.svg';
 
@@ -73,14 +75,17 @@ type ProtectedRouteProps = {
   exact?: boolean;
 };
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Component, ...rest }) => (
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  component: Component,
+  ...rest
+}) => (
   <Route
     {...rest}
-    render={props =>
+    render={(props) =>
       isAuthorized() ? (
         <Component {...props} />
       ) : (
-        <Redirect to="/a/onboarding" />
+        <Redirect to='/a/onboarding' />
       )
     }
   />
@@ -88,7 +93,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Component, .
 
 const AppTabs: React.FC = () => {
   const location = useLocation();
-  const hideTabBar = location.pathname === '/a/onboarding' || location.pathname === '/a/auth';
+  const hideTabBar =
+    location.pathname === '/a/onboarding' || location.pathname === '/a/auth';
 
   const [lang, setLang] = React.useState<'kg' | 'ru'>('kg');
 
@@ -98,7 +104,7 @@ const AppTabs: React.FC = () => {
         <img src={logo} alt='' style={{ height: 22 }} />
         <span>ОСАГО Агент КГ</span>
         <span
-          className="text-[#000] absolute right-0 top-0 cursor-pointer"
+          className='text-[#000] absolute right-0 top-0 cursor-pointer'
           style={{ background: 'transparent', padding: 8 }}
           onClick={() => setLang(lang === 'kg' ? 'ru' : 'kg')}
         >
@@ -121,15 +127,41 @@ const AppTabs: React.FC = () => {
           <ProtectedRoute exact path='/a/agents' component={Agents} />
           <ProtectedRoute exact path='/a/finances' component={Finances} />
           <ProtectedRoute exact path='/a/profile' component={Profile} />
-          <ProtectedRoute exact path='/a/profile/edit' component={ProfileEdit} />
+          <ProtectedRoute
+            exact
+            path='/a/profile/edit'
+            component={ProfileEdit}
+          />
           <ProtectedRoute exact path='/a/referral' component={ReferralInfo} />
           <ProtectedRoute exact path='/a/invite' component={InviteFriend} />
           <ProtectedRoute exact path='/a/withdraw' component={Withdraw} />
-          <ProtectedRoute exact path='/a/withdraw/identification' component={WithdrawIdentification} />
-          <ProtectedRoute exact path='/a/withdraw/info' component={WithdrawInfo} />
-          <ProtectedRoute exact path='/a/profile/identification' component={ProfileIdentification} />
-          <ProtectedRoute exact path='/a/profile/identification/passport' component={ProfileIdentificationPassport} />
-          <ProtectedRoute exact path='/a/profile/identification/process' component={IdentificationProcess} />
+          <ProtectedRoute
+            exact
+            path='/a/withdraw/identification'
+            component={WithdrawIdentification}
+          />
+          <ProtectedRoute
+            exact
+            path='/a/withdraw/info'
+            component={WithdrawInfo}
+          />
+          <ProtectedRoute
+            exact
+            path='/a/profile/identification'
+            component={ProfileIdentification}
+          />
+          <ProtectedRoute
+            exact
+            path='/a/profile/identification/passport'
+            component={ProfileIdentificationPassport}
+          />
+          <ProtectedRoute
+            exact
+            path='/a/profile/identification/process'
+            component={IdentificationProcess}
+          />
+          <ProtectedRoute exact path='/a/instruction' component={Instruction} />
+          <ProtectedRoute exact path='/a/faq' component={Faq} />
           <Route exact path='/a/'>
             <Redirect to='/a/home' />
           </Route>
