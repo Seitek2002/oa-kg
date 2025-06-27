@@ -5,6 +5,7 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonCardContent,
+  useIonRouter,
 } from '@ionic/react';
 
 import './styles.scss';
@@ -17,9 +18,8 @@ interface IncomeCardProps {
   onWithdraw?: () => void;
 }
 
-const IncomeCard: FC<IncomeCardProps> = ({
-  onWithdraw,
-}) => {
+const IncomeCard: FC<IncomeCardProps> = ({ onWithdraw }) => {
+  const navigate = useIonRouter();
   const localData =
     localStorage.getItem('usersInfo') ||
     `{
@@ -41,6 +41,13 @@ const IncomeCard: FC<IncomeCardProps> = ({
   const [data, setData] = useState(JSON.parse(localData));
 
   const [getUserInfo] = useLazyGetCurrentUserQuery();
+
+  const handleClick = () => {
+    navigate.push('/a/withdraw');
+    if (onWithdraw) {
+      onWithdraw();
+    }
+  };
 
   const handleFetch = async () => {
     const res = await getUserInfo().unwrap();
@@ -72,7 +79,7 @@ const IncomeCard: FC<IncomeCardProps> = ({
         </span>
       </IonCardContent>
       <IonCardContent>
-        <button onClick={onWithdraw} className='incomeCard-button'>
+        <button onClick={handleClick} className='incomeCard-button'>
           <svg
             width='24'
             height='24'

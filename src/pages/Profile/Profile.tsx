@@ -49,7 +49,7 @@ const Profile: React.FC = () => {
               icon={createOutline}
             ></IonIcon>
           </IonAvatar>
-          <span className='profile-name'>+996500604644</span>
+          <span className='profile-name'>{user?.phoneNumber}</span>
           <span
             className={`profile-status ${
               user?.identificationStatus !== 'pending'
@@ -57,9 +57,8 @@ const Profile: React.FC = () => {
                 : 'not-identified'
             }`}
           >
-            {user?.identificationStatus !== 'pending'
-              ? 'Идентифицирован'
-              : 'Не идентифицирован'}
+            {user?.identificationStatus !== 'approved' && 'Не идентифицирован'}
+            {user?.identificationStatus === 'approved' && 'Идентифицирован'}
           </span>
         </div>
         <div className='profile-actions'>

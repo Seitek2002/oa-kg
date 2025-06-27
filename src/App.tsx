@@ -31,7 +31,7 @@ import ProfileIdentification from './pages/ProfileIdentification/ProfileIdentifi
 import ProfileIdentificationPassport from './pages/ProfileIdentificationPassport/ProfileIdentificationPassport';
 import IdentificationProcess from './pages/IdentificationProcess/IdentificationProcess';
 import InviteFriend from './pages/InviteFriend';
-import Withdraw from './pages/Withdraw';
+import Withdraw from './pages/Withdraw/Withdraw';
 import Onboarding from './pages/Onboarding/Onboarding';
 import Auth from './pages/Auth/Auth';
 import Finances from './pages/Finances';
