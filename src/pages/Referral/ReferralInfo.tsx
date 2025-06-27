@@ -84,8 +84,9 @@ const ReferralInfo: FC = () => {
           onClick={() => {
             if (navigator.share) {
               navigator.share({
-                title: 'Реферальная ссылка',
-                text: data.referralLink,
+                title: 'Приглашение в команду',
+                text: 'Приглашаю тебя в мою команду! Давай зарабатывать вместе на ОСАГО',
+                url: data.referralLink,
               });
             } else {
               alert('Web Share API не поддерживается на этом устройстве');
