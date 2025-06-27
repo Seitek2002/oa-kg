@@ -8,6 +8,18 @@ import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 import './style.scss';
 
+function formatDate(dateStr: string) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+  return `${hours}:${minutes} ${day}.${month}.${year}`;
+}
+
 const Agents: React.FC = () => {
   const history = useHistory();
 
@@ -58,7 +70,7 @@ const Agents: React.FC = () => {
         <div className='agent-card' key={agent.id}>
           <div className='agent-name'>{agent.fullName}</div>
           <div className='agent-info'>
-            Дата регистрации: <span>{agent.dateJoined}</span>
+            Дата регистрации: <span>{formatDate(agent.dateJoined)}</span>
           </div>
           <div className='agent-info'>
             Телефон: <span>{agent.phoneNumber}</span>
