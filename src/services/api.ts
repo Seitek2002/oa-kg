@@ -67,6 +67,26 @@ export const api = createApi({
         headers: { 'Content-Type': 'application/json' },
       }),
     }),
+    ocrCreate: builder.mutation<OcrResponse, OcrRequest>({
+      query: ({ documentType, frontImage, backImage }) => {
+        const formData = new FormData();
+        formData.append('frontImage', frontImage);
+        formData.append('backImage', backImage);
+        return {
+          url: '/api/ocr/',
+          method: 'POST',
+          body: formData,
+          params: { documentType },
+        };
+      },
+    }),
+    createIdentification: builder.mutation<unknown, FormData>({
+      query: (body) => ({
+        url: '/api/users/identification/',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -79,6 +99,8 @@ export const {
   usePatchCurrentUserMutation,
   useGetPoliciesQuery,
   useLazyGetPoliciesQuery,
+  useOcrCreateMutation,
+  useCreateIdentificationMutation,
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -112,4 +134,29 @@ export interface Policy {
   endDate: string;
   vehicle: string | null;
   policyPdfUrl: string;
+}
+
+export interface OcrRequest {
+  documentType: 'passport' | 'driver_license' | 'vehicle_cert';
+  frontImage: File;
+  backImage: File;
+}
+export interface OcrPassportData {
+  surname: string;
+  name: string;
+  patronymic: string;
+  gender: string;
+  birthDate: string;
+  documentNumber: string;
+  expiryDate: string;
+  authority: string;
+  issueDate: string;
+  birthPlace: string;
+  personalNumber: string;
+  ethnicity: string;
+}
+
+export interface OcrResponse {
+  id: number;
+  data: OcrPassportData;
 }

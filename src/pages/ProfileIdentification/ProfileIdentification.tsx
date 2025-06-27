@@ -1,19 +1,30 @@
-import { IonButton, IonIcon, IonPage, useIonRouter } from '@ionic/react';
+import { useState, useRef, useEffect } from 'react';
+import { useHistory } from 'react-router';
+import { IonButton, IonIcon, IonPage } from '@ionic/react';
 import { arrowBackOutline, closeOutline } from 'ionicons/icons';
+
+import { OcrPassportData, useOcrCreateMutation } from '../../services/api';
+import { useAppDispatch } from '../../hooks';
 
 import identificationCard from '../../assets/identificationCard.svg';
 import identificationCardBack from '../../assets/identificationCard-back.svg';
 import identificationSelfie from '../../assets/identificationSelfie.svg';
 
 import './styles.scss';
-import { useState, useRef } from 'react';
+import { setIdentificationImages, setPassportData } from '../../store/index';
 
 const ProfileIdentification = () => {
-  const navigate = useIonRouter();
+  const history = useHistory();
+  const dispatch = useAppDispatch();
 
+  const [ocrCreate, { data: ocrData, isSuccess, isError, error, isLoading }] =
+    useOcrCreateMutation();
+
+  const [files, setFiles] = useState<{ [key: string]: File | undefined }>({});
   const [photos, setPhotos] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+
   const fileRefs = {
     front: useRef<HTMLInputElement>(null),
     back: useRef<HTMLInputElement>(null),
@@ -30,10 +41,10 @@ const ProfileIdentification = () => {
   ) => {
     const file = e.target.files?.[0];
     if (file) {
+      setFiles((prev) => ({ ...prev, [key]: file }));
       const reader = new FileReader();
       reader.onload = () => {
         setPhotos((prev) => ({ ...prev, [key]: reader.result as string }));
-
         if (fileRefs[key].current) fileRefs[key].current.value = '';
       };
       reader.readAsDataURL(file);
@@ -41,18 +52,37 @@ const ProfileIdentification = () => {
   };
 
   const onNext = () => {
-    console.log(photos);
-
-    if (photos.front && photos.back && photos.selfie) {
-      navigate.push('/a/profile/identification/passport');
-    }
+    if (!files.front || !files.back) return;
+    dispatch(
+      setIdentificationImages({
+        front: files.front,
+        back: files.back,
+        selfie: files.selfie || null,
+      })
+    );
+    ocrCreate({
+      documentType: 'passport',
+      frontImage: files.front,
+      backImage: files.back,
+    });
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      history.push('/a/profile/identification/passport');
+      dispatch(setPassportData(ocrData.data as OcrPassportData));
+      localStorage.setItem('ocrPassportData', JSON.stringify(ocrData.data));
+    }
+    if (isError) {
+      console.log(error);
+    }
+  }, [dispatch, error, history, isError, isSuccess, ocrData]);
 
   return (
     <IonPage className='profile-identification'>
       <div className='identification-header'>
         <IonIcon
-          onClick={() => navigate.goBack()}
+          onClick={() => history.goBack()}
           icon={arrowBackOutline}
           className='identification-back'
         />
@@ -181,7 +211,7 @@ const ProfileIdentification = () => {
         </div>
       </div>
       <IonButton
-        disabled={!photos.front || !photos.back || !photos.selfie}
+        disabled={!photos.front || !photos.back || !photos.selfie || isLoading}
         onClick={onNext}
         expand='block'
         className='identification-next'
