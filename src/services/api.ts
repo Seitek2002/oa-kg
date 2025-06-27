@@ -80,6 +80,13 @@ export const api = createApi({
         };
       },
     }),
+    getReferrals: builder.query<Referral[], void>({
+      query: () => ({
+        url: 'https://oa.kg/api/referrals/me/',
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
     createIdentification: builder.mutation<unknown, FormData>({
       query: (body) => ({
         url: '/api/users/identification/',
@@ -101,6 +108,8 @@ export const {
   useLazyGetPoliciesQuery,
   useOcrCreateMutation,
   useCreateIdentificationMutation,
+  useGetReferralsQuery,
+  useLazyGetReferralsQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -159,4 +168,13 @@ export interface OcrPassportData {
 export interface OcrResponse {
   id: number;
   data: OcrPassportData;
+}
+
+export interface Referral {
+  id: number;
+  fullName: string;
+  phoneNumber: string;
+  dateJoined: string;
+  osagoCount: number;
+  osagoIncome: string;
 }

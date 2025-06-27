@@ -11,7 +11,7 @@ export const getBaseQuery =
     const fetchQuery = fetchBaseQuery({
       baseUrl: import.meta.env.VITE_BASE_URL,
       credentials: 'same-origin',
-      prepareHeaders: (headers, { endpoint }) => {
+      prepareHeaders: (headers) => {
         const token = JSON.parse(localStorage.getItem('access') || '{}');
         const url = typeof args === 'string' ? args : args.url;
 
