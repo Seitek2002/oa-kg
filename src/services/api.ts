@@ -62,7 +62,7 @@ export const api = createApi({
         };
       },
     }),
-    createIdentification: builder.mutation<OcrPassportData, FormData>({
+    createIdentification: builder.mutation<unknown, FormData>({
       query: (body) => ({
         url: '/api/users/identification/',
         method: 'POST',
