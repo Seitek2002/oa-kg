@@ -111,7 +111,13 @@ const InviteFriend: React.FC = () => {
         >
           <IonIcon
             icon={informationCircleOutline}
-            style={{ color: '#3880ff', fontSize: 20, marginTop: 2, width: 24, height: 24 }}
+            style={{
+              color: '#3880ff',
+              fontSize: 20,
+              marginTop: 2,
+              width: 24,
+              height: 24,
+            }}
           />
           <span style={{ fontSize: 12, width: '80%' }}>
             Отправьте реферальную ссылку – промокод подставится автоматически
