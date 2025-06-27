@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   IonButton,
   IonCard,
@@ -66,7 +66,18 @@ const Home: React.FC = () => {
         {/* Моя команда */}
         <TeamCard showButton={true} />
 
-        <IonButton className='btn-questions' expand='block' fill='outline'>
+        <IonButton
+          onClick={() => {
+            window.open(
+              'https://t.me/+ZMp1eTcT_4Y2MGEy',
+              '_blank',
+              'noopener,noreferrer'
+            );
+          }}
+          className='btn-questions'
+          expand='block'
+          fill='outline'
+        >
           <IonIcon slot='start' icon={helpCircleOutline} />У меня есть вопросы
         </IonButton>
       </div>

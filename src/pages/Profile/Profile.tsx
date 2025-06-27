@@ -33,7 +33,11 @@ const Profile: React.FC = () => {
     if (user?.identificationStatus !== 'approved') {
       navigate.push('profile/identification');
     } else {
-      navigate.push('profile/questions');
+      window.open(
+        'https://t.me/+ZMp1eTcT_4Y2MGEy',
+        '_blank',
+        'noopener,noreferrer'
+      );
     }
   };
 
