@@ -7,7 +7,7 @@ import {
   IonPage,
 } from '@ionic/react';
 
-import { useGetCurrentUserQuery } from '../../services/api';
+import { useGetCurrentUserQuery, useUpdateCurrentUserMutation } from '../../services/api';
 
 import avatar from '../../assets/avatar-default.svg';
 import { z } from 'zod';
@@ -24,6 +24,7 @@ type FormData = z.infer<typeof formDataSchema>;
 
 const ProfileEdit = () => {
   const { data: user } = useGetCurrentUserQuery();
+  const [updateUser] = useUpdateCurrentUserMutation();
 
   const [userFormData, setFormData] = useState<Partial<FormData>>({});
 
@@ -55,6 +56,19 @@ const ProfileEdit = () => {
     if (errors) {
       console.log('Form has errors:', errors);
       return;
+    }
+
+    // Отправка запроса на изменение профиля
+    try {
+      await updateUser({
+        firstName: formData.firstName || '',
+        lastName: formData.lastName || '',
+        middleName: formData.patronymic || '',
+      }).unwrap();
+      // Можно добавить уведомление об успехе или обновить localStorage
+    } catch (err) {
+      // Можно обработать ошибку
+      console.error('Ошибка обновления профиля', err);
     }
   };
 
