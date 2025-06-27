@@ -5,6 +5,10 @@ import {
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
 
+/**
+ * Кастомный baseQuery с поддержкой обновления токена.
+ * access и refresh теперь хранятся в localStorage в ключе "access" как объект { access, refresh }
+ */
 export const getBaseQuery =
   (): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> =>
   async (args, api, extraOptions) => {
@@ -12,15 +16,19 @@ export const getBaseQuery =
       baseUrl: import.meta.env.VITE_BASE_URL,
       credentials: 'same-origin',
       prepareHeaders: (headers) => {
-        const token = JSON.parse(localStorage.getItem('access') || '{}');
+        let access = '';
+        try {
+          const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');
+          access = tokenObj.access || '';
+        } catch {
+          access = '';
+        }
         const url = typeof args === 'string' ? args : args.url;
-
-        // Не добавляем токен для /sms/send и /sms/verify
         const isAuthFree =
           url?.includes('/sms/send') || url?.includes('/sms/verify');
 
-        if (token && !isAuthFree) {
-          headers.set('Authorization', `Bearer ${token.access}`);
+        if (access && !isAuthFree) {
+          headers.set('Authorization', `Bearer ${access}`);
         }
         headers.set('Accept', 'application/json');
         return headers;
@@ -34,8 +42,17 @@ export const getBaseQuery =
     const isAuthFree =
       url?.includes('/sms/send') || url?.includes('/sms/verify');
 
-    if (result.meta?.response?.status === 401 && !isAuthFree) {
-      const refresh = localStorage.getItem('refresh');
+    if (
+      result.meta?.response?.status === 401 &&
+      !isAuthFree
+    ) {
+      let refresh = '';
+      try {
+        const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');
+        refresh = tokenObj.refresh || '';
+      } catch {
+        refresh = '';
+      }
       if (refresh) {
         // Пробуем обновить токен
         const refreshResult = await fetchQuery(
@@ -53,7 +70,14 @@ export const getBaseQuery =
           typeof refreshResult.data === 'object' &&
           'access' in refreshResult.data
         ) {
-          localStorage.setItem('access', JSON.stringify(refreshResult.data));
+          // Сохраняем оба токена обратно в localStorage
+          localStorage.setItem(
+            'access',
+            JSON.stringify({
+              access: refreshResult.data.access,
+              refresh,
+            })
+          );
           // Повторяем исходный запрос с новым токеном
           result = await fetchQuery(args, api, extraOptions);
         } else {
