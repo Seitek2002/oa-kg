@@ -53,7 +53,7 @@ export const getBaseQuery =
           typeof refreshResult.data === 'object' &&
           'access' in refreshResult.data
         ) {
-          localStorage.setItem('access', refreshResult.data.access as string);
+          localStorage.setItem('access', JSON.stringify(refreshResult.data));
           // Повторяем исходный запрос с новым токеном
           result = await fetchQuery(args, api, extraOptions);
         } else {
