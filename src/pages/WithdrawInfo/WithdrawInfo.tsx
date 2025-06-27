@@ -1,21 +1,26 @@
 import { IonPage, IonButton } from '@ionic/react';
 
+import { Operation } from '../../services/api';
 import TransactionStatusCard from '../../components/TransactionStatusCard/TransactionStatusCard';
 
 import './styles.scss';
 
 const WithdrawInfo = () => {
-  const transaction = {
-    type: 'pending' as 'withdrawal' | 'deposit' | 'pending',
-    transactionId: '1234',
-    timestamp: '12:00 01.06.2025',
-    amount: '1000 сом',
-    recipient: '+996555112233 - BakAi',
+  const transaction: Operation = {
+    type: 'withdrawal',
+    status: 'paid',
+    id: '1234',
+    createdAt: '12:00 01.06.2025',
+    amountDisplay: '1000',
+    requisiteDisplay: '+996555112233 - BakAi',
   };
 
   return (
     <IonPage className='withdraw-info-page'>
-      <TransactionStatusCard {...transaction} />
+      <TransactionStatusCard
+        {...transaction}
+        timestamp={transaction.createdAt}
+      />
       <IonButton
         expand='block'
         className='withdraw-info-btn'

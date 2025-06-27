@@ -6,18 +6,6 @@ import TransactionStatusCard from '../../components/TransactionStatusCard/Transa
 import IncomeCard from '../../components/IncomeCard/IncomeCard';
 import './styles.scss';
 
-function formatDate(dateStr: string) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const day = pad(date.getDate());
-  const month = pad(date.getMonth() + 1);
-  const year = date.getFullYear();
-  return `${hours}:${minutes} ${day}.${month}.${year}`;
-}
-
 const Finances: React.FC = () => {
   // Паттерн localData + data + getOperations + handleFetch + useEffect
   const localData = localStorage.getItem('operations') || '[]';
@@ -51,18 +39,11 @@ const Finances: React.FC = () => {
           </div>
         )}
         {data.map((op) => {
-          let cardType: "withdrawal" | "deposit" | "pending" = "pending";
-          if (op.type === "withdrawal") cardType = "withdrawal";
-          else if (op.type === "deposit") cardType = "deposit";
           return (
             <TransactionStatusCard
               key={op.id}
-              type={cardType}
-              transactionId={`№${op.id}`}
-              timestamp={formatDate(op.createdAt)}
-              amount={op.amountDisplay || op.amount}
-              status={op.status}
-              comments={op.comment}
+              {...op}
+              timestamp={op.createdAt}
             />
           );
         })}

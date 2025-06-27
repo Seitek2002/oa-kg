@@ -209,13 +209,13 @@ export interface Referral {
 }
 
 export interface Operation {
-  id: number;
-  type: 'withdrawal' | 'deposit';
+  id: string;
+  type: 'withdrawal' | 'osago' | 'referral';
+  status: 'created' | 'rejected' | 'paid' | '';
   createdAt: string;
-  amount: string;
-  amountDisplay?: string;
-  status: string;
-  comment: string;
+  amountDisplay: string;
+  comment?: string;
+  requisiteDisplay: string;
 }
 
 export interface WithdrawalMethod {
