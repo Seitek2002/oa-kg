@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import { useHistory } from 'react-router-dom';
 
-function calculateAverageIncome(totalIncome, numberOfAgents) {
+function calculateAverageIncome(totalIncome: number, numberOfAgents: number) {
   if (numberOfAgents === 0) {
     return 0;
   }
