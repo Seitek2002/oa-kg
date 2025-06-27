@@ -30,11 +30,11 @@ const Profile: React.FC = () => {
   };
 
   const identificationClick = () => {
-    if (user?.identificationStatus === 'pending') {
+    if (user?.identificationStatus !== 'approved') {
       navigate.push('profile/identification');
+    } else {
+      navigate.push('profile/questions');
     }
-    // redirect to telegram group if user is identified
-    navigate.push('profile/questions');
   };
 
   return (
@@ -52,13 +52,14 @@ const Profile: React.FC = () => {
           <span className='profile-name'>{user?.phoneNumber}</span>
           <span
             className={`profile-status ${
-              user?.identificationStatus !== 'pending'
+              user?.identificationStatus === 'approved'
                 ? 'identified'
                 : 'not-identified'
             }`}
           >
-            {user?.identificationStatus !== 'approved' && 'Не идентифицирован'}
-            {user?.identificationStatus === 'approved' && 'Идентифицирован'}
+            {user?.identificationStatus === 'approved'
+              ? 'Идентифицирован'
+              : 'Не идентифицирован'}
           </span>
         </div>
         <div className='profile-actions'>
@@ -100,12 +101,12 @@ const Profile: React.FC = () => {
             expand='block'
             fill='outline'
           >
-            {user?.identificationStatus !== 'pending' && (
+            {user?.identificationStatus === 'approved' && (
               <IonIcon slot='start' icon={helpCircleOutline} />
             )}
-            {user?.identificationStatus === 'pending'
-              ? 'Пройти идентификация'
-              : 'У меня есть вопросы'}
+            {user?.identificationStatus === 'approved'
+              ? 'У меня есть вопросы'
+              : 'Пройти идентификацию'}
           </IonButton>
           <div className='profile-contacts'>
             <h2>Наши контакты</h2>
