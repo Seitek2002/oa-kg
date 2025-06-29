@@ -126,6 +126,14 @@ export const api = createApi({
         headers: { 'Content-Type': 'application/json' },
       }),
     }),
+    getQaList: builder.query<QaItem[], { type: string }>({
+      query: ({ type }) => ({
+        url: 'https://oa.kg/api/qa/',
+        method: 'GET',
+        params: { type },
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
   }),
 });
 
@@ -159,6 +167,7 @@ export const {
   useLazyGetWithdrawalMethodsQuery,
   useGetPageTextsQuery,
   useLazyGetPageTextsQuery,
+  useGetQaListQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -242,4 +251,11 @@ export interface WithdrawalMethod {
   id: number;
   name: string;
   image: string;
+}
+
+export interface QaItem {
+  id: number;
+  type: 'osago' | 'nc' | 'vzr' | 'faq';
+  question: string;
+  answer: string;
 }

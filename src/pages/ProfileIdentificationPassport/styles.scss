@@ -36,6 +36,17 @@
     gap: 12px;
   }
 
+  .passport-form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .passport-label {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+
   .passport-input {
     --background: #f5f5f5;
     --color: #171717;

@@ -10,20 +10,21 @@ import {
 import { arrowBackOutline } from 'ionicons/icons';
 import { useAppSelector } from '../../hooks';
 import { RootState } from '../../store';
-
 import {
   OcrPassportData,
   useCreateIdentificationMutation,
 } from '../../services/api';
-import { identificationKeys, identificationSchema } from './schema';
 
-import './styles.scss';
+import { identificationKeys, identificationSchema } from './schema';
 import { useTexts } from '../../context/TextsContext';
 
+import './styles.scss';
+
 const ProfileIdentificationPassport = () => {
-  const [createIdentification, { isLoading, isSuccess, isError }] =
+  const [createIdentification, { isLoading, isSuccess, isError, reset }] =
     useCreateIdentificationMutation();
   const { t } = useTexts();
+
   const navigate = useIonRouter();
   const { images, passportData } = useAppSelector(
     (state: RootState) => state.ocr
@@ -31,6 +32,7 @@ const ProfileIdentificationPassport = () => {
   const localData = JSON.parse(
     localStorage.getItem('ocrPassportData') || '{}'
   ) as OcrPassportData;
+
   const [, setErrors] = useState<Record<string, string[]>>({});
   const [toast, setToast] = useState<{ open: boolean; message: string }>({
     open: false,
@@ -38,18 +40,18 @@ const ProfileIdentificationPassport = () => {
   });
 
   const ocrData = localData || passportData;
+  console.log(ocrData);
 
   const normalizedGender = useMemo(() => {
-    const genderObj = {
+    const genderMap = {
       М: 'Мужчина',
       Ж: 'Женщина',
     };
-    return genderObj[ocrData?.gender as keyof typeof genderObj] || 'Неизвестно';
+    return genderMap[ocrData?.gender as keyof typeof genderMap] || 'Неизвестно';
   }, [ocrData?.gender]);
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const formData = new FormData(event.currentTarget);
     const formObj = Object.fromEntries(formData.entries()) as Record<
       string,
@@ -68,24 +70,18 @@ const ProfileIdentificationPassport = () => {
       issueDate: formObj.issueDate,
       expiryDate: formObj.expirationDate,
     };
-    console.log({ unifiedObj });
-    console.log({ formObj });
 
     const result = identificationSchema.safeParse(unifiedObj);
 
-    console.log({ result });
-
     if (!result.success) {
-      const formatted = result.error.format();
+      const errorsFormatted = result.error.format();
       const newErrors: Record<string, string[]> = {};
-
       identificationKeys.forEach((field) => {
-        const fieldError = formatted[field];
+        const fieldError = errorsFormatted[field];
         if (fieldError?._errors && fieldError._errors.length > 0) {
           newErrors[field] = fieldError._errors;
         }
       });
-
       setErrors(newErrors);
       setToast({
         open: true,
@@ -117,7 +113,7 @@ const ProfileIdentificationPassport = () => {
     if (isError) {
       setToast({
         open: true,
-        message: 'Ошибка при отправке данных. Пожалуйста, попробуйте еще раз.',
+        message: 'Ошибка при отправке данных. Пожалуйста, попробуйте ещё раз.',
       });
     }
     if (isSuccess) {
@@ -125,9 +121,10 @@ const ProfileIdentificationPassport = () => {
         open: true,
         message: 'Данные успешно отправлены. Спасибо!',
       });
+      reset();
       navigate.push('/a/profile/identification/process');
     }
-  }, [isError, isSuccess, navigate]);
+  }, [isError, isSuccess, navigate, reset]);
 
   return (
     <IonPage className='passport-page'>
@@ -138,87 +135,148 @@ const ProfileIdentificationPassport = () => {
             icon={arrowBackOutline}
             className='passport-back'
           />
-          <span className='passport-title'>{t('passport_data') || 'Паспортные данные'}</span>
+          <span className='passport-title'>
+            {t('passport_data') || 'Паспортные данные'}
+          </span>
         </div>
         <form className='passport-form' onSubmit={handleFormSubmit}>
-          <IonInput
-            name='inn'
-            className='passport-input'
-            placeholder={t('inn') || 'ИНН'}
-            value={ocrData?.personalNumber}
-          />
-          <IonInput
-            name='surname'
-            className='passport-input'
-            placeholder={t('label_surname')}
-            value={ocrData?.surname}
-          />
-          <IonInput
-            name='name'
-            className='passport-input'
-            placeholder={t('label_name')}
-            value={ocrData?.name}
-          />
-          <IonInput
-            name='patronymic'
-            className='passport-input'
-            placeholder={t('label_patronymic')}
-            value={ocrData?.patronymic}
-          />
-          <div className='passport-row'>
+          <div className='passport-form-group'>
+            <label className='passport-label' htmlFor='inn'>
+              {t('inn') || 'ИНН'}
+            </label>
             <IonInput
-              name='gender'
+              name='inn'
               className='passport-input'
-              placeholder={t('gender') || 'Пол'}
-              value={normalizedGender}
+              placeholder={t('inn') || 'ИНН'}
+              value={ocrData?.personalNumber}
             />
+          </div>
+          <div className='passport-form-group'>
+            <label className='passport-label' htmlFor='surname'>
+              {t('label_surname') || 'Фамилия'}
+            </label>
             <IonInput
-              name='birthDate'
+              name='surname'
               className='passport-input'
-              placeholder={t('birth_date') || 'Дата рождения'}
-              value={ocrData?.birthDate}
+              placeholder={t('label_surname')}
+              value={ocrData?.surname}
+            />
+          </div>
+          <div className='passport-form-group'>
+            <label className='passport-label' htmlFor='name'>
+              {t('label_name') || 'Имя'}
+            </label>
+
+            <IonInput
+              name='name'
+              className='passport-input'
+              placeholder={t('label_name')}
+              value={ocrData?.name}
+            />
+          </div>
+          <div className='passport-form-group'>
+            <label className='passport-label' htmlFor='patronymic'>
+              {t('label_patronymic') || 'Отчество'}
+            </label>
+            <IonInput
+              name='patronymic'
+              className='passport-input'
+              placeholder={t('label_patronymic')}
+              value={ocrData?.patronymic}
             />
           </div>
           <div className='passport-row'>
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='gender'>
+                {t('gender') || 'Пол'}
+              </label>
+              <IonInput
+                name='gender'
+                className='passport-input'
+                placeholder={t('gender') || 'Пол'}
+                value={normalizedGender}
+              />
+            </div>
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='birthDate'>
+                {t('birth_date') || 'Дата рождения'}
+              </label>
+              <IonInput
+                name='birthDate'
+                className='passport-input'
+                placeholder={t('birth_date') || 'Дата рождения'}
+                value={ocrData?.birthDate}
+              />
+            </div>
+          </div>
+          <div className='passport-row'>
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='gender'>
+                {t('gender') || 'Пол'}
+              </label>
+              <IonInput
+                id='gender'
+                name='gender'
+                placeholder={t('gender') || 'Пол'}
+                className='passport-input'
+                value={normalizedGender}
+              />
+            </div>
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='birthDate'>
+                {t('birth_date') || 'Дата рождения'}
+              </label>
+              <IonInput
+                id='birthDate'
+                name='birthDate'
+                placeholder={t('birth_date') || 'Дата рождения'}
+                className='passport-input'
+                value={ocrData?.birthDate}
+              />
+            </div>
+          </div>
+          <div className='passport-form-group'>
+            <label className='passport-label' htmlFor='issueAuthority'>
+              {t('issue_authority') || 'Орган выдачи'}
+            </label>
             <IonInput
-              name='documentNumber'
+              name='issueAuthority'
               className='passport-input'
-              placeholder={t('passport_id') || 'ID'}
-              value={ocrData?.documentNumber.slice(0, 2)}
-            />
-            <IonInput
-              name='idNumber'
-              className='passport-input'
-              placeholder='2303-04'
-              type='number'
-              value={ocrData?.documentNumber.slice(2)}
+              placeholder={t('issue_authority') || 'Орган выдачи'}
+              value={ocrData?.authority}
             />
           </div>
-          <IonInput
-            name='issueAuthority'
-            className='passport-input'
-            placeholder={t('issue_authority') || 'Орган выдачи'}
-            value={ocrData?.authority}
-          />
           <div className='passport-row'>
-            <IonInput
-              name='issueDate'
-              className='passport-input'
-              placeholder={t('issue_date') || 'Дата выдачи'}
-              value={ocrData?.issueDate}
-            />
-            <IonInput
-              name='expirationDate'
-              className='passport-input'
-              placeholder={t('expiry_date') || 'Дата окончания'}
-              value={ocrData?.expiryDate}
-            />
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='issueDate'>
+                {t('issue_date') || 'Дата выдачи'}
+              </label>
+              <IonInput
+                id='issueDate'
+                name='issueDate'
+                placeholder={t('issue_date') || 'Дата выдачи'}
+                className='passport-input'
+                value={ocrData?.issueDate}
+              />
+            </div>
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='expirationDate'>
+                {t('expiry_date') || 'Дата окончания'}
+              </label>
+              <IonInput
+                id='expirationDate'
+                name='expirationDate'
+                placeholder={t('expiry_date') || 'Дата окончания'}
+                className='passport-input'
+                value={ocrData?.expiryDate}
+              />
+            </div>
           </div>
           <IonButton
-            disabled={isLoading}
             type='submit'
             expand='block'
             className='passport-next'
+            disabled={isLoading}
           >
             {t('btn_next')}
           </IonButton>
@@ -228,7 +286,7 @@ const ProfileIdentificationPassport = () => {
           onDidDismiss={() => setToast({ open: false, message: '' })}
           message={toast.message}
           duration={5000}
-        ></IonToast>
+        />
       </div>
     </IonPage>
   );

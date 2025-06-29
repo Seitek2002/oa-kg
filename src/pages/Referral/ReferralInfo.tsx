@@ -67,8 +67,8 @@ const ReferralInfo: FC = () => {
           color='primary'
           className='referral-btn'
           onClick={() => {
-            if (data?.referralLink) {
-              window.location.href = data.referralLink;
+            if (data?.authReferralLink) {
+              window.location.href = data.authReferralLink;
             }
           }}
         >

@@ -39,6 +39,7 @@ import Auth from './pages/Auth/Auth';
 import Finances from './pages/Finances';
 import Instruction from './pages/Instruction/Instruction';
 import Faq from './pages/Faq/Faq';
+import InstructionAccident from './pages/InstructionAccident/InstructionAccident';
 
 import logo from './assets/logo.svg';
 import { TextsProvider } from './context/TextsContext';
@@ -171,6 +172,11 @@ const AppTabs: React.FC = () => {
           />
           <ProtectedRoute exact path='/a/instruction' component={Instruction} />
           <ProtectedRoute exact path='/a/faq' component={Faq} />
+          <ProtectedRoute
+            exact
+            path='/a/instruction'
+            component={InstructionAccident}
+          />
           <Route exact path='/a/'>
             <Redirect to='/a/home' />
           </Route>

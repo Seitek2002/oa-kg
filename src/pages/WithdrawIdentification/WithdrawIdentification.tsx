@@ -1,9 +1,21 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { IonPage, IonButton } from '@ionic/react';
-import identificationImg from '../../assets/identification-need.svg'; // замените на вашу картинку
+import { useGetCurrentUserQuery } from '../../services/api';
+
+import identificationImg from '../../assets/identification-need.svg';
+
 import './styles.scss';
 
 const WithdrawIdentification = () => {
+  const { data: user } = useGetCurrentUserQuery();
+
+  const redirectUrl = useMemo(() => {
+    if (user?.identificationStatus === 'pending') {
+      return '/a/profile/identification/process';
+    }
+    return '/a/profile/identification';
+  }, [user?.identificationStatus]);
+
   return (
     <IonPage className='withdraw-identification-page'>
       <div className='withdraw-identification-content'>
@@ -18,7 +30,7 @@ const WithdrawIdentification = () => {
         <IonButton
           expand='block'
           className='withdraw-identification-btn'
-          routerLink='/a/profile/identification'
+          routerLink={redirectUrl}
         >
           Идентификация
         </IonButton>
