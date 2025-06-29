@@ -5,6 +5,7 @@ import { personAddOutline, searchOutline } from 'ionicons/icons';
 import TeamCard from '../../components/TeamCard/TeamCard';
 import { useLazyGetReferralsQuery, Referral } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
+import { useTexts } from '../../context/TextsContext';
 
 import './style.scss';
 
@@ -22,6 +23,7 @@ function formatDate(dateStr: string) {
 
 const Agents: React.FC = () => {
   const history = useHistory();
+  const { t } = useTexts();
 
   // Паттерн localData + data + getReferrals + handleFetch + useEffect
   const localData = localStorage.getItem('referrals') || '[]';
@@ -55,7 +57,7 @@ const Agents: React.FC = () => {
       <div className='search-bar'>
         <IonIcon icon={searchOutline} className='search-icon' />
         <IonInput
-          placeholder='Поиск'
+          placeholder={t('search_section')}
           className='search-input'
           value={searchTerm}
           onIonInput={(e) =>
@@ -70,19 +72,19 @@ const Agents: React.FC = () => {
         <div className='agent-card' key={agent.id}>
           <div className='agent-name'>{agent.fullName}</div>
           <div className='agent-info'>
-            Дата регистрации: <span>{formatDate(agent.dateJoined)}</span>
+            {t('agent_reg_date').split(':')[0]}: <span>{formatDate(agent.dateJoined)}</span>
           </div>
           <div className='agent-info'>
-            Телефон: <span>{agent.phoneNumber}</span>
+            {t('agent_phone').split(':')[0]}: <span>{agent.phoneNumber}</span>
           </div>
           <div className='agent-stats'>
             <div className='stat-box'>
               <span className='stat-value'>{agent.osagoCount}</span>
-              <div className='stat-label'>Количество</div>
+              <div className='stat-label'>{t('earnings_quantity')}</div>
             </div>
             <div className='stat-box'>
               <span className='stat-value'>{agent.osagoIncome}</span>
-              <div className='stat-label'>Ваш заработок</div>
+              <div className='stat-label'>{t('your_profit')}</div>
             </div>
           </div>
         </div>
@@ -97,10 +99,10 @@ const Agents: React.FC = () => {
           }}
         >
           <IonIcon slot='start' icon={personAddOutline} />
-          Пригласить друга в команду
+          {t('btn_invite_friend')}
         </IonButton>
         <div className='commission-info'>
-          Вы заработаете 10% от всех ОСАГО агента
+          {t('earn_10_percent')}
         </div>
       </div>
     </IonPage>

@@ -5,6 +5,7 @@ import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import TransactionStatusCard from '../../components/TransactionStatusCard/TransactionStatusCard';
 import IncomeCard from '../../components/IncomeCard/IncomeCard';
 import './styles.scss';
+import { useTexts } from '../../context/TextsContext';
 
 const Finances: React.FC = () => {
   // Паттерн localData + data + getOperations + handleFetch + useEffect
@@ -28,14 +29,15 @@ const Finances: React.FC = () => {
     // eslint-disable-next-line
   }, []);
 
+  const { t } = useTexts();
   return (
     <IonPage className='finances-page'>
       <div>
         <IncomeCard />
-        <h2 className='finances-title'>История операций</h2>
+        <h2 className='finances-title'>{t('screen_finance') || 'История операций'}</h2>
         {data.length === 0 && (
           <div style={{ textAlign: 'center', marginTop: 32, color: '#888' }}>
-            Нет операций
+            {t('no_operations') || 'Нет операций'}
           </div>
         )}
         {data.map((op) => {

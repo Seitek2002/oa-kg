@@ -41,6 +41,7 @@ import Instruction from './pages/Instruction/Instruction';
 import Faq from './pages/Faq/Faq';
 
 import logo from './assets/logo.svg';
+import { TextsProvider } from './context/TextsContext';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -202,7 +203,9 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-        <AppTabs />
+        <TextsProvider>
+          <AppTabs />
+        </TextsProvider>
       </IonReactRouter>
     </IonApp>
   );

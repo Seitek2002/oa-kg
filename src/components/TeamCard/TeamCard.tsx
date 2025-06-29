@@ -12,6 +12,7 @@ import { useLazyGetCurrentUserQuery } from '../../services/api';
 import { useEffect, useState } from 'react';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import { useHistory } from 'react-router-dom';
+import { useTexts } from '../../context/TextsContext';
 
 function calculateAverageIncome(totalIncome: number, numberOfAgents: number) {
   if (numberOfAgents === 0) {
@@ -22,6 +23,7 @@ function calculateAverageIncome(totalIncome: number, numberOfAgents: number) {
 
 const TeamCard = ({ showButton }: { showButton?: boolean }) => {
   const history = useHistory();
+  const { t } = useTexts();
   const localData =
     localStorage.getItem('usersInfo') ||
     `{
@@ -64,27 +66,25 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
       style={{ overflow: 'visible', zIndex: 1 }}
     >
       <IonCardContent>
-        <h2 className='card-section-title'>Моя команда</h2>
+        <h2 className='card-section-title'>{t('section_team')}</h2>
         <IonGrid>
           <IonRow>
             <IonCol size='6'>
               <div className='stat-card'>
-                <p className='stat-title'>Ваши агенты</p>
+                <p className='stat-title'>{t('agents_count_label')}</p>
                 <p className='stat-number'>{data?.agentsCount}</p>
-                <p className='stat-info'>Всего агентов 3 402</p>
+                <p className='stat-info'>{t('team_total_desc')}</p>
               </div>
             </IonCol>
             <IonCol size='6'>
               <div className='stat-card'>
-                <p className='stat-title'>Доход агентов</p>
+                <p className='stat-title'>{t('income_agents_label')}</p>
                 <p className='stat-number'>{+data?.agentsIncome}</p>
                 <p className='stat-info'>
-                  В среднем{' '}
-                  {calculateAverageIncome(
+                  {t('stat_desc_4').replace('2030', calculateAverageIncome(
                     data?.agentsIncome,
                     data?.agentsCount
-                  )}{' '}
-                  сом
+                  ))}
                 </p>
               </div>
             </IonCol>
@@ -100,10 +100,10 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               }}
             >
               <IonIcon slot='start' icon={personAddOutline} />
-              Пригласить агента
+              {t('btn_invite_agent')}
             </IonButton>
             <p className='card-footer-text'>
-              Вы заработаете 10% от всех ОСАГО агентов
+              {t('earn_10_percent')}
             </p>
           </>
         )}

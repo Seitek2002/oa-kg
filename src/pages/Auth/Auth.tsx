@@ -13,9 +13,11 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 // import '../../components/OnboardingModal.css';
 import './style.scss';
+import { useTexts } from '../../context/TextsContext';
 
 const Auth: React.FC = () => {
   const { pathname } = useLocation();
+  const { t } = useTexts();
   const [step, setStep] = useState(1); // 1: номер, 2: код
   const [phone, setPhone] = useState('');
   const [agree, setAgree] = useState(false);
@@ -68,8 +70,8 @@ const Auth: React.FC = () => {
         <div style={{ padding: '120px 24px 0 24px', textAlign: 'center' }}>
           {step === 1 && (
             <div className='onboarding-form'>
-              <h2 className='onboarding-title'>Начните зарабатывать</h2>
-              <p className='onboarding-subtitle'>Введите номер телефона</p>
+              <h2 className='onboarding-title'>{t('screen_title_earn')}</h2>
+              <p className='onboarding-subtitle'>{t('input_phone_label')}</p>
               <div className='onboarding-phoneNumber'>
                 <span style={{ marginRight: 8, fontSize: 22 }}>+996</span>
                 <IonInput
@@ -97,26 +99,12 @@ const Auth: React.FC = () => {
                   onIonChange={(e) => setAgree(e.detail.checked)}
                   labelPlacement='end'
                 >
-                  Согласен с условиями{' '}
-                  <a
-                    href='/ПУБЛИЧНАЯ ОФЕРТА для субагентов.docx'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{
-                      textDecoration: 'underline',
-                      color: '#1976d2',
-                      marginLeft: 4,
-                      whiteSpace: 'break-spaces',
-                    }}
-                  >
-                    публичной оферты
-                  </a>{' '}
-                  OA.KG
+                  {t('agreement_text')}
                 </IonCheckbox>
               </IonItem>
               {isSending ? (
                 <p className='onboarding-sms'>
-                  На номер телефона указанный выше будет отправлен СМС код
+                  {t('sms_disclaimer')}
                 </p>
               ) : (
                 ''
@@ -132,7 +120,7 @@ const Auth: React.FC = () => {
                     gap: 8,
                   }}
                 >
-                  Реферальный код:
+                  {t('referral_title')}
                   <IonInput
                     readonly
                     fill='outline'
@@ -159,19 +147,19 @@ const Auth: React.FC = () => {
                 onClick={handleSendSms}
                 style={{ marginTop: 24 }}
               >
-                {isSending ? 'Отправка...' : 'Начать зарабатывать'}
+                {isSending ? t('sending') || 'Отправка...' : t('cta_start_earning_1')}
               </IonButton>
             </div>
           )}
           {step === 2 && (
             <div className='onboarding-form'>
-              <h2>Введите код из SMS</h2>
+              <h2>{t('input_sms_label')}</h2>
               <IonInputOtp
                 length={6}
                 value={smsCode}
                 onIonInput={(e) => setSmsCode(e.detail.value!)}
               >
-                Не получили код?{' '}
+                {t('not_received_code') || 'Не получили код?'}{' '}
                 <a
                   href='#'
                   onClick={async (e) => {
@@ -180,7 +168,7 @@ const Auth: React.FC = () => {
                   }}
                   style={{ color: '#1976d2', cursor: 'pointer' }}
                 >
-                  Отправить код заново
+                  {t('resend_sms')}
                 </a>
               </IonInputOtp>
               {error && (
@@ -201,7 +189,7 @@ const Auth: React.FC = () => {
                 onClick={handleVerify}
                 style={{ marginTop: 24 }}
               >
-                {isVerifying ? 'Проверка...' : 'Начать зарабатывать'}
+                {isVerifying ? t('verifying') || 'Проверка...' : t('cta_start_earning_1')}
               </IonButton>
             </div>
           )}

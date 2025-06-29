@@ -13,6 +13,7 @@ import avatar from '../../assets/avatar-default.svg';
 import { z } from 'zod';
 
 import './styles.scss';
+import { useTexts } from '../../context/TextsContext';
 
 const formDataSchema = z.object({
   firstName: z.string().min(2, { message: 'Минимум 2 символа' }),
@@ -24,6 +25,7 @@ type FormData = z.infer<typeof formDataSchema>;
 
 const ProfileEdit = () => {
   const { data: user } = useGetCurrentUserQuery();
+  const { t } = useTexts();
   const [updateUser] = useUpdateCurrentUserMutation();
 
   const [userFormData, setFormData] = useState<Partial<FormData>>({});
@@ -78,15 +80,15 @@ const ProfileEdit = () => {
         <IonAvatar className='profile-edit-avatar'>
           <img src={avatar} alt='Avatar' />
         </IonAvatar>
-        <span>Редактировать</span>
+        <span>{t('header_profile_country')}</span>
       </div>
       <form className='profile-edit-form' onSubmit={handleSubmit}>
         <div className='profile-edit-group'>
-          <IonLabel className='profile-edit-label'>Имя</IonLabel>
+          <IonLabel className='profile-edit-label'>{t('label_name')}</IonLabel>
           <IonInput
             name='firstName'
             className='profile-edit-input'
-            placeholder='Иван'
+            placeholder={t('label_name')}
             value={userFormData.firstName}
             onIonChange={(e) =>
               setFormData((prev) => ({
@@ -100,11 +102,11 @@ const ProfileEdit = () => {
           )}
         </div>
         <div className='profile-edit-group'>
-          <IonLabel className='profile-edit-label'>Фамилия</IonLabel>
+          <IonLabel className='profile-edit-label'>{t('label_surname')}</IonLabel>
           <IonInput
             name='lastName'
             className='profile-edit-input'
-            placeholder='Иванов'
+            placeholder={t('label_surname')}
             value={userFormData.lastName}
             onIonChange={(e) =>
               setFormData((prev) => ({
@@ -118,11 +120,11 @@ const ProfileEdit = () => {
           )}
         </div>
         <div className='profile-edit-group'>
-          <IonLabel className='profile-edit-label'>Отчество</IonLabel>
+          <IonLabel className='profile-edit-label'>{t('label_patronymic')}</IonLabel>
           <IonInput
             name='patronymic'
             className='profile-edit-input'
-            placeholder='Иванович'
+            placeholder={t('label_patronymic')}
             value={userFormData.patronymic}
             onIonChange={(e) =>
               setFormData((prev) => ({
@@ -145,7 +147,7 @@ const ProfileEdit = () => {
           size='default'
           className='profile-edit-save'
         >
-          Сохранить
+          {t('btn_save')}
         </IonButton>
       </form>
     </IonPage>

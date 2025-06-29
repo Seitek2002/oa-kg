@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { useTexts } from '../../context/TextsContext';
 import {
   IonButton,
   IonCard,
@@ -29,6 +30,7 @@ function calculateAverageIncome(totalIncome: number, numberOfAgents: number) {
 
 const Home: FC = () => {
   const history = useHistory();
+  const { t } = useTexts();
   const localData =
     localStorage.getItem('usersInfo') ||
     `{
@@ -73,27 +75,22 @@ const Home: FC = () => {
 
         <IonCard className='card-block osago-card'>
           <IonCardContent>
-            <h3 className='card-section-title'>Ваши полисы ОСАГО</h3>
+            <h3 className='card-section-title'>{t('section_policies')}</h3>
             <IonGrid>
               <IonRow>
                 <IonCol size='6'>
                   <div className='stat-card'>
-                    <p className='stat-title'>Ваши ОСАГО</p>
+                    <p className='stat-title'>{t('policies_count_label')}</p>
                     <p className='stat-number'>{data.osagoCount}</p>
-                    <p className='stat-info'>В среднем агент продает 12 штук</p>
+                    <p className='stat-info'>{t('stat_desc_1')}</p>
                   </div>
                 </IonCol>
                 <IonCol size='6'>
                   <div className='stat-card'>
-                    <p className='stat-title'>Доход агентов</p>
+                    <p className='stat-title'>{t('income_agents_label')}</p>
                     <p className='stat-number'>{+data?.agentsIncome}</p>
                     <p className='stat-info'>
-                      В среднем зарабатывают{' '}
-                      {calculateAverageIncome(
-                        data?.agentsIncome,
-                        data?.agentsCount
-                      )}{' '}
-                      сом
+                      {t('stat_desc_2')}
                     </p>
                   </div>
                 </IonCol>
@@ -105,10 +102,10 @@ const Home: FC = () => {
               onClick={() => history.push('/a/referral')}
             >
               <IonIcon slot='start' icon={car} />
-              Оформить ОСАГО
+              {t('ofo_title')}
             </IonButton>
             <p className='card-footer-text'>
-              Вы заработаете 10% от полиса ОСАГО
+              {t('earn_10_percent')}
             </p>
           </IonCardContent>
         </IonCard>
@@ -128,7 +125,7 @@ const Home: FC = () => {
           expand='block'
           fill='outline'
         >
-          <IonIcon slot='start' icon={helpCircleOutline} />У меня есть вопросы
+          <IonIcon slot='start' icon={helpCircleOutline} />{t('btn_help')}
         </IonButton>
       </div>
     </IonPage>

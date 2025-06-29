@@ -12,23 +12,26 @@ import 'swiper/css';
 import '../../components/OnboardingModal.css'
 import './style.scss';
 
-const slideData = [
+import { useTexts } from '../../context/TextsContext';
+
+const slideKeys = [
   {
     image: img1,
-    title: 'Помоги другим оформить ОСАГО и заработай до 100 000 сом',
-    subtitle: 'Вознаграждение 10% от ОСАГО',
+    titleKey: 'promo_title_1',
+    subtitleKey: 'bonus_10_percent',
+    extraKey: null,
   },
   {
     image: img2,
-    title: 'Научи регистрировать друзей и зарабатывай пассивно от их продаж',
-    subtitle: 'Вознаграждение 5% от ОСАГО друзей',
+    titleKey: 'promo_title_2',
+    subtitleKey: 'bonus_5_percent',
+    extraKey: null,
   },
   {
     image: img3,
-    title: 'Все легально! Стань агентом по продаже ОСАГО за 2 минуты',
-    subtitle: 'Вознаграждение 5% от ОСАГО друзей',
-    extra:
-      'Агент ОСАГО - маркетинговая платформа компании ОСОО "Агент КейДжи" по ОСАГО. ОСОО "Агент КейДжи" является официальным партнером ЗАО "Басай Иншуренс"',
+    titleKey: 'promo_title_3',
+    subtitleKey: 'bonus_5_percent',
+    extraKey: null, // Можно добавить отдельный ключ, если появится в API
   },
 ];
 
@@ -36,10 +39,11 @@ const Onboarding: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const history = useHistory();
   const swiperRef = useRef<SwiperCore>(null);
+  const { t } = useTexts();
 
   const renderPagination = () => (
     <div className='onboarding-pagination'>
-      {slideData.map((_, idx) => (
+      {slideKeys.map((_, idx: number) => (
         <span
           key={idx}
           className={`onboarding-dot${currentSlide === idx ? ' active' : ''}`}
@@ -49,7 +53,7 @@ const Onboarding: React.FC = () => {
   );
 
   const handleStart = () => {
-    if (currentSlide < slideData.length - 1) {
+    if (currentSlide < slideKeys.length - 1) {
       swiperRef.current?.slideNext();
     } else {
       history.push('/a/auth');
@@ -70,7 +74,7 @@ const Onboarding: React.FC = () => {
               swiperRef.current = swiper;
             }}
           >
-            {slideData.map((slide, idx) => (
+            {slideKeys.map((slide, idx) => (
               <SwiperSlide key={idx}>
                 <img
                   src={slide.image}
@@ -81,7 +85,7 @@ const Onboarding: React.FC = () => {
                     objectFit: 'contain',
                   }}
                 />
-                {slide.extra && (
+                {slide.extraKey && t(slide.extraKey) && (
                   <IonText color='medium' style={{ textAlign: 'center' }}>
                     <span
                       style={{
@@ -90,14 +94,14 @@ const Onboarding: React.FC = () => {
                         marginTop: 12,
                       }}
                     >
-                      {slide.extra}
+                      {t(slide.extraKey)}
                     </span>
                   </IonText>
                 )}
                 <h2 style={{ marginTop: 24 }} className='swiper-title'>
-                  {slide.title}
+                  {t(slide.titleKey)}
                 </h2>
-                <p>{slide.subtitle}</p>
+                <p>{t(slide.subtitleKey)}</p>
               </SwiperSlide>
             ))}
           </Swiper>
@@ -109,10 +113,10 @@ const Onboarding: React.FC = () => {
             onClick={handleStart}
             style={{ marginTop: 32 }}
           >
-            Начать зарабатывать
+            {t('cta_start_earning_1')}
           </IonButton>
           <IonButton fill='clear' expand='block' onClick={() => history.push('/a/auth')}>
-            Пропустить
+            {t('btn_skip')}
           </IonButton>
         </div>
       </div>

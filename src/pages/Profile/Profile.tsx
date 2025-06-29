@@ -19,9 +19,11 @@ import helpBuoy from '../../assets/helpBuoyFilled.svg';
 import helpQuestion from '../../assets/helpQuestionFilled.svg';
 
 import './styles.scss';
+import { useTexts } from '../../context/TextsContext';
 
 const Profile: React.FC = () => {
   const navigate = useIonRouter();
+  const { t } = useTexts();
 
   const { data: user } = useGetCurrentUserQuery();
 
@@ -68,8 +70,8 @@ const Profile: React.FC = () => {
             }`}
           >
             {user?.identificationStatus === 'approved'
-              ? 'Идентифицирован'
-              : 'Не идентифицирован'}
+              ? t('user_status_identified')
+              : t('user_status_not_identified')}
           </span>
         </div>
         <div className='profile-actions'>
@@ -82,10 +84,10 @@ const Profile: React.FC = () => {
             </div>
             <div className='profile-action__content'>
               <div className='profile-action__title profile-action__title--blue'>
-                Страховой случай
+                {t('insurance_case_title')}
               </div>
               <div className='profile-action__subtitle'>
-                Инструкция и контакты при ДТП
+                {t('accident_instructions')}
               </div>
             </div>
             <IonIcon
@@ -101,9 +103,9 @@ const Profile: React.FC = () => {
               <IonIcon icon={helpQuestion} />
             </div>
             <div className='profile-action__content'>
-              <div className='profile-action__title'>Остались вопросы?</div>
+              <div className='profile-action__title'>{t('faq_prompt')}</div>
               <div className='profile-action__subtitle'>
-                Часто задаваемые вопросы
+                {t('faq_title')}
               </div>
             </div>
             <IonIcon
@@ -122,14 +124,13 @@ const Profile: React.FC = () => {
               <IonIcon slot='start' icon={helpCircleOutline} />
             )}
             {user?.identificationStatus === 'not_submitted'
-              ? 'Пройти идентификацию'
-              : 'У меня есть вопросы'}
+              ? t('verify_button')
+              : t('btn_help')}
           </IonButton>
           <div className='profile-contacts'>
-            <h2>Наши контакты</h2>
+            <h2>{t('contacts_title')}</h2>
             <p>
-              Кыргызская Руспублика, г. Бишкек, ул. Турусбекова, 109/1, 1 этаж,
-              офис 116 (БЦ «Азия Трейд Компани»)
+              {t('contacts_address')}
             </p>
             <IonButton
               href='tel:+996777394080'
@@ -137,7 +138,7 @@ const Profile: React.FC = () => {
               expand='block'
               fill='outline'
             >
-              Позвонить
+              {t('call_button')}
             </IonButton>
           </div>
         </div>

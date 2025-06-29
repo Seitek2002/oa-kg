@@ -7,6 +7,7 @@ import {
   IonCardContent,
   useIonRouter,
 } from '@ionic/react';
+import { useTexts } from '../../context/TextsContext';
 
 import './styles.scss';
 import { useLazyGetCurrentUserQuery } from '../../services/api';
@@ -20,6 +21,7 @@ interface IncomeCardProps {
 
 const IncomeCard: FC<IncomeCardProps> = ({ onWithdraw }) => {
   const navigate = useIonRouter();
+  const { t } = useTexts();
   const localData =
     localStorage.getItem('usersInfo') ||
     `{
@@ -67,15 +69,15 @@ const IncomeCard: FC<IncomeCardProps> = ({ onWithdraw }) => {
     <IonCard color='white' className='incomeCard'>
       <IonCardHeader>
         <IonCardSubtitle className='incomeCard-subtitle'>
-          Доступно
+          {t('balance_label')}
         </IonCardSubtitle>
         <IonCardTitle className='incomeCard-title'>
-          <b>{data?.balance} сом</b>
+          <b>{data?.balance} {t('balance_currency') || 'сом'}</b>
         </IonCardTitle>
       </IonCardHeader>
       <IonCardContent>
         <span style={{ color: '#AAD2FF' }}>
-          Вы заработали за все время {data?.totalIncome} сом
+          {t('total_income_label').replace('1 400 000', data?.totalIncome || '')}
         </span>
       </IonCardContent>
       <IonCardContent>
@@ -98,7 +100,7 @@ const IncomeCard: FC<IncomeCardProps> = ({ onWithdraw }) => {
               fill='#0072DE'
             />
           </svg>
-          Вывести деньги
+          {t('cashout_buttom')}
         </button>
       </IonCardContent>
     </IonCard>

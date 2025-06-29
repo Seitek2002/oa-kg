@@ -6,9 +6,11 @@ import { useLazyGetPoliciesQuery, Policy } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import car from '../../assets/car.svg';
 import './style.scss';
+import { useTexts } from '../../context/TextsContext';
 
 const Osago: React.FC = () => {
   const history = useHistory();
+  const { t } = useTexts();
 
   // Паттерн localData + data + getPolicies + handleFetch + useEffect
   const localData = localStorage.getItem('policies') || '[]';
@@ -45,7 +47,7 @@ const Osago: React.FC = () => {
         <div className='search-bar'>
           <IonIcon icon={searchOutline} className='search-icon' />
           <IonInput
-            placeholder='Поиск'
+            placeholder={t('search_section')}
             className='search-input'
             value={searchTerm}
             onIonInput={e => setSearchTerm((e.detail.value || '').toLowerCase())}
@@ -58,16 +60,16 @@ const Osago: React.FC = () => {
             <div className='policy-name'>{policy.fullName}</div>
             <div className='policy-number'>№{policy.id}</div>
             <div className='policy-info'>
-              <span className='label'>Машина:</span>
+              <span className='label'>{t('vehicle_info').split(':')[0]}:</span>
               <span className='until'> {policy.vehicle || '—'}</span>
             </div>
             <div className='policy-info'>
-              <span className='label'>Дата:</span>
+              <span className='label'>{t('issue_date').split(':')[0]}:</span>
               <span className='until'> {policy.startDate}</span>
             </div>
             <div className='policy-status'>
-              <span className='active'>Активен</span>
-              <span className='until'> до {policy.endDate}</span>
+              <span className='active'>{t('active_until').split(':')[0]}</span>
+              <span className='until'> {t('active_until').includes(':') ? t('active_until').split(':')[1] : 'до'} {policy.endDate}</span>
             </div>
             <div className='policy-buttons'>
               <IonButton
@@ -80,7 +82,7 @@ const Osago: React.FC = () => {
                 target='_blank'
                 rel='noopener noreferrer'
               >
-                Скачать ОСАГО
+                {t('btn_download')}
               </IonButton>
             </div>
           </div>
@@ -94,8 +96,8 @@ const Osago: React.FC = () => {
             className='create-osago-btn'
             onClick={() => history.push('/a/referral')}
           >
-            <img src={car} alt='Оформить ОСАГО' />
-            Оформить ОСАГО
+            <img src={car} alt={t('ofo_title')} />
+            {t('ofo_title')}
           </IonButton>
         </div>
       </div>

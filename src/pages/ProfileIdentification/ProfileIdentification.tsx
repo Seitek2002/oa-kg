@@ -12,10 +12,12 @@ import identificationSelfie from '../../assets/identificationSelfie.svg';
 
 import './styles.scss';
 import { setIdentificationImages, setPassportData } from '../../store/index';
+import { useTexts } from '../../context/TextsContext';
 
 const ProfileIdentification = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const { t } = useTexts();
 
   const [ocrCreate, { data: ocrData, isSuccess, isError, error, isLoading }] =
     useOcrCreateMutation();
@@ -86,7 +88,7 @@ const ProfileIdentification = () => {
           icon={arrowBackOutline}
           className='identification-back'
         />
-        <span className='identification-title'>Идентификация</span>
+        <span className='identification-title'>{t('screen_identification')}</span>
       </div>
       <div className='identification-list'>
         {/* Лицевая сторона */}
@@ -117,7 +119,7 @@ const ProfileIdentification = () => {
                 icon={identificationCard}
                 className='identification-icon'
               />
-              <span>Лицевая сторона паспорта</span>
+              <span>{t('id_step_front')}</span>
             </>
           )}
           <input
@@ -157,7 +159,7 @@ const ProfileIdentification = () => {
                 icon={identificationCardBack}
                 className='identification-icon'
               />
-              <span>Обратная сторона паспорта</span>
+              <span>{t('id_step_back')}</span>
             </>
           )}
           <input
@@ -197,7 +199,7 @@ const ProfileIdentification = () => {
                 icon={identificationSelfie}
                 className='identification-icon'
               />
-              <span>Селфи с паспортом</span>
+              <span>{t('id_step_selfie') || 'Селфи с паспортом'}</span>
             </>
           )}
           <input
@@ -216,7 +218,7 @@ const ProfileIdentification = () => {
         expand='block'
         className='identification-next'
       >
-        Далее
+        {t('btn_next')}
       </IonButton>
     </IonPage>
   );

@@ -18,10 +18,12 @@ import {
 import { identificationKeys, identificationSchema } from './schema';
 
 import './styles.scss';
+import { useTexts } from '../../context/TextsContext';
 
 const ProfileIdentificationPassport = () => {
   const [createIdentification, { isLoading, isSuccess, isError }] =
     useCreateIdentificationMutation();
+  const { t } = useTexts();
   const navigate = useIonRouter();
   const { images, passportData } = useAppSelector(
     (state: RootState) => state.ocr
@@ -136,44 +138,44 @@ const ProfileIdentificationPassport = () => {
             icon={arrowBackOutline}
             className='passport-back'
           />
-          <span className='passport-title'>Паспортные данные</span>
+          <span className='passport-title'>{t('passport_data') || 'Паспортные данные'}</span>
         </div>
         <form className='passport-form' onSubmit={handleFormSubmit}>
           <IonInput
             name='inn'
             className='passport-input'
-            placeholder='ИНН'
+            placeholder={t('inn') || 'ИНН'}
             value={ocrData?.personalNumber}
           />
           <IonInput
             name='surname'
             className='passport-input'
-            placeholder='Фамилия'
+            placeholder={t('label_surname')}
             value={ocrData?.surname}
           />
           <IonInput
             name='name'
             className='passport-input'
-            placeholder='Имя'
+            placeholder={t('label_name')}
             value={ocrData?.name}
           />
           <IonInput
             name='patronymic'
             className='passport-input'
-            placeholder='Отчество'
+            placeholder={t('label_patronymic')}
             value={ocrData?.patronymic}
           />
           <div className='passport-row'>
             <IonInput
               name='gender'
               className='passport-input'
-              placeholder='Пол'
+              placeholder={t('gender') || 'Пол'}
               value={normalizedGender}
             />
             <IonInput
               name='birthDate'
               className='passport-input'
-              placeholder='Дата рождения'
+              placeholder={t('birth_date') || 'Дата рождения'}
               value={ocrData?.birthDate}
             />
           </div>
@@ -181,7 +183,7 @@ const ProfileIdentificationPassport = () => {
             <IonInput
               name='documentNumber'
               className='passport-input'
-              placeholder='ID'
+              placeholder={t('passport_id') || 'ID'}
               value={ocrData?.documentNumber.slice(0, 2)}
             />
             <IonInput
@@ -195,20 +197,20 @@ const ProfileIdentificationPassport = () => {
           <IonInput
             name='issueAuthority'
             className='passport-input'
-            placeholder='Орган выдачи'
+            placeholder={t('issue_authority') || 'Орган выдачи'}
             value={ocrData?.authority}
           />
           <div className='passport-row'>
             <IonInput
               name='issueDate'
               className='passport-input'
-              placeholder='Дата выдачи'
+              placeholder={t('issue_date') || 'Дата выдачи'}
               value={ocrData?.issueDate}
             />
             <IonInput
               name='expirationDate'
               className='passport-input'
-              placeholder='Дата окончания'
+              placeholder={t('expiry_date') || 'Дата окончания'}
               value={ocrData?.expiryDate}
             />
           </div>
@@ -218,7 +220,7 @@ const ProfileIdentificationPassport = () => {
             expand='block'
             className='passport-next'
           >
-            Далее
+            {t('btn_next')}
           </IonButton>
         </form>
         <IonToast

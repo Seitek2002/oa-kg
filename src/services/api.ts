@@ -5,6 +5,13 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: getBaseQuery(),
   endpoints: (builder) => ({
+    getPageTexts: builder.query<PageTextsResponse, void>({
+      query: () => ({
+        url: 'https://oa.kg/api/page-texts/',
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
     sendSms: builder.mutation<{ success: boolean }, { phoneNumber: string }>({
       query: ({ phoneNumber }) => ({
         url: 'https://oa.kg/api/auth/sms/send/',
@@ -122,6 +129,17 @@ export const api = createApi({
   }),
 });
 
+export interface PageText {
+  id: number;
+  key: string;
+  text: string;
+}
+
+export interface PageTextsResponse {
+  version: number;
+  results: PageText[];
+}
+
 export const {
   useSendSmsMutation,
   useVerifySmsMutation,
@@ -139,6 +157,8 @@ export const {
   useLazyGetOperationsQuery,
   useGetWithdrawalMethodsQuery,
   useLazyGetWithdrawalMethodsQuery,
+  useGetPageTextsQuery,
+  useLazyGetPageTextsQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/

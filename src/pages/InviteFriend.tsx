@@ -6,8 +6,10 @@ import inviteLogo from '../assets//onboarding/inviteLogo.png';
 import { useLazyGetCurrentUserQuery } from '../services/api';
 import { useEffect, useState } from 'react';
 import { CompareLocaldata } from '../helpers/CompareLocaldata';
+import { useTexts } from '../context/TextsContext';
 
 const InviteFriend: React.FC = () => {
+  const { t } = useTexts();
   const localData =
     localStorage.getItem('usersInfo') ||
     `{
@@ -64,12 +66,10 @@ const InviteFriend: React.FC = () => {
           }}
         />
         <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 10 }}>
-          Научи регистрировать друзей и зарабатывай
-          <br />
-          пассивно от их продаж
+          {t('promo_title_2')}
         </div>
         <div style={{ color: '#1abc9c', fontSize: 16, marginBottom: 22 }}>
-          Вознаграждение 5% от ОСАГО друзей
+          {t('bonus_5_percent')}
         </div>
         <IonButton
           expand='block'
@@ -84,17 +84,17 @@ const InviteFriend: React.FC = () => {
             const link = data?.referralLink || '';
             if (navigator.share) {
               navigator.share({
-                title: 'Приглашение в команду',
-                text: 'Приглашаю тебя в мою команду! Давай зарабатывать вместе на ОСАГО',
+                title: t('referral_title'),
+                text: t('referral_instructions'),
                 url: link,
               });
             } else {
-              alert(link ? link : 'тут должна быть ссылка');
+              alert(link ? link : t('referral_code'));
             }
           }}
         >
           <IonIcon icon={personAddOutline} slot='start' />
-          Пригласить друга в команду
+          {t('btn_invite_friend')}
         </IonButton>
         <div
           style={{
@@ -121,9 +121,7 @@ const InviteFriend: React.FC = () => {
             }}
           />
           <span style={{ fontSize: 12, width: '80%' }}>
-            Отправьте реферальную ссылку – промокод подставится автоматически
-            после перехода по ней. Отправьте код – клиенту/партнеру необходимо
-            будет ввести его в специальное поле.
+            {t('referral_instructions')}
           </span>
         </div>
       </div>

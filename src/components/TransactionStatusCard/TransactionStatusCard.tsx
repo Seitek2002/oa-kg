@@ -11,6 +11,7 @@ import { timeOutline } from 'ionicons/icons';
 import clock from '../../assets/clock-time.svg';
 
 import './styles.scss';
+import { useTexts } from '../../context/TextsContext';
 
 interface ITransactionStatusCardProps {
   type: 'withdrawal' | 'referral' | 'osago';
@@ -34,16 +35,16 @@ function formatDate(dateStr: string) {
   return `${hours}:${minutes} ${day}.${month}.${year}`;
 }
 
-const getTitleByType = (type: string): string => {
+const getTitleByType = (type: string, t: (key: string) => string): string => {
   switch (type) {
     case 'referral':
-      return 'Заработок от агента';
+      return t('income_agent');
     case 'osago':
-      return 'Заработок от ОСАГО';
+      return t('income_osago');
     case 'withdrawal':
-      return 'Вывод средств';
+      return t('withdraw_label');
     default:
-      return 'Транзакция';
+      return t('transaction') || 'Транзакция';
   }
 };
 
@@ -56,7 +57,8 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
   requisiteDisplay,
   comments,
 }) => {
-  const title = getTitleByType(type);
+  const { t } = useTexts();
+  const title = getTitleByType(type, t);
   const isPending = status === 'created';
   const formattedTimestamp = formatDate(timestamp);
 
@@ -66,8 +68,15 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
         <IonCardHeader className='transactionStatusCard-header'>
           <IonImg className='clock' src={clock} alt='Clock' />
           <div className='transactionHeader'>
-            <p className=''>Ваша заявка на вывод принята.</p>
-            <p className=''>Ожидайте, скоро деньги поступят</p>
+            {t('withdraw_desc_1')
+              .split('.')
+              .map((line, idx) =>
+                line.trim() ? (
+                  <p className='' key={idx}>
+                    {line.trim()}
+                  </p>
+                ) : null
+              )}
           </div>
         </IonCardHeader>
       )}
@@ -95,22 +104,22 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
 
         {isPending && requisiteDisplay && (
           <p className='transactionDetails-item'>
-            Реквизиты: <span>{requisiteDisplay}</span>
+            {t('withdraw_detail_1')}: <span>{requisiteDisplay}</span>
           </p>
         )}
         {isPending && (
           <p className='transactionDetails-item'>
-            Сумма: <span>{amountDisplay} сом</span>
+            {t('withdraw_detail_2')}: <span>{amountDisplay} {t('balance_currency') || 'сом'}</span>
           </p>
         )}
         {isPending && (
           <p className='transactionDetails-item status-item'>
-            Статус: <span className='status'>На рассмотрении</span>
+            {t('withdraw_detail_3')}: <span className='status'>{t('pending_status') || 'На рассмотрении'}</span>
           </p>
         )}
-        <p className='transactionDetails-item'>Комментарии:</p>
+        <p className='transactionDetails-item'>{t('withdraw_detail_4') || 'Комментарии:'}</p>
         <div className='transactionDetails-comments'>
-          {comments || 'Вывод денежных средств'}
+          {comments || t('withdraw_section')}
         </div>
       </IonCardContent>
     </IonCard>
