@@ -97,7 +97,10 @@ const AppTabs: React.FC = () => {
   const hideTabBar =
     location.pathname === '/a/onboarding' || location.pathname === '/a/auth';
 
-  const [lang, setLang] = React.useState<'kg' | 'ru'>('kg');
+  const [lang, setLang] = React.useState<'kg' | 'ru'>(() => {
+    const stored = localStorage.getItem('lang');
+    return stored === 'ru' || stored === 'kg' ? stored : 'kg';
+  });
 
   return (
     <>
@@ -107,7 +110,12 @@ const AppTabs: React.FC = () => {
         <span
           className='text-[#000] absolute right-0 top-0 cursor-pointer'
           style={{ background: 'transparent', padding: 8 }}
-          onClick={() => setLang(lang === 'kg' ? 'ru' : 'kg')}
+          onClick={() => {
+            const newLang = lang === 'kg' ? 'ru' : 'kg';
+            localStorage.setItem('lang', newLang);
+            setLang(newLang);
+            window.location.reload();
+          }}
         >
           {lang === 'kg' ? 'Кыргызча' : 'Русский'}
         </span>

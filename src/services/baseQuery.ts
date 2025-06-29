@@ -31,6 +31,9 @@ export const getBaseQuery =
           headers.set('Authorization', `Bearer ${access}`);
         }
         headers.set('Accept', 'application/json');
+        // Добавляем язык из localStorage
+        const lang = localStorage.getItem('lang') || 'ru';
+        headers.set('Accept-Language', lang);
         return headers;
       },
     });
