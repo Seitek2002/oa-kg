@@ -99,7 +99,21 @@ const Auth: React.FC = () => {
                   onIonChange={(e) => setAgree(e.detail.checked)}
                   labelPlacement='end'
                 >
-                  {t('agreement_text')}
+                  Согласен с условиями{' '}
+                  <a
+                    href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.docx'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{
+                      textDecoration: 'underline',
+                      color: '#1976d2',
+                      marginLeft: 4,
+                      whiteSpace: 'break-spaces',
+                    }}
+                  >
+                    публичной оферты
+                  </a>{' '}
+                  OA.KG
                 </IonCheckbox>
               </IonItem>
               {isSending ? (
