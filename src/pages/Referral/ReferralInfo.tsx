@@ -9,8 +9,10 @@ import share from '../../assets/share.svg';
 import warning from '../../assets/warning.svg';
 
 import './style.scss';
+import { useTexts } from '../../context/TextsContext';
 
 const ReferralInfo: FC = () => {
+  const { t } = useTexts();
   const localData =
     localStorage.getItem('usersInfo') ||
     `{
@@ -52,14 +54,13 @@ const ReferralInfo: FC = () => {
       <div className='referral-card'>
         <img
           src={referralLogo}
-          alt='Бакаи Иншуренс'
+          alt={t('company_name')}
           className='referral-logo'
         />
         <div className='referral-description'>
-          ЗАО «Бакаи Иншуренс» является дочерней компанией ОАО «Бакаи Банк», что
-          является гарантом надежности и финансовой устойчивости бренда.
+          {t('company_description')}
         </div>
-        <div className='referral-title'>Ваш реферальный код</div>
+        <div className='referral-title'>{t('referral_title')}</div>
         <div className='referral-code'>{data?.id}</div>
 
         <IonButton
@@ -73,7 +74,7 @@ const ReferralInfo: FC = () => {
           }}
         >
           <img src={car} alt='car' />
-          Оформить ОСАГО другому человеку
+          {t('btn_issue_other')}
         </IonButton>
 
         <IonButton
@@ -84,7 +85,7 @@ const ReferralInfo: FC = () => {
           onClick={() => {
             if (navigator.share) {
               navigator.share({
-                title: 'Бакаи Иншуренс',
+                title: t('company_name'),
                 text: 'Онлайн оператор страховки ОСАГО',
                 url: data.authReferralLink,
               });
@@ -94,15 +95,13 @@ const ReferralInfo: FC = () => {
           }}
         >
           <img src={share} alt='share' />
-          Поделиться реферальной&nbsp;ссылкой
+          {t('btn_share')}
         </IonButton>
 
         <div className='referral-hint'>
           <img src={warning} alt='warning' />
           <span>
-            Отправьте реферальную ссылку – промокод подставится автоматически
-            после перехода по ней. Отправьте код – клиенту/партнеру необходимо
-            будет ввести его в специальное поле.
+            {t('referral_instructions')}
           </span>
         </div>
       </div>
