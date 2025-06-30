@@ -21,13 +21,6 @@ import car from '../../assets/car.svg';
 
 import './styles.scss';
 
-function calculateAverageIncome(totalIncome: number, numberOfAgents: number) {
-  if (numberOfAgents === 0) {
-    return 0;
-  }
-  return (totalIncome / numberOfAgents).toFixed(2);
-}
-
 const Home: FC = () => {
   const history = useHistory();
   const { t } = useTexts();
