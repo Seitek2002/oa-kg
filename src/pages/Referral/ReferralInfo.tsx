@@ -86,7 +86,7 @@ const ReferralInfo: FC = () => {
               navigator.share({
                 title: 'Бакаи Иншуренс',
                 text: 'Онлайн оператор страховки ОСАГО',
-                url: data.referralLink,
+                url: data.authReferralLink,
               });
             } else {
               alert('Web Share API не поддерживается на этом устройстве');
