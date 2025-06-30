@@ -97,7 +97,7 @@ const Profile: React.FC = () => {
           </div>
           <div
             className='profile-action'
-            onClick={() => navigate.push('/a/faq')}
+            onClick={() => navigate.push('/a/my-faq')}
           >
             <div className='profile-action__icon profile-action__icon--gray'>
               <IonIcon icon={helpQuestion} />
