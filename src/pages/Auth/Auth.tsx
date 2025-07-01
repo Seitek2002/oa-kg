@@ -27,6 +27,14 @@ const Auth: React.FC = () => {
   const [verifySms, { isLoading: isVerifying }] = useVerifySmsMutation();
   const history = useHistory();
 
+  // Автоматический вход при вводе 6-значного кода
+  React.useEffect(() => {
+    if (smsCode.length === 6 && !isVerifying) {
+      handleVerify();
+    }
+    // eslint-disable-next-line
+  }, [smsCode, isVerifying]);
+
   const handleSendSms = async () => {
     setError('');
     const num = '+996' + phone;
