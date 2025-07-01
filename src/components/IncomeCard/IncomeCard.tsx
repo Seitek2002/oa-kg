@@ -66,7 +66,7 @@ const IncomeCard: FC<IncomeCardProps> = ({ onWithdraw }) => {
   }, []);
 
   return (
-    <IonCard color='white' className='incomeCard'>
+    <IonCard color='white' className='incomeCard' mode='md'>
       <IonCardHeader>
         <IonCardSubtitle className='incomeCard-subtitle'>
           {t('balance_label')}
