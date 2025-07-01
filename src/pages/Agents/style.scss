@@ -13,33 +13,6 @@
     background: #f9f9f9;
   }
 
-  .search-bar {
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 1px 6px rgba(56, 128, 255, 0.04);
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    margin-bottom: 24px;
-    height: 48px;
-    border: 1.5px solid #e0e4ea;
-    z-index: 10;
-
-    .search-icon {
-      font-size: 22px;
-      color: #222;
-      margin-right: 8px;
-    }
-
-    .search-input {
-      border: none;
-      outline: none;
-      font-size: 17px;
-      background: transparent;
-      flex: 1;
-    }
-  }
-
   .my-team-card,
   .agent-card {
     background: #fff;

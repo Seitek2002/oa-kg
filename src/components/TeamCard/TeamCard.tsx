@@ -63,7 +63,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
   return (
     <IonCard
       className='card-block team-card'
-      style={{ overflow: 'visible', zIndex: 1 }}
+      style={{ overflow: 'visible', zIndex: 1, marginTop: 2}}
     >
       <IonCardContent>
         <h2 className='card-section-title'>{t('section_team')}</h2>

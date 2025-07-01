@@ -115,7 +115,7 @@ const Home: FC = () => {
               'noopener,noreferrer'
             );
           }}
-          className='btn-questions'
+          className='outlined-btn'
           expand='block'
           fill='outline'
         >

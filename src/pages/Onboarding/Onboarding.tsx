@@ -110,8 +110,9 @@ const Onboarding: React.FC = () => {
         <div style={{ background: 'white', width: '100%', paddingBottom: '40px' }}>
           <IonButton
             expand='block'
+            className='primary-btn'
             onClick={handleStart}
-            style={{ marginTop: 32 }}
+            style={{ marginTop: 32, fontSize: 16 }}
           >
             {t('cta_start_earning_1')}
           </IonButton>

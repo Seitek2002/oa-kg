@@ -33,4 +33,12 @@
   font-weight: 700 !important;
 }
 
-
+.outlined-btn {
+  --background: transparent;
+  --border-color: #0072de;
+  --border-width: 1px;
+  --color: #0072de;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  --border-radius: 12px;
+}

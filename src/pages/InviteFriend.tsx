@@ -73,7 +73,7 @@ const InviteFriend: React.FC = () => {
         </div>
         <IonButton
           expand='block'
-          color='primary'
+          className='primary-btn'
           style={{
             fontWeight: 500,
             borderRadius: 12,
@@ -96,20 +96,7 @@ const InviteFriend: React.FC = () => {
           <IonIcon icon={personAddOutline} slot='start' />
           {t('btn_invite_friend')}
         </IonButton>
-        <div
-          style={{
-            background: '#F2F5FF',
-            borderRadius: 10,
-            padding: '10px 12px',
-            color: '#3b4a5a',
-            fontSize: 14,
-            marginTop: 8,
-            textAlign: 'left',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 8,
-          }}
-        >
+        <div className='referral-hint'>
           <IonIcon
             icon={informationCircleOutline}
             style={{

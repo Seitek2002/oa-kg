@@ -115,7 +115,7 @@ const Profile: React.FC = () => {
           </div>
           <IonButton
             onClick={identificationClick}
-            className='btn-questions'
+            className='outlined-btn'
             expand='block'
             fill='outline'
           >
@@ -134,7 +134,7 @@ const Profile: React.FC = () => {
             </p>
             <IonButton
               href='tel:+996777394080'
-              className='btn-questions'
+              className='outlined-btn'
               expand='block'
               fill='outline'
             >
