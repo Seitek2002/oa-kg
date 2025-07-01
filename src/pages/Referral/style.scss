@@ -1,14 +1,14 @@
 .referral-page {
   padding: 16px;
-  background: #f6f8fa;
+  background: #fff;
   overflow: auto;
 }
 
 .referral-card {
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 2px 16px rgba(56, 128, 255, 0.08);
-  padding: 24px 18px 18px 18px;
+  // box-shadow: 0 2px 16px rgba(56, 128, 255, 0.08);
+  // padding: 24px 18px 18px 18px;
   margin-bottom: 24px;
   text-align: center;
 }
@@ -37,9 +37,10 @@
 }
 
 .referral-btn {
-  border-radius: 12px;
   font-weight: 500;
   margin-bottom: 16px;
+  margin-top: 8px;
+  --border-radius: 12px;
 }
 
 .referral-hint {
@@ -47,12 +48,13 @@
   border-radius: 10px;
   padding: 10px 12px;
   color: #3b4a5a;
-  font-size: 14px;
+  font-size: 12px;
   margin-top: 16px;
   text-align: left;
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  line-height: 140%;
 }
 
 .referral-icon {

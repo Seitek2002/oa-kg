@@ -18,6 +18,7 @@
   top: 0;
   left: 0;
   right: 0;
+  z-index: 10;
 }
 
 .search-icon {
@@ -90,7 +91,9 @@
   .policy-btn {
     flex: 1;
     font-weight: 500;
-    padding: 0;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    --border-radius: 12px;
   }
 }
 
@@ -99,7 +102,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #F9F9FA;
+  background: #f9f9fa;
   z-index: 10;
   margin-bottom: 20px;
 
@@ -108,8 +111,20 @@
   }
 }
 
-.create-osago-btn {
-  border-radius: 14px;
-  font-weight: 500;
-  font-size: 17px;
+.osago-page {
+  .create-osago-btn {
+    font-weight: 500;
+    font-size: 16px;
+    --background: #0072de;
+    --border-radius: 12px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+  }
+
+  .commission-info {
+    color: #1cbe93;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 2px;
+  }
 }

@@ -90,14 +90,15 @@ const Home: FC = () => {
               </IonRow>
             </IonGrid>
             <IonButton
-              className='btn-osago'
+              className='primary-btn'
+              expand='block'
               fill='solid'
               onClick={() => history.push('/a/referral')}
             >
               <IonIcon slot='start' icon={car} />
               {t('ofo_title')}
             </IonButton>
-            <p className='card-footer-text'>
+            <p className='earn-percent'>
               {t('earn_10_percent')}
             </p>
           </IonCardContent>

@@ -152,13 +152,14 @@ const Osago: React.FC = () => {
         <div className='bottom-button-wrapper'>
           <IonButton
             expand='block'
-            color='primary'
-            className='create-osago-btn'
+            className='primary-btn'
             onClick={() => history.push('/a/referral')}
           >
             <img src={car} alt={t('ofo_title')} />
             {t('ofo_title')}
           </IonButton>
+
+          <div className='earn-percent'>{t('earn_10_percent')}</div>
         </div>
       </div>
     </IonPage>

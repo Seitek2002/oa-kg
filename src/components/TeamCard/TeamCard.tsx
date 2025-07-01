@@ -96,8 +96,9 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
         {showButton && (
           <>
             <IonButton
-              className='btn-invite'
+              className='green-btn'
               fill='solid'
+              expand='block'
               onClick={() => {
                 history.push('/a/invite');
               }}
@@ -105,7 +106,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               <IonIcon slot='start' icon={personAddOutline} />
               {t('btn_invite_agent')}
             </IonButton>
-            <p className='card-footer-text'>{t('earn_10_percent')}</p>
+            <p className='earn-percent'>{t('earn_10_percent')}</p>
           </>
         )}
       </IonCardContent>

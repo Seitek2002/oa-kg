@@ -92,7 +92,8 @@ const Agents: React.FC = () => {
 
       <div className='agents-bottom'>
         <IonButton
-          className='invite-button'
+          className='green-btn'
+          expand='block'
           fill='solid'
           onClick={() => {
             history.push('/a/invite');
@@ -101,7 +102,7 @@ const Agents: React.FC = () => {
           <IonIcon slot='start' icon={personAddOutline} />
           {t('btn_invite_friend')}
         </IonButton>
-        <div className='commission-info'>
+        <div className='earn-percent'>
           {t('earn_10_percent')}
         </div>
       </div>

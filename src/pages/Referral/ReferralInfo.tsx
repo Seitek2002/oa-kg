@@ -65,8 +65,7 @@ const ReferralInfo: FC = () => {
 
         <IonButton
           expand='block'
-          color='primary'
-          className='referral-btn'
+          className='primary-btn'
           onClick={() => {
             if (data?.authReferralLink) {
               window.location.href = data.authReferralLink;
@@ -80,7 +79,6 @@ const ReferralInfo: FC = () => {
         <IonButton
           expand='block'
           fill='outline'
-          color='primary'
           className='referral-btn'
           onClick={() => {
             if (navigator.share) {
