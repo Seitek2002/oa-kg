@@ -80,7 +80,7 @@ export const api = createApi({
         formData.append('frontImage', frontImage);
         formData.append('backImage', backImage);
         return {
-          url: 'https://oa.kg/api/ocr/',
+          url: 'https://oa.kg/api/ocr2/',
           method: 'POST',
           body: formData,
           params: { documentType },
