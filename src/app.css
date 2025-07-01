@@ -24,12 +24,24 @@
   --border-radius: 12px;
 }
 
+.green-btn:hover {
+  --background: #1cbe93;
+}
+
 .earn-percent {
   color: #1cbe93;
   text-align: center;
   margin-top: 2px;
   margin-top: 8px !important;
   font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+.earn-percent-2 {
+  color: #1cbe93;
+  text-align: center;
+  margin-top: 8px !important;
+  font-size: 18px !important;
   font-weight: 700 !important;
 }
 

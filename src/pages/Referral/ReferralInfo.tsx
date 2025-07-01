@@ -57,11 +57,10 @@ const ReferralInfo: FC = () => {
           alt={t('company_name')}
           className='referral-logo'
         />
-        <div className='referral-description'>
-          {t('company_description')}
-        </div>
+        <div className='referral-description'>{t('company_description')}</div>
         <div className='referral-title'>{t('referral_title')}</div>
         <div className='referral-code'>{data?.id}</div>
+        <p className='earn-percent-2' style={{ fontSize: '14px' }}>{t('earn_10_percent')}</p>
 
         <IonButton
           expand='block'
@@ -98,9 +97,7 @@ const ReferralInfo: FC = () => {
 
         <div className='referral-hint'>
           <img src={warning} alt='warning' />
-          <span>
-            {t('referral_instructions')}
-          </span>
+          <span>{t('referral_instructions')}</span>
         </div>
       </div>
     </IonPage>

@@ -117,9 +117,7 @@ const Auth: React.FC = () => {
                 </IonCheckbox>
               </IonItem>
               {isSending ? (
-                <p className='onboarding-sms'>
-                  {t('sms_disclaimer')}
-                </p>
+                <p className='onboarding-sms'>{t('sms_disclaimer')}</p>
               ) : (
                 ''
               )}
@@ -160,8 +158,11 @@ const Auth: React.FC = () => {
                 disabled={!phone || !agree || phone.length < 9 || isSending}
                 onClick={handleSendSms}
                 style={{ marginTop: 24 }}
+                className='primary-btn'
               >
-                {isSending ? t('sending') || 'Отправка...' : t('cta_start_earning_1')}
+                {isSending
+                  ? t('sending') || 'Отправка...'
+                  : t('cta_start_earning_1')}
               </IonButton>
             </div>
           )}
@@ -202,8 +203,11 @@ const Auth: React.FC = () => {
                 disabled={smsCode.length < 5 || isVerifying}
                 onClick={handleVerify}
                 style={{ marginTop: 24 }}
+                className='primary-btn'
               >
-                {isVerifying ? t('verifying') || 'Проверка...' : t('cta_start_earning_1')}
+                {isVerifying
+                  ? t('verifying') || 'Проверка...'
+                  : t('cta_start_earning_1')}
               </IonButton>
             </div>
           )}
