@@ -1,19 +1,18 @@
 .identification-process-page {
   display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100dvh;
   background: #fff;
   overflow: auto;
 
   .identification-process-content {
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 32px 16px 0 16px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 32px 16px 0 16px;
+    position: relative;
   }
 
   .identification-process-title {
@@ -40,11 +39,13 @@
   }
 
   .identification-process-btn {
+    position: absolute;
+    bottom: 130px;
+    left: 0;
     width: 100%;
     height: 50px;
     font-size: 16px;
     font-weight: 500;
-    margin-top: 30%;
     text-transform: none;
     --background: #0072de;
     --border-radius: 16px;
@@ -53,7 +54,7 @@
   .identification-process-approved {
     margin-top: 24px;
     font-size: 24px;
-    color: #1CBE93;
+    color: #1cbe93;
     font-weight: 400;
     text-align: center;
   }

@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   IonPage,
   IonButton,
   IonInput,
   IonIcon,
   useIonRouter,
+  IonToast,
 } from '@ionic/react';
 import { timeOutline } from 'ionicons/icons';
-import { useLazyGetWithdrawalMethodsQuery, WithdrawalMethod, useLazyGetOperationsQuery, Operation } from '../../services/api';
+import {
+  useLazyGetWithdrawalMethodsQuery,
+  WithdrawalMethod,
+  useLazyGetOperationsQuery,
+  Operation,
+} from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
+import { useGetCurrentUserQuery } from '../../services/api';
 
 import './styles.scss';
-import { useGetCurrentUserQuery } from '../../services/api';
 
 function formatDate(dateStr: string) {
   if (!dateStr) return '';
@@ -28,16 +34,27 @@ function formatDate(dateStr: string) {
 const Withdraw: React.FC = () => {
   const navigate = useIonRouter();
 
+  const localHistory = localStorage.getItem('operations') || '[]';
+  const localData = localStorage.getItem('withdrawalMethods') || '[]';
+
   const { data: user } = useGetCurrentUserQuery();
+  const [getOperations] = useLazyGetOperationsQuery();
+  const [getWithdrawalMethods] = useLazyGetWithdrawalMethodsQuery();
+
+  const defaultNumber = useMemo(
+    () => user?.phoneNumber.slice(4) || '',
+    [user?.phoneNumber]
+  );
 
   const [phone, setPhone] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
-  const [amount, setAmount] = useState('1000');
-
-  // Банки
-  const localData = localStorage.getItem('withdrawalMethods') || '[]';
+  const [amount, setAmount] = useState('');
+  const [history, setHistory] = useState<Operation[]>(JSON.parse(localHistory));
   const [data, setData] = useState<WithdrawalMethod[]>(JSON.parse(localData));
-  const [getWithdrawalMethods] = useLazyGetWithdrawalMethodsQuery();
+  const [toast, setToast] = useState<{ show: boolean; msg: string }>({
+    show: false,
+    msg: '',
+  });
 
   const handleFetch = async () => {
     const res = await getWithdrawalMethods().unwrap();
@@ -48,6 +65,45 @@ const Withdraw: React.FC = () => {
       setState: (data) => setData(Array.isArray(data) ? data : []),
     });
   };
+
+  const handleFetchHistory = async () => {
+    const res = await getOperations({ type: 'withdrawal' }).unwrap();
+    CompareLocaldata({
+      oldData: localHistory,
+      newData: res,
+      localKey: 'operations',
+      setState: (data) => setHistory(Array.isArray(data) ? data : []),
+    });
+  };
+
+  const handleWithdraw = () => {
+    const balance = Number(user?.balance ?? 0);
+    const amt = Number(amount);
+
+    if (!amt) {
+      setToast({ show: true, msg: 'Введите сумму' });
+      return;
+    }
+
+    if (amt > balance) {
+      setToast({
+        show: true,
+        msg: `Недостаточно средств. Доступно ${balance} сом`,
+      });
+      return;
+    }
+
+    if (user?.identificationStatus !== 'verified') {
+      navigate.push('/a/withdraw/identification');
+      return;
+    }
+    navigate.push('/a/withdraw/info', 'forward', 'replace');
+  };
+
+  useEffect(() => {
+    handleFetchHistory();
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     handleFetch();
@@ -61,36 +117,15 @@ const Withdraw: React.FC = () => {
     }
   }, [data, selectedBank]);
 
-  // История операций (выводов)
-  const localHistory = localStorage.getItem('operations') || '[]';
-  const [history, setHistory] = useState<Operation[]>(JSON.parse(localHistory));
-  const [getOperations] = useLazyGetOperationsQuery();
-
-  const handleFetchHistory = async () => {
-    const res = await getOperations({ type: 'withdrawal' }).unwrap();
-    CompareLocaldata({
-      oldData: localHistory,
-      newData: res,
-      localKey: 'operations',
-      setState: (data) => setHistory(Array.isArray(data) ? data : []),
-    });
-  };
-
-  useEffect(() => {
-    handleFetchHistory();
-    // eslint-disable-next-line
-  }, []);
-
-  const handleWithdraw = () => {
-    if (user?.identificationStatus !== 'verified') {
-      navigate.push('/a/withdraw/identification');
-      return;
-    }
-    navigate.push('/a/withdraw/info', 'forward', 'replace');
-  };
-
   return (
     <IonPage className='withdraw-page'>
+      <IonToast
+        isOpen={toast.show}
+        message={toast.msg}
+        duration={2500}
+        color='danger'
+        onDidDismiss={() => setToast({ show: false, msg: '' })}
+      />
       <div>
         <div className='withdraw-form-block'>
           <div className='withdraw-title'>Вывод денег</div>
@@ -100,19 +135,22 @@ const Withdraw: React.FC = () => {
             <span>+996</span>
             <IonInput
               className='withdraw-phone-input'
-              value={phone}
+              value={defaultNumber || phone}
               placeholder='XXX XXX XXX'
               inputMode='tel'
               maxlength={9}
               onIonChange={(e) => setPhone(e.detail.value!)}
+              readonly
+              disabled
               style={{
                 background: 'transparent',
                 border: 'none',
                 boxShadow: 'none',
                 fontSize: 16,
-                fontWeight: 500,
+                fontWeight: 400,
                 padding: 0,
                 width: '100%',
+                color: '#222',
               }}
             />
           </div>
@@ -122,14 +160,17 @@ const Withdraw: React.FC = () => {
 
           <div className='withdraw-row'>
             <span>Сумма (сом)</span>
-            <span className='withdraw-available'>Доступно 24 000 сом</span>
+            <span className='withdraw-available'>
+              Доступно {user?.balance} сом
+            </span>
           </div>
-
           <IonInput
             className='withdraw-input'
             value={amount}
+            type='number'
             placeholder='Введите сумму'
-            onIonChange={(e) => setAmount(e.detail.value!)}
+            onIonInput={(e) => setAmount(e.detail.value!)}
+            max={user?.balance || 0}
           />
 
           <div className='withdraw-label'>Куда</div>
