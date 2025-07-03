@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   IonCard,
   IonCardContent,
@@ -8,18 +9,11 @@ import {
   IonIcon,
 } from '@ionic/react';
 import { personAddOutline } from 'ionicons/icons';
-import { useLazyGetCurrentUserQuery } from '../../services/api';
-import { useEffect, useState } from 'react';
-import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import { useHistory } from 'react-router-dom';
-import { useTexts } from '../../context/TextsContext';
 
-function calculateAverageIncome(totalIncome: number, numberOfAgents: number) {
-  if (numberOfAgents === 0) {
-    return 0;
-  }
-  return (totalIncome / numberOfAgents).toFixed(2);
-}
+import { useLazyGetCurrentUserQuery } from '../../services/api';
+import { CompareLocaldata } from '../../helpers/CompareLocaldata';
+import { useTexts } from '../../context/TextsContext';
 
 const TeamCard = ({ showButton }: { showButton?: boolean }) => {
   const history = useHistory();
@@ -39,7 +33,8 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
       "osagoCount": 0,
       "agentsCount": 0,
       "referralLink": "string",
-      "identificationStatus": "not_submitted"
+      "identificationStatus": "not_submitted",
+      "averageAgentsIncome": "0"
     }`;
 
   const [data, setData] = useState(JSON.parse(localData));
@@ -63,7 +58,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
   return (
     <IonCard
       className='card-block team-card'
-      style={{ overflow: 'visible', zIndex: 1, marginTop: 2}}
+      style={{ overflow: 'visible', zIndex: 1, marginTop: 2 }}
     >
       <IonCardContent>
         <h2 className='card-section-title'>{t('section_team')}</h2>
@@ -83,10 +78,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
                 <p className='stat-info'>
                   {t('stat_desc_4').replace(
                     '2030',
-                    calculateAverageIncome(
-                      data?.agentsIncome,
-                      data?.agentsCount
-                    ).toString()
+                    data.averageAgentsIncome.toString()
                   )}
                 </p>
               </div>
