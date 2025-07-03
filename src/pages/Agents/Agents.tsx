@@ -70,7 +70,7 @@ const Agents: React.FC = () => {
 
       {filtered.map((agent) => (
         <div className='agent-card' key={agent.id}>
-          <div className='agent-name'>{agent.fullName}</div>
+          <div className='agent-name'>{agent.fullName || agent.phoneNumber}</div>
           <div className='agent-info'>
             {t('agent_reg_date').split(':')[0]}: <span>{formatDate(agent.dateJoined)}</span>
           </div>

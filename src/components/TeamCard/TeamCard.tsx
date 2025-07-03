@@ -68,7 +68,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               <div className='stat-card'>
                 <p className='stat-title'>{t('agents_count_label')}</p>
                 <p className='stat-number'>{data?.agentsCount}</p>
-                <p className='stat-info'>{t('team_total_desc')}</p>
+                <p className='stat-info'>Всего агентов {data.totalAgents}</p>
               </div>
             </IonCol>
             <IonCol size='6'>
