@@ -82,9 +82,7 @@ const Home: FC = () => {
                   <div className='stat-card'>
                     <p className='stat-title'>{t('income_agents_label')}</p>
                     <p className='stat-number'>{+data?.agentsIncome}</p>
-                    <p className='stat-info'>
-                      {t('stat_desc_2')}
-                    </p>
+                    <p className='stat-info'>{t('stat_desc_2')}</p>
                   </div>
                 </IonCol>
               </IonRow>
@@ -98,9 +96,7 @@ const Home: FC = () => {
               <IonIcon slot='start' icon={car} />
               {t('ofo_title')}
             </IonButton>
-            <p className='earn-percent'>
-              {t('earn_10_percent')}
-            </p>
+            <p className='earn-percent'>{t('earn_10_percent')}</p>
           </IonCardContent>
         </IonCard>
 
@@ -119,7 +115,8 @@ const Home: FC = () => {
           expand='block'
           fill='outline'
         >
-          <IonIcon slot='start' icon={helpCircleOutline} />{t('btn_help')}
+          <IonIcon slot='start' icon={helpCircleOutline} />
+          {t('btn_help')}
         </IonButton>
       </div>
     </IonPage>

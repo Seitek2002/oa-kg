@@ -10,6 +10,10 @@
   top: 60px;
 }
 
+.header.ios {
+  box-shadow: 0px 8px 22px -6px #18274b1f;
+}
+
 .primary-btn {
   --background: #0072de;
   --padding-top: 14px;

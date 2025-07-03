@@ -197,6 +197,7 @@ export interface UserMeResponse {
   referralLink: string;
   authReferralLink: string;
   identificationStatus: string;
+  averageAgentsIncome: string;
 }
 
 export interface UserMeUpdateRequest {

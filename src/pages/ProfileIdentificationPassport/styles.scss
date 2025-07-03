@@ -63,6 +63,12 @@
     }
   }
 
+  .passport-error {
+    color: #e53935;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
   .passport-row {
     display: flex;
     gap: 12px;

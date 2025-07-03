@@ -18,6 +18,8 @@ import {
 import { identificationKeys, identificationSchema } from './schema';
 import { useTexts } from '../../context/TextsContext';
 
+import Loader from '../../components/Loader/Loader';
+
 import './styles.scss';
 
 const ProfileIdentificationPassport = () => {
@@ -33,7 +35,7 @@ const ProfileIdentificationPassport = () => {
     localStorage.getItem('ocrPassportData') || '{}'
   ) as OcrPassportData;
 
-  const [, setErrors] = useState<Record<string, string[]>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [toast, setToast] = useState<{ open: boolean; message: string }>({
     open: false,
     message: '',
@@ -126,6 +128,8 @@ const ProfileIdentificationPassport = () => {
     }
   }, [isError, isSuccess, navigate, reset]);
 
+  if (isLoading) return <Loader />;
+
   return (
     <IonPage className='passport-page'>
       <div>
@@ -150,6 +154,12 @@ const ProfileIdentificationPassport = () => {
               placeholder={t('inn') || 'ИНН'}
               value={ocrData?.personalNumber}
             />
+            {errors.inn &&
+              errors.inn.map((err, i) => (
+                <div className='passport-error' key={i}>
+                  {err}
+                </div>
+              ))}
           </div>
           <div className='passport-form-group'>
             <label className='passport-label' htmlFor='surname'>
@@ -161,18 +171,29 @@ const ProfileIdentificationPassport = () => {
               placeholder={t('label_surname')}
               value={ocrData?.surname}
             />
+            {errors.surname &&
+              errors.surname.map((err, i) => (
+                <div className='passport-error' key={i}>
+                  {err}
+                </div>
+              ))}
           </div>
           <div className='passport-form-group'>
             <label className='passport-label' htmlFor='name'>
               {t('label_name') || 'Имя'}
             </label>
-
             <IonInput
               name='name'
               className='passport-input'
               placeholder={t('label_name')}
               value={ocrData?.name}
             />
+            {errors.name &&
+              errors.name.map((err, i) => (
+                <div className='passport-error' key={i}>
+                  {err}
+                </div>
+              ))}
           </div>
           <div className='passport-form-group'>
             <label className='passport-label' htmlFor='patronymic'>
@@ -184,30 +205,12 @@ const ProfileIdentificationPassport = () => {
               placeholder={t('label_patronymic')}
               value={ocrData?.patronymic}
             />
-          </div>
-          <div className='passport-row'>
-            <div className='passport-form-group'>
-              <label className='passport-label' htmlFor='gender'>
-                {t('gender') || 'Пол'}
-              </label>
-              <IonInput
-                name='gender'
-                className='passport-input'
-                placeholder={t('gender') || 'Пол'}
-                value={normalizedGender}
-              />
-            </div>
-            <div className='passport-form-group'>
-              <label className='passport-label' htmlFor='birthDate'>
-                {t('birth_date') || 'Дата рождения'}
-              </label>
-              <IonInput
-                name='birthDate'
-                className='passport-input'
-                placeholder={t('birth_date') || 'Дата рождения'}
-                value={ocrData?.birthDate}
-              />
-            </div>
+            {errors.patronymic &&
+              errors.patronymic.map((err, i) => (
+                <div className='passport-error' key={i}>
+                  {err}
+                </div>
+              ))}
           </div>
           <div className='passport-row'>
             <div className='passport-form-group'>
@@ -221,6 +224,12 @@ const ProfileIdentificationPassport = () => {
                 className='passport-input'
                 value={normalizedGender}
               />
+              {errors.gender &&
+                errors.gender.map((err, i) => (
+                  <div className='passport-error' key={i}>
+                    {err}
+                  </div>
+                ))}
             </div>
             <div className='passport-form-group'>
               <label className='passport-label' htmlFor='birthDate'>
@@ -233,6 +242,12 @@ const ProfileIdentificationPassport = () => {
                 className='passport-input'
                 value={ocrData?.birthDate}
               />
+              {errors.birthDate &&
+                errors.birthDate.map((err, i) => (
+                  <div className='passport-error' key={i}>
+                    {err}
+                  </div>
+                ))}
             </div>
           </div>
           <div className='passport-form-group'>
@@ -245,6 +260,12 @@ const ProfileIdentificationPassport = () => {
               placeholder={t('issue_authority') || 'Орган выдачи'}
               value={ocrData?.authority}
             />
+            {errors.issueAuthority &&
+              errors.issueAuthority.map((err, i) => (
+                <div className='passport-error' key={i}>
+                  {err}
+                </div>
+              ))}
           </div>
           <div className='passport-row'>
             <div className='passport-form-group'>
@@ -258,6 +279,12 @@ const ProfileIdentificationPassport = () => {
                 className='passport-input'
                 value={ocrData?.issueDate}
               />
+              {errors.issueDate &&
+                errors.issueDate.map((err, i) => (
+                  <div className='passport-error' key={i}>
+                    {err}
+                  </div>
+                ))}
             </div>
             <div className='passport-form-group'>
               <label className='passport-label' htmlFor='expirationDate'>
@@ -270,6 +297,12 @@ const ProfileIdentificationPassport = () => {
                 className='passport-input'
                 value={ocrData?.expiryDate}
               />
+              {errors.expiryDate &&
+                errors.expiryDate.map((err, i) => (
+                  <div className='passport-error' key={i}>
+                    {err}
+                  </div>
+                ))}
             </div>
           </div>
           <IonButton
