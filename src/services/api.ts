@@ -135,7 +135,7 @@ export const api = createApi({
       }),
     }),
     usersNameRetrieve: builder.query<
-      { id: number; fullName: string; phoneNumber: string },
+      { id: number; fullName?: string; phoneNumber: string, referralId: number },
       number
     >({
       query: (id) => ({
