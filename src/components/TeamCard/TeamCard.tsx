@@ -89,7 +89,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               fill='solid'
               expand='block'
               onClick={() => {
-                history.push('/a/invite');
+                window.open('/a/invite', '_blank');
               }}
             >
               <IonIcon slot='start' icon={personAddOutline} />
