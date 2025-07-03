@@ -8,7 +8,8 @@ import {
   IonInput,
   IonInputOtp,
 } from '@ionic/react';
-import { useSendSmsMutation, useVerifySmsMutation } from '../../services/api';
+import { useSendSmsMutation, useVerifySmsMutation, useUsersNameRetrieveQuery } from '../../services/api';
+import { skipToken } from '@reduxjs/toolkit/query';
 import { useHistory, useLocation } from 'react-router-dom';
 
 // import '../../components/OnboardingModal.css';
@@ -20,6 +21,13 @@ const Auth: React.FC = () => {
   const { t } = useTexts();
   const [step, setStep] = useState(1); // 1: номер, 2: код
   const [phone, setPhone] = useState('');
+
+  // Получаем id из pathname
+  const referralId = pathname.split('/')[3];
+  // Делаем запрос, если есть id
+  const { data: referralData } = useUsersNameRetrieveQuery(
+    referralId ? Number(referralId) : skipToken
+  );
   const [agree, setAgree] = useState(false);
   const [smsCode, setSmsCode] = useState('');
   const [error, setError] = useState('');
@@ -130,26 +138,27 @@ const Auth: React.FC = () => {
               ) : (
                 ''
               )}
-              {pathname.split('/')[3] && (
+              {referralId && (
                 <div
                   style={{
                     textAlign: 'left',
                     paddingTop: 16,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     gap: 8,
                   }}
                 >
-                  {t('referral_title')}
+                  Вас пригласил:
                   <IonInput
                     readonly
                     fill='outline'
-                    value={pathname.split('/')[3]}
+                    value={
+                      referralData?.fullName?.trim()
+                        ? referralData.fullName
+                        : referralData?.phoneNumber || referralId
+                    }
                     style={{
-                      width: 140,
-                      height: 30,
+                      height: 40,
                       minHeight: 20,
+                      marginTop: 8,
                     }}
                   />
                 </div>

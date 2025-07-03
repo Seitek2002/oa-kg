@@ -134,6 +134,16 @@ export const api = createApi({
         headers: { 'Content-Type': 'application/json' },
       }),
     }),
+    usersNameRetrieve: builder.query<
+      { id: number; fullName: string; phoneNumber: string },
+      number
+    >({
+      query: (id) => ({
+        url: `https://oa.kg/api/users/${id}/name/`,
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
   }),
 });
 
@@ -168,6 +178,7 @@ export const {
   useGetPageTextsQuery,
   useLazyGetPageTextsQuery,
   useGetQaListQuery,
+  useUsersNameRetrieveQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/
