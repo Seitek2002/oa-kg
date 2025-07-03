@@ -153,7 +153,7 @@ const Auth: React.FC = () => {
                     value={
                       referralData?.fullName?.trim()
                         ? referralData.fullName
-                        : referralData?.phoneNumber || referralId
+                        : referralData?.referralId
                     }
                     style={{
                       height: 40,
