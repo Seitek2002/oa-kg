@@ -103,7 +103,7 @@ const Agents: React.FC = () => {
           {t('btn_invite_friend')}
         </IonButton>
         <div className='earn-percent'>
-          {t('earn_10_percent')}
+          {t('bonus_10_percent')}
         </div>
       </div>
     </IonPage>

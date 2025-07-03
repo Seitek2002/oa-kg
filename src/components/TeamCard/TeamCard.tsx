@@ -98,7 +98,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               <IonIcon slot='start' icon={personAddOutline} />
               {t('btn_invite_agent')}
             </IonButton>
-            <p className='earn-percent'>{t('earn_10_percent')}</p>
+            <p className='earn-percent'>{t('bonus_10_percent')}</p>
           </>
         )}
       </IonCardContent>
