@@ -76,10 +76,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
                 <p className='stat-title'>{t('income_agents_label')}</p>
                 <p className='stat-number'>{+data?.agentsIncome}</p>
                 <p className='stat-info'>
-                  {t('stat_desc_4').replace(
-                    '2030',
-                    data.averageAgentsIncome.toString()
-                  )}
+                  {t('stat_desc_4')}
                 </p>
               </div>
             </IonCol>
