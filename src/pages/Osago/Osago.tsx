@@ -100,7 +100,7 @@ const Osago: React.FC = () => {
                   <div className='stat-card'>
                     <p className='stat-title'>{t('income_agents_label')}</p>
                     <p className='stat-number'>{+usersInfo?.agentsIncome}</p>
-                    <p className='stat-info'>{t('stat_desc_2')}</p>
+                    <p className='stat-info'>В среднем зарабатывают {+usersInfo.averageAgentsIncome} сом</p>
                   </div>
                 </IonCol>
               </IonRow>

@@ -82,7 +82,7 @@ const Home: FC = () => {
                   <div className='stat-card'>
                     <p className='stat-title'>{t('income_agents_label')}</p>
                     <p className='stat-number'>{+data?.agentsIncome}</p>
-                    <p className='stat-info'>{t('stat_desc_2')}</p>
+                    <p className='stat-info'>В среднем зарабатывают {+data.averageAgentsIncome} сом</p>
                   </div>
                 </IonCol>
               </IonRow>
