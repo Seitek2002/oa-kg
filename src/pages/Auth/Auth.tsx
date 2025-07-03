@@ -55,6 +55,7 @@ const Auth: React.FC = () => {
       code: smsCode,
       referralCode: undefined,
     };
+      setSmsCode('');
 
     if (pathname.split('/')[3]) {
       send.referralCode = pathname.split('/')[3];
