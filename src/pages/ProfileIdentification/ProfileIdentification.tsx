@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import { IonButton, IonIcon, IonPage } from '@ionic/react';
+import {
+  IonActionSheet,
+  IonButton,
+  IonIcon,
+  IonPage,
+  isPlatform,
+} from '@ionic/react';
 import { arrowBackOutline, closeOutline } from 'ionicons/icons';
 
 import { OcrPassportData, useOcrCreateMutation } from '../../services/api';
@@ -26,6 +32,12 @@ const ProfileIdentification = () => {
   const [photos, setPhotos] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+  const [currentKey, setCurrentKey] = useState<
+    'front' | 'back' | 'selfie' | null
+  >(null);
+  const [showActionSheet, setShowActionSheet] = useState(false);
+
+  const isAndroid = isPlatform('android');
 
   const fileRefs = {
     front: useRef<HTMLInputElement>(null),
@@ -35,6 +47,22 @@ const ProfileIdentification = () => {
 
   const handleItemClick = (key: 'front' | 'back' | 'selfie') => {
     fileRefs[key].current?.click();
+  };
+
+  const handleSelectSource = (source: 'gallery' | 'camera') => {
+    if (!currentKey) return;
+
+    const inputEl = fileRefs[currentKey].current;
+    if (inputEl) {
+      if (source === 'camera' && isAndroid) {
+        inputEl.setAttribute('capture', 'environment');
+      } else {
+        inputEl.removeAttribute('capture');
+      }
+      inputEl.click();
+    }
+    setShowActionSheet(false);
+    setCurrentKey(null);
   };
 
   const handleFileChange = (
@@ -80,137 +108,114 @@ const ProfileIdentification = () => {
     }
   }, [dispatch, error, history, isError, isSuccess, ocrData]);
 
+  const renderInputsObj = [
+    {
+      key: 'front',
+      title: t('id_step_front') || 'Лицевая сторона',
+      image: identificationCard,
+    },
+    {
+      key: 'back',
+      title: t('id_step_back') || 'Обратная сторона',
+      image: identificationCardBack,
+    },
+    {
+      key: 'selfie',
+      title: t('id_step_selfie') || 'Селфи с паспортом',
+      image: identificationSelfie,
+    },
+  ];
+
   return (
     <IonPage className='profile-identification'>
+      <IonActionSheet
+        mode='ios'
+        isOpen={showActionSheet}
+        onDidDismiss={() => {
+          setShowActionSheet(false);
+          setCurrentKey(null);
+        }}
+        header={t('choose_source') || 'Выберите источник'}
+        buttons={[
+          {
+            text: t('gallery') || 'Галерея',
+            handler: () => handleSelectSource('gallery'),
+          },
+          {
+            text: t('camera') || 'Камера',
+            handler: () => handleSelectSource('camera'),
+          },
+          {
+            text: t('cancel') || 'Отмена',
+            role: 'cancel',
+          },
+        ]}
+      />
       <div className='identification-header'>
         <IonIcon
           onClick={() => history.goBack()}
           icon={arrowBackOutline}
           className='identification-back'
         />
-        <span className='identification-title'>{t('screen_identification')}</span>
+        <span className='identification-title'>
+          {t('screen_identification')}
+        </span>
       </div>
       <div className='identification-list'>
-        {/* Лицевая сторона */}
-        <div
-          className='identification-item'
-          onClick={() => !photos.front && handleItemClick('front')}
-        >
-          {photos.front ? (
-            <div className='identification-photo-wrapper'>
-              <img
-                src={photos.front}
-                alt='front'
-                className='identification-photo-preview'
-                onClick={() => handleItemClick('front')}
-              />
-              <IonIcon
-                icon={closeOutline}
-                className='identification-photo-remove'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPhotos((prev) => ({ ...prev, front: undefined }));
-                }}
-              />
-            </div>
-          ) : (
-            <>
-              <IonIcon
-                icon={identificationCard}
-                className='identification-icon'
-              />
-              <span>{t('id_step_front')}</span>
-            </>
-          )}
-          <input
-            ref={fileRefs.front}
-            type='file'
-            accept='image/*'
-            style={{ display: 'none' }}
-            onChange={(e) => handleFileChange('front', e)}
-          />
-        </div>
+        {renderInputsObj.map(({ key, title, image }) => {
+          return (
+            <div
+              key={key}
+              className='identification-item'
+              onClick={() => {
+                if (!photos[key]) {
+                  setCurrentKey(key as 'front' | 'back' | 'selfie');
+                  if (isAndroid) {
+                    return setShowActionSheet(true);
+                  }
+                  handleItemClick(key as 'front' | 'back' | 'selfie');
+                }
+              }}
+            >
+              {photos[key] ? (
+                <div className='identification-photo-wrapper'>
+                  <img
+                    src={photos[key]}
+                    alt={key}
+                    className='identification-photo-preview'
+                    onClick={() =>
+                      handleItemClick(key as 'front' | 'back' | 'selfie')
+                    }
+                  />
+                  <IonIcon
+                    icon={closeOutline}
+                    className='identification-photo-remove'
+                    onClick={(e) => {
+                      console.log(key);
 
-        {/* Обратная сторона */}
-        <div
-          className='identification-item'
-          onClick={() => !photos.back && handleItemClick('back')}
-        >
-          {photos.back ? (
-            <div className='identification-photo-wrapper'>
-              <img
-                src={photos.back}
-                alt='back'
-                className='identification-photo-preview'
-                onClick={() => handleItemClick('back')}
-              />
-              <IonIcon
-                icon={closeOutline}
-                className='identification-photo-remove'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPhotos((prev) => ({ ...prev, back: undefined }));
-                }}
-              />
-            </div>
-          ) : (
-            <>
-              <IonIcon
-                icon={identificationCardBack}
-                className='identification-icon'
-              />
-              <span>{t('id_step_back')}</span>
-            </>
-          )}
-          <input
-            ref={fileRefs.back}
-            type='file'
-            accept='image/*'
-            style={{ display: 'none' }}
-            onChange={(e) => handleFileChange('back', e)}
-          />
-        </div>
-
-        {/* Селфи */}
-        <div
-          className='identification-item'
-          onClick={() => !photos.selfie && handleItemClick('selfie')}
-        >
-          {photos.selfie ? (
-            <div className='identification-photo-wrapper'>
-              <img
-                src={photos.selfie}
-                alt='selfie'
-                className='identification-photo-preview'
-                onClick={() => handleItemClick('selfie')}
-              />
-              <IonIcon
-                icon={closeOutline}
-                className='identification-photo-remove'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPhotos((prev) => ({ ...prev, selfie: undefined }));
-                }}
+                      e.stopPropagation();
+                      setPhotos((prev) => ({ ...prev, [key]: undefined }));
+                    }}
+                  />
+                </div>
+              ) : (
+                <>
+                  <IonIcon icon={image} className='identification-icon' />
+                  <span>{title}</span>
+                </>
+              )}
+              <input
+                ref={fileRefs[key as 'front' | 'back' | 'selfie']}
+                type='file'
+                accept='image/*'
+                style={{ display: 'none' }}
+                onChange={(e) =>
+                  handleFileChange(key as 'front' | 'back' | 'selfie', e)
+                }
               />
             </div>
-          ) : (
-            <>
-              <IonIcon
-                icon={identificationSelfie}
-                className='identification-icon'
-              />
-              <span>{t('id_step_selfie') || 'Селфи с паспортом'}</span>
-            </>
-          )}
-          <input
-            ref={fileRefs.selfie}
-            type='file'
-            accept='image/*'
-            capture='user'
-            style={{ display: 'none' }}
-            onChange={(e) => handleFileChange('selfie', e)}
-          />
-        </div>
+          );
+        })}
       </div>
       <IonButton
         disabled={!photos.front || !photos.back || !photos.selfie || isLoading}
