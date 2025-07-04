@@ -84,8 +84,8 @@ const InviteFriend: React.FC = () => {
             const link = data?.referralLink || '';
             if (navigator.share) {
               navigator.share({
-                title: t('referral_title'),
-                text: t('referral_instructions'),
+                title: t('add_to_group_title'),
+                text: t('add_to_group_text'),
                 url: link,
               });
             } else {

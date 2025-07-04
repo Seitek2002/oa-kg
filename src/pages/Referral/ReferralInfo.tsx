@@ -82,8 +82,8 @@ const ReferralInfo: FC = () => {
           onClick={() => {
             if (navigator.share) {
               navigator.share({
-                title: t('company_name'),
-                text: 'Онлайн оператор страховки ОСАГО',
+                title: t('share_osago_link_title'),
+                text: t('share_osago_link_text'),
                 url: data.authReferralLink,
               });
             } else {
