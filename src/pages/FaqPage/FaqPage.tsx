@@ -15,7 +15,7 @@ import { useGetQaListQuery } from '../../services/api';
 import './styles.scss';
 
 const FaqPage: React.FC = () => {
-  const { data, isLoading, isError } = useGetQaListQuery({ type: 'faq' });
+  const { data, isLoading, isError } = useGetQaListQuery({ type: '' });
 
   return (
     <IonPage className='faq-page'>
