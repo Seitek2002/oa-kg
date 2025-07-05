@@ -200,7 +200,7 @@ const Auth: React.FC = () => {
                 >
                   Согласен с условиями{' '}
                   <a
-                    href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.docx'
+                    href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.pdf'
                     target='_blank'
                     rel='noopener noreferrer'
                     style={{
