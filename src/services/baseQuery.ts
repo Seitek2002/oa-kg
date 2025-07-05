@@ -9,6 +9,7 @@ import {
  * Кастомный baseQuery с поддержкой обновления токена.
  * access и refresh теперь хранятся в localStorage в ключе "access" как объект { access, refresh }
  */
+
 export const getBaseQuery =
   (): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> =>
   async (args, api, extraOptions) => {
@@ -45,10 +46,7 @@ export const getBaseQuery =
     const isAuthFree =
       url?.includes('/sms/send') || url?.includes('/sms/verify');
 
-    if (
-      result.meta?.response?.status === 401 &&
-      !isAuthFree
-    ) {
+    if (result.meta?.response?.status === 401 && !isAuthFree) {
       let refresh = '';
       try {
         const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');
@@ -60,7 +58,7 @@ export const getBaseQuery =
         // Пробуем обновить токен
         const refreshResult = await fetchQuery(
           {
-            url: '/auth/token/refresh/',
+            url: '/api/auth/token/refresh/',
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({ refresh }).toString(),

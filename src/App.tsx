@@ -59,39 +59,12 @@ import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
-
+// {"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1OTQ2ODc0NiwiaWF0IjoxNzUxNjkyNzQ2LCJqdGkiOiJiYjAxMTNkNmIxYjg0YjNlODVkYTMzMzE3ZmMxNWMyOCIsInVzZXJfaWQiOjEwMX0.DNFtWT2S65ZEpIDGOBMS5ilIaCax94qt0-ovOuGcHhA","access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxNjk2MzQ2LCJpYXQiOjE3NTE2OTI3NDYsImp0aSI6IjM1ODUwZTdjN2RiYzRjMTE5ODYwNmU1NjFkMGJlMTZmIiwidXNlcl9pZCI6MTAxfQ.w3Oj1CXXZSCSA2EjsE2IhWvWK8vw3DvBKY6Ti4YFXSA"}
 /* Theme variables */
 import './theme/variables.css';
 import './app.css';
 
 setupIonicReact();
-
-const isAuthorized = () => {
-  // Можно доработать: проверять валидность токена
-  return !!localStorage.getItem('access');
-};
-
-type ProtectedRouteProps = {
-  component: React.ComponentType<any>;
-  path: string;
-  exact?: boolean;
-};
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  component: Component,
-  ...rest
-}) => (
-  <Route
-    {...rest}
-    render={(props) =>
-      isAuthorized() ? (
-        <Component {...props} />
-      ) : (
-        <Redirect to='/a/onboarding' />
-      )
-    }
-  />
-);
 
 const AppTabs: React.FC = () => {
   const location = useLocation();
@@ -132,51 +105,39 @@ const AppTabs: React.FC = () => {
           <Route exact path='/a/auth/:id'>
             <Auth />
           </Route>
-          <ProtectedRoute exact path='/a/home' component={Home} />
-          <ProtectedRoute exact path='/a/osago' component={Osago} />
-          <ProtectedRoute exact path='/a/agents' component={Agents} />
-          <ProtectedRoute exact path='/a/finances' component={Finances} />
-          <ProtectedRoute exact path='/a/profile' component={Profile} />
-          <ProtectedRoute
-            exact
-            path='/a/profile/edit'
-            component={ProfileEdit}
-          />
-          <ProtectedRoute exact path='/a/referral' component={ReferralInfo} />
-          <ProtectedRoute exact path='/a/invite' component={InviteFriend} />
-          <ProtectedRoute exact path='/a/withdraw' component={Withdraw} />
-          <ProtectedRoute
+          <Route exact path='/a/home' component={Home} />
+          <Route exact path='/a/osago' component={Osago} />
+          <Route exact path='/a/agents' component={Agents} />
+          <Route exact path='/a/finances' component={Finances} />
+          <Route exact path='/a/profile' component={Profile} />
+          <Route exact path='/a/profile/edit' component={ProfileEdit} />
+          <Route exact path='/a/referral' component={ReferralInfo} />
+          <Route exact path='/a/invite' component={InviteFriend} />
+          <Route exact path='/a/withdraw' component={Withdraw} />
+          <Route
             exact
             path='/a/withdraw/identification'
             component={WithdrawIdentification}
           />
-          <ProtectedRoute
-            exact
-            path='/a/withdraw/info'
-            component={WithdrawInfo}
-          />
-          <ProtectedRoute
+          <Route exact path='/a/withdraw/info' component={WithdrawInfo} />
+          <Route
             exact
             path='/a/profile/identification'
             component={ProfileIdentification}
           />
-          <ProtectedRoute
+          <Route
             exact
             path='/a/profile/identification/passport'
             component={ProfileIdentificationPassport}
           />
-          <ProtectedRoute
+          <Route
             exact
             path='/a/profile/identification/process'
             component={IdentificationProcess}
           />
-          <ProtectedRoute exact path='/a/instruction' component={Instruction} />
-          <ProtectedRoute
-            exact
-            path='/a/instruction'
-            component={InstructionAccident}
-          />
-          <ProtectedRoute exact path='/a/my-faq' component={MyFaqPage} />
+          <Route exact path='/a/instruction' component={Instruction} />
+          <Route exact path='/a/instruction' component={InstructionAccident} />
+          <Route exact path='/a/my-faq' component={MyFaqPage} />
           <Route exact path='/a/'>
             <Redirect to='/a/home' />
           </Route>

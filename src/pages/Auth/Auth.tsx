@@ -16,11 +16,48 @@ import { useHistory, useLocation } from 'react-router-dom';
 import './style.scss';
 import { useTexts } from '../../context/TextsContext';
 
+type ErrorWithData = { data?: { error?: string; secondsLeft?: number } };
+
+function isErrorWithData(e: unknown): e is ErrorWithData {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'data' in e &&
+    typeof (e as { data?: unknown }).data === 'object' &&
+    (e as { data?: unknown }).data !== null
+  );
+}
+
 const Auth: React.FC = () => {
   const { pathname } = useLocation();
   const { t } = useTexts();
+  const history = useHistory();
+
+  // Редирект если уже авторизован
+  React.useEffect(() => {
+    try {
+      const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');
+      if (tokenObj.access) {
+        history.replace('/a/home');
+      }
+    } catch (e) {
+      // ignore JSON parse error
+    }
+    // eslint-disable-next-line
+  }, []);
   const [step, setStep] = useState(1); // 1: номер, 2: код
   const [phone, setPhone] = useState('');
+  const [secondsLeft, setSecondsLeft] = useState<number>(() => {
+    const saved = localStorage.getItem('auth_secondsLeft');
+    const savedTime = localStorage.getItem('auth_secondsLeft_time');
+    if (saved && savedTime) {
+      const diff = Math.floor((Date.now() - Number(savedTime)) / 1000);
+      const left = Number(saved) - diff;
+      return left > 0 ? left : 0;
+    }
+    return 0;
+  });
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Получаем id из pathname
   const referralId = pathname.split('/')[3];
@@ -33,7 +70,6 @@ const Auth: React.FC = () => {
   const [error, setError] = useState('');
   const [sendSms, { isLoading: isSending }] = useSendSmsMutation();
   const [verifySms, { isLoading: isVerifying }] = useVerifySmsMutation();
-  const history = useHistory();
 
   // Автоматический вход при вводе 6-значного кода
   React.useEffect(() => {
@@ -50,8 +86,17 @@ const Auth: React.FC = () => {
       await sendSms({ phoneNumber: num }).unwrap();
       setSmsCode('');
       setStep(2);
-    } catch (e: any) {
-      setError(e?.data?.error || 'Ошибка отправки SMS');
+    } catch (e: unknown) {
+      if (isErrorWithData(e) && e.data) {
+        if (e.data.secondsLeft) {
+          setSecondsLeft(e.data.secondsLeft);
+          localStorage.setItem('auth_secondsLeft', String(e.data.secondsLeft));
+          localStorage.setItem('auth_secondsLeft_time', String(Date.now()));
+        }
+        setError(e.data.error || 'Ошибка отправки SMS');
+      } else {
+        setError('Ошибка отправки SMS');
+      }
     }
   };
 
@@ -76,10 +121,47 @@ const Auth: React.FC = () => {
       }
       // После успешной авторизации можно редиректить или закрывать модалку
       history.replace('/a/home');
-    } catch (e: any) {
-      setError(e?.data?.error || 'Ошибка проверки кода');
+    } catch (e: unknown) {
+      if (isErrorWithData(e) && e.data) {
+        setError(e.data.error || 'Ошибка проверки кода');
+      } else {
+        setError('Ошибка проверки кода');
+      }
     }
   };
+
+  // Таймер
+  React.useEffect(() => {
+    if (secondsLeft > 0 && !timerRef.current) {
+      timerRef.current = setInterval(() => {
+        setSecondsLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current!);
+            timerRef.current = null;
+            localStorage.removeItem('auth_secondsLeft');
+            localStorage.removeItem('auth_secondsLeft_time');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [secondsLeft]);
+
+  // Сброс таймера при переходе на шаг 1
+  React.useEffect(() => {
+    if (step === 1) {
+      setSecondsLeft(0);
+      localStorage.removeItem('auth_secondsLeft');
+      localStorage.removeItem('auth_secondsLeft_time');
+    }
+  }, [step]);
 
   return (
     <IonContent scrollY={false}>
@@ -191,19 +273,26 @@ const Auth: React.FC = () => {
                 length={6}
                 value={smsCode}
                 onIonInput={(e) => setSmsCode(e.detail.value!)}
-              >
+              />
+              <div style={{ marginTop: 16 }}>
                 {t('not_received_code') || 'Не получили код?'}{' '}
-                <a
-                  href='#'
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    await handleSendSms();
-                  }}
-                  style={{ color: '#1976d2', cursor: 'pointer' }}
-                >
-                  {t('resend_sms')}
-                </a>
-              </IonInputOtp>
+                {secondsLeft > 0 ? (
+                  <span style={{ color: '#888', marginLeft: 8 }}>
+                    Повторная отправка через {secondsLeft} сек.
+                  </span>
+                ) : (
+                  <a
+                    href='#'
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await handleSendSms();
+                    }}
+                    style={{ color: '#1976d2', cursor: 'pointer' }}
+                  >
+                    {t('resend_sms')}
+                  </a>
+                )}
+              </div>
               {error && (
                 <IonText
                   color='danger'
