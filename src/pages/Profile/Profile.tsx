@@ -13,13 +13,13 @@ import {
 } from 'ionicons/icons';
 
 import { useGetCurrentUserQuery } from '../../services/api';
+import { useTexts } from '../../context/TextsContext';
 
 import avatar from '../../assets/avatar-default.svg';
 import helpBuoy from '../../assets/helpBuoyFilled.svg';
 import helpQuestion from '../../assets/helpQuestionFilled.svg';
 
 import './styles.scss';
-import { useTexts } from '../../context/TextsContext';
 
 const Profile: React.FC = () => {
   const navigate = useIonRouter();
@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
   const { data: user } = useGetCurrentUserQuery();
 
   const editClick = () => {
-    navigate.push('profile/edit');
+    navigate.push('/a/profile/edit');
   };
 
   const identificationClick = () => {
@@ -104,9 +104,7 @@ const Profile: React.FC = () => {
             </div>
             <div className='profile-action__content'>
               <div className='profile-action__title'>{t('faq_prompt')}</div>
-              <div className='profile-action__subtitle'>
-                {t('faq_title')}
-              </div>
+              <div className='profile-action__subtitle'>{t('faq_title')}</div>
             </div>
             <IonIcon
               icon={chevronForwardOutline}
@@ -129,9 +127,7 @@ const Profile: React.FC = () => {
           </IonButton>
           <div className='profile-contacts'>
             <h2>{t('contacts_title')}</h2>
-            <p>
-              {t('contacts_address')}
-            </p>
+            <p>{t('contacts_address')}</p>
             <IonButton
               href='tel:+996777394080'
               className='outlined-btn'

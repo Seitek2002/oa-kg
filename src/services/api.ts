@@ -4,6 +4,7 @@ import { getBaseQuery } from './baseQuery';
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: getBaseQuery(),
+  tagTypes: ['CurrentUser'],
   endpoints: (builder) => ({
     getPageTexts: builder.query<PageTextsResponse, void>({
       query: () => ({
@@ -27,6 +28,7 @@ export const api = createApi({
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(body as Record<string, string>).toString(),
       }),
+      invalidatesTags: ['CurrentUser'],
     }),
     patchCurrentUser: builder.mutation<UserMeResponse, UserMeUpdateRequest>({
       query: (body) => ({
@@ -66,6 +68,7 @@ export const api = createApi({
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       }),
+      providesTags: ['CurrentUser'],
     }),
     getPolicies: builder.query<Policy[], void>({
       query: () => ({
@@ -135,7 +138,12 @@ export const api = createApi({
       }),
     }),
     usersNameRetrieve: builder.query<
-      { id: number; fullName?: string; phoneNumber: string, referralId: number },
+      {
+        id: number;
+        fullName?: string;
+        phoneNumber: string;
+        referralId: number;
+      },
       number
     >({
       query: (id) => ({

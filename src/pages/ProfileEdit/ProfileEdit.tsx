@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import {
   IonAvatar,
   IonButton,
@@ -7,13 +8,18 @@ import {
   IonPage,
 } from '@ionic/react';
 
-import { useGetCurrentUserQuery, useUpdateCurrentUserMutation } from '../../services/api';
-
-import avatar from '../../assets/avatar-default.svg';
+import {
+  useGetCurrentUserQuery,
+  useUpdateCurrentUserMutation,
+} from '../../services/api';
+import { useTexts } from '../../context/TextsContext';
 import { z } from 'zod';
 
+import Loader from '../../components/Loader/Loader';
+
+import avatar from '../../assets/avatar-default.svg';
+
 import './styles.scss';
-import { useTexts } from '../../context/TextsContext';
 
 const formDataSchema = z.object({
   firstName: z.string().min(2, { message: 'Минимум 2 символа' }),
@@ -24,9 +30,11 @@ const formDataSchema = z.object({
 type FormData = z.infer<typeof formDataSchema>;
 
 const ProfileEdit = () => {
+  const history = useHistory();
   const { data: user } = useGetCurrentUserQuery();
   const { t } = useTexts();
-  const [updateUser] = useUpdateCurrentUserMutation();
+  const [updateUser, { isLoading, isSuccess, isError }] =
+    useUpdateCurrentUserMutation();
 
   const [userFormData, setFormData] = useState<Partial<FormData>>({});
 
@@ -52,7 +60,7 @@ const ProfileEdit = () => {
 
   const errors = validate();
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (errors) {
@@ -60,96 +68,112 @@ const ProfileEdit = () => {
       return;
     }
 
-    // Отправка запроса на изменение профиля
-    try {
-      await updateUser({
-        firstName: formData.firstName || '',
-        lastName: formData.lastName || '',
-        middleName: formData.patronymic || '',
-      }).unwrap();
-      // Можно добавить уведомление об успехе или обновить localStorage
-    } catch (err) {
-      // Можно обработать ошибку
-      console.error('Ошибка обновления профиля', err);
-    }
+    updateUser({
+      firstName: formData.firstName || '',
+      lastName: formData.lastName || '',
+      middleName: formData.patronymic || '',
+    });
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      history.push('/a/profile');
+    }
+    if (isError) {
+      console.error('Ошибка при обновлении профиля');
+    }
+  }, [history, isError, isSuccess]);
+
+  if (isLoading) return <Loader />;
 
   return (
     <IonPage className='profile-page profile-edit'>
-      <div className='profile-edit-header'>
-        <IonAvatar className='profile-edit-avatar'>
-          <img src={avatar} alt='Avatar' />
-        </IonAvatar>
-        <span>{t('header_profile_country')}</span>
-      </div>
-      <form className='profile-edit-form' onSubmit={handleSubmit}>
-        <div className='profile-edit-group'>
-          <IonLabel className='profile-edit-label'>{t('label_name')}</IonLabel>
-          <IonInput
-            name='firstName'
-            className='profile-edit-input'
-            placeholder={t('label_name')}
-            value={userFormData.firstName}
-            onIonChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                firstName: e.detail.value ?? '',
-              }))
-            }
-          />
-          {errors && errors?.firstName?._errors && (
-            <span className='error'>{errors.firstName._errors.join(', ')}</span>
-          )}
+      <div>
+        <div className='profile-edit-header'>
+          <IonAvatar className='profile-edit-avatar'>
+            <img src={avatar} alt='Avatar' />
+          </IonAvatar>
+          <span>{t('header_profile_country')}</span>
         </div>
-        <div className='profile-edit-group'>
-          <IonLabel className='profile-edit-label'>{t('label_surname')}</IonLabel>
-          <IonInput
-            name='lastName'
-            className='profile-edit-input'
-            placeholder={t('label_surname')}
-            value={userFormData.lastName}
-            onIonChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                lastName: e.detail.value ?? '',
-              }))
-            }
-          />
-          {errors && errors?.lastName?._errors && (
-            <span className='error'>{errors.lastName._errors.join(', ')}</span>
-          )}
-        </div>
-        <div className='profile-edit-group'>
-          <IonLabel className='profile-edit-label'>{t('label_patronymic')}</IonLabel>
-          <IonInput
-            name='patronymic'
-            className='profile-edit-input'
-            placeholder={t('label_patronymic')}
-            value={userFormData.patronymic}
-            onIonChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                patronymic: e.detail.value ?? '',
-              }))
-            }
-          />
-          {errors && errors?.patronymic?._errors && (
-            <span className='error'>
-              {errors.patronymic._errors.join(', ')}
-            </span>
-          )}
-        </div>
+        <form className='profile-edit-form' onSubmit={handleSubmit}>
+          <div className='profile-edit-group'>
+            <IonLabel className='profile-edit-label'>
+              {t('label_name')}
+            </IonLabel>
+            <IonInput
+              name='firstName'
+              className='profile-edit-input'
+              placeholder={t('label_name')}
+              value={userFormData.firstName}
+              onIonChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  firstName: e.detail.value ?? '',
+                }))
+              }
+            />
+            {errors && errors?.firstName?._errors && (
+              <span className='error'>
+                {errors.firstName._errors.join(', ')}
+              </span>
+            )}
+          </div>
+          <div className='profile-edit-group'>
+            <IonLabel className='profile-edit-label'>
+              {t('label_surname')}
+            </IonLabel>
+            <IonInput
+              name='lastName'
+              className='profile-edit-input'
+              placeholder={t('label_surname')}
+              value={userFormData.lastName}
+              onIonChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  lastName: e.detail.value ?? '',
+                }))
+              }
+            />
+            {errors && errors?.lastName?._errors && (
+              <span className='error'>
+                {errors.lastName._errors.join(', ')}
+              </span>
+            )}
+          </div>
+          <div className='profile-edit-group'>
+            <IonLabel className='profile-edit-label'>
+              {t('label_patronymic')}
+            </IonLabel>
+            <IonInput
+              name='patronymic'
+              className='profile-edit-input'
+              placeholder={t('label_patronymic')}
+              value={userFormData.patronymic}
+              onIonChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  patronymic: e.detail.value ?? '',
+                }))
+              }
+            />
+            {errors && errors?.patronymic?._errors && (
+              <span className='error'>
+                {errors.patronymic._errors.join(', ')}
+              </span>
+            )}
+          </div>
 
-        <IonButton
-          disabled={!!errors}
-          type='submit'
-          expand='block'
-          size='default'
-          className='profile-edit-save'
-        >
-          {t('btn_save')}
-        </IonButton>
-      </form>
+          <IonButton
+            disabled={!!errors}
+            type='submit'
+            expand='block'
+            size='default'
+            className='profile-edit-save'
+          >
+            {t('btn_save')}
+          </IonButton>
+        </form>
+      </div>
     </IonPage>
   );
 };
