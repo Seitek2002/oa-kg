@@ -37,7 +37,6 @@ import WithdrawInfo from './pages/WithdrawInfo/WithdrawInfo';
 import Onboarding from './pages/Onboarding/Onboarding';
 import Auth from './pages/Auth/Auth';
 import Finances from './pages/Finances';
-import Instruction from './pages/Instruction/Instruction';
 import InstructionAccident from './pages/InstructionAccident/InstructionAccident';
 import MyFaqPage from './pages/FaqPage/FaqPage';
 
@@ -135,7 +134,6 @@ const AppTabs: React.FC = () => {
             path='/a/profile/identification/process'
             component={IdentificationProcess}
           />
-          <Route exact path='/a/instruction' component={Instruction} />
           <Route exact path='/a/instruction' component={InstructionAccident} />
           <Route exact path='/a/my-faq' component={MyFaqPage} />
           <Route exact path='/a/'>

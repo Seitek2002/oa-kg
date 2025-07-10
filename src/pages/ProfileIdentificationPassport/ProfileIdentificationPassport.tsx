@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonPage,
   IonInput,
@@ -6,6 +6,8 @@ import {
   IonIcon,
   useIonRouter,
   IonToast,
+  IonSelect,
+  IonSelectOption,
 } from '@ionic/react';
 import { arrowBackOutline } from 'ionicons/icons';
 import { useAppSelector } from '../../hooks';
@@ -42,15 +44,6 @@ const ProfileIdentificationPassport = () => {
   });
 
   const ocrData = localData || passportData;
-  console.log(ocrData);
-
-  const normalizedGender = useMemo(() => {
-    const genderMap = {
-      М: 'Мужчина',
-      Ж: 'Женщина',
-    };
-    return genderMap[ocrData?.gender as keyof typeof genderMap] || 'Неизвестно';
-  }, [ocrData?.gender]);
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -67,7 +60,8 @@ const ProfileIdentificationPassport = () => {
       passportMiddleName: formObj.patronymic,
       gender: formObj.gender,
       birthDate: formObj.birthDate,
-      documentNumber: (formObj.documentNumber || '') + (formObj.idNumber || ''),
+      documentNumber:
+        (formObj.documentType || '') + (formObj.documentNumber || ''),
       issueAuthority: formObj.issueAuthority,
       issueDate: formObj.issueDate,
       expiryDate: formObj.expirationDate,
@@ -217,13 +211,17 @@ const ProfileIdentificationPassport = () => {
               <label className='passport-label' htmlFor='gender'>
                 {t('gender') || 'Пол'}
               </label>
-              <IonInput
+              <IonSelect
                 id='gender'
                 name='gender'
-                placeholder={t('gender') || 'Пол'}
                 className='passport-input'
-                value={normalizedGender}
-              />
+                placeholder={t('gender') || 'Пол'}
+                value={ocrData.gender || ''}
+                interface='popover'
+              >
+                <IonSelectOption value='М'>Мужчина</IonSelectOption>
+                <IonSelectOption value='Ж'>Женщина</IonSelectOption>
+              </IonSelect>
               {errors.gender &&
                 errors.gender.map((err, i) => (
                   <div className='passport-error' key={i}>
@@ -248,6 +246,36 @@ const ProfileIdentificationPassport = () => {
                     {err}
                   </div>
                 ))}
+            </div>
+          </div>
+          <div className='passport-row'>
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='documentType'>
+                ID паспорта
+              </label>
+              <IonSelect
+                id='documentType'
+                name='documentType'
+                className='passport-input'
+                placeholder='ID'
+                value={ocrData.documentNumber.slice(0, 2) || ''}
+                interface='popover'
+              >
+                <IonSelectOption value='ID'>ID</IonSelectOption>
+                <IonSelectOption value='AN'>AN</IonSelectOption>
+              </IonSelect>
+            </div>
+            <div className='passport-form-group'>
+              <label className='passport-label' htmlFor='documentNumber'>
+                Номер паспорта
+              </label>
+              <IonInput
+                id='documentNumber'
+                name='documentNumber'
+                className='passport-input'
+                placeholder='2303-04'
+                value={ocrData.documentNumber.slice(2) || ''}
+              />
             </div>
           </div>
           <div className='passport-form-group'>

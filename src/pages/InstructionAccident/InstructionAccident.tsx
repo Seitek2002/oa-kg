@@ -18,6 +18,8 @@ import alert from '../../assets/alert.svg';
 
 import { arrowBackOutline } from 'ionicons/icons';
 
+import DOMPurify from 'dompurify';
+
 import './styles.scss';
 
 const InstructionsPage: React.FC = () => {
@@ -102,7 +104,11 @@ const InstructionsPage: React.FC = () => {
                       </div>
                     </IonItem>
                     <div slot='content' className='item-content'>
-                      <p>{item.answer}</p>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(item.answer),
+                        }}
+                      />
                     </div>
                   </IonAccordion>
                   {i !== data.length - 1 && <hr />}

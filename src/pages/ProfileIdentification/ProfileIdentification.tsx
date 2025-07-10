@@ -191,8 +191,6 @@ const ProfileIdentification = () => {
                     icon={closeOutline}
                     className='identification-photo-remove'
                     onClick={(e) => {
-                      console.log(key);
-
                       e.stopPropagation();
                       setPhotos((prev) => ({ ...prev, [key]: undefined }));
                     }}

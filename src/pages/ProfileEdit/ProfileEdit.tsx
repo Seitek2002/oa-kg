@@ -104,7 +104,7 @@ const ProfileEdit = () => {
               name='firstName'
               className='profile-edit-input'
               placeholder={t('label_name')}
-              value={userFormData.firstName}
+              value={formData.firstName}
               onIonChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
@@ -126,7 +126,7 @@ const ProfileEdit = () => {
               name='lastName'
               className='profile-edit-input'
               placeholder={t('label_surname')}
-              value={userFormData.lastName}
+              value={formData.lastName}
               onIonChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
@@ -148,7 +148,7 @@ const ProfileEdit = () => {
               name='patronymic'
               className='profile-edit-input'
               placeholder={t('label_patronymic')}
-              value={userFormData.patronymic}
+              value={formData.patronymic}
               onIonChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,

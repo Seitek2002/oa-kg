@@ -12,6 +12,8 @@ import { arrowBackOutline } from 'ionicons/icons';
 
 import { useGetQaListQuery } from '../../services/api';
 
+import DOMPurify from 'dompurify';
+
 import './styles.scss';
 
 const FaqPage: React.FC = () => {
@@ -55,7 +57,11 @@ const FaqPage: React.FC = () => {
                       </div>
                     </IonItem>
                     <div slot='content' className='item-content'>
-                      <p>{item.answer}</p>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(item.answer),
+                        }}
+                      />
                     </div>
                   </IonAccordion>
                   {i !== data.length - 1 && <hr />}

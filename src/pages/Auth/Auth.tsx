@@ -7,8 +7,13 @@ import {
   IonText,
   IonInput,
   IonInputOtp,
+  IonPage,
 } from '@ionic/react';
-import { useSendSmsMutation, useVerifySmsMutation, useUsersNameRetrieveQuery } from '../../services/api';
+import {
+  useSendSmsMutation,
+  useVerifySmsMutation,
+  useUsersNameRetrieveQuery,
+} from '../../services/api';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -164,163 +169,165 @@ const Auth: React.FC = () => {
   }, [step]);
 
   return (
-    <IonContent scrollY={false}>
-      <div className='ion-content'>
-        <div style={{ padding: '120px 24px 0 24px', textAlign: 'center' }}>
-          {step === 1 && (
-            <div className='onboarding-form'>
-              <h2 className='onboarding-title'>{t('screen_title_earn')}</h2>
-              <p className='onboarding-subtitle'>{t('input_phone_label')}</p>
-              <div className='onboarding-phoneNumber'>
-                <span style={{ marginRight: 8, fontSize: 22 }}>+996</span>
-                <IonInput
-                  type='tel'
-                  placeholder='XXXXXXXXX'
-                  value={phone}
-                  onIonInput={(e) => {
-                    const raw = (e.detail.value || '').replace(/\D/g, '');
-                    if (raw.length > 0 && raw[0] === '0') return;
-                    setPhone(raw.slice(0, 9));
-                  }}
-                  maxlength={9}
-                  style={{
-                    fontSize: 22,
-                    padding: 8,
-                    borderRadius: 4,
-                    width: 140,
-                  }}
-                />
-              </div>
-              <IonItem style={{ width: '100%' }}>
-                <IonCheckbox
-                  className='onboarding-checkbox'
-                  checked={agree}
-                  onIonChange={(e) => setAgree(e.detail.checked)}
-                  labelPlacement='end'
-                >
-                  Согласен с условиями{' '}
-                  <a
-                    href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.pdf'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{
-                      textDecoration: 'underline',
-                      color: '#1976d2',
-                      marginLeft: 4,
-                      whiteSpace: 'break-spaces',
-                    }}
-                  >
-                    публичной оферты
-                  </a>{' '}
-                  OA.KG
-                </IonCheckbox>
-              </IonItem>
-              {isSending ? (
-                <p className='onboarding-sms'>{t('sms_disclaimer')}</p>
-              ) : (
-                ''
-              )}
-              {referralId && (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    paddingTop: 16,
-                    gap: 8,
-                  }}
-                >
-                  Вас пригласил:
+    <IonPage>
+      <IonContent scrollY={false}>
+        <div className='ion-content'>
+          <div style={{ padding: '120px 24px 0 24px', textAlign: 'center' }}>
+            {step === 1 && (
+              <div className='onboarding-form'>
+                <h2 className='onboarding-title'>{t('screen_title_earn')}</h2>
+                <p className='onboarding-subtitle'>{t('input_phone_label')}</p>
+                <div className='onboarding-phoneNumber'>
+                  <span style={{ marginRight: 8, fontSize: 22 }}>+996</span>
                   <IonInput
-                    readonly
-                    fill='outline'
-                    value={
-                      referralData?.fullName?.trim()
-                        ? referralData.fullName
-                        : referralData?.phoneNumber
-                    }
+                    type='tel'
+                    placeholder='XXXXXXXXX'
+                    value={phone}
+                    onIonInput={(e) => {
+                      const raw = (e.detail.value || '').replace(/\D/g, '');
+                      if (raw.length > 0 && raw[0] === '0') return;
+                      setPhone(raw.slice(0, 9));
+                    }}
+                    maxlength={9}
                     style={{
-                      height: 40,
-                      minHeight: 20,
-                      marginTop: 8,
+                      fontSize: 22,
+                      padding: 8,
+                      borderRadius: 4,
+                      width: 140,
                     }}
                   />
                 </div>
-              )}
-              {error && (
-                <IonText
-                  color='danger'
-                  style={{ display: 'block', marginBottom: 8 }}
-                >
-                  {error}
-                </IonText>
-              )}
-              <IonButton
-                expand='block'
-                disabled={!phone || !agree || phone.length < 9 || isSending}
-                onClick={handleSendSms}
-                style={{ marginTop: 24 }}
-                className='primary-btn'
-              >
-                {isSending
-                  ? t('sending') || 'Отправка...'
-                  : t('cta_start_earning_1')}
-              </IonButton>
-            </div>
-          )}
-          {step === 2 && (
-            <div className='onboarding-form'>
-              <h2>{t('input_sms_label')}</h2>
-              <IonInputOtp
-                length={6}
-                value={smsCode}
-                onIonInput={(e) => setSmsCode(e.detail.value!)}
-              />
-              <div style={{ marginTop: 16 }}>
-                {t('not_received_code') || 'Не получили код?'}{' '}
-                {secondsLeft > 0 ? (
-                  <span style={{ color: '#888', marginLeft: 8 }}>
-                    Повторная отправка через {secondsLeft} сек.
-                  </span>
-                ) : (
-                  <a
-                    href='#'
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      await handleSendSms();
-                    }}
-                    style={{ color: '#1976d2', cursor: 'pointer' }}
+                <IonItem style={{ width: '100%' }}>
+                  <IonCheckbox
+                    className='onboarding-checkbox'
+                    checked={agree}
+                    onIonChange={(e) => setAgree(e.detail.checked)}
+                    labelPlacement='end'
                   >
-                    {t('resend_sms')}
-                  </a>
+                    Согласен с условиями{' '}
+                    <a
+                      href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.pdf'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      style={{
+                        textDecoration: 'underline',
+                        color: '#1976d2',
+                        marginLeft: 4,
+                        whiteSpace: 'break-spaces',
+                      }}
+                    >
+                      публичной оферты
+                    </a>{' '}
+                    OA.KG
+                  </IonCheckbox>
+                </IonItem>
+                {isSending ? (
+                  <p className='onboarding-sms'>{t('sms_disclaimer')}</p>
+                ) : (
+                  ''
                 )}
-              </div>
-              {error && (
-                <IonText
-                  color='danger'
-                  style={{
-                    display: 'block',
-                    marginBottom: 8,
-                    textAlign: 'center',
-                  }}
+                {referralId && (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      paddingTop: 16,
+                      gap: 8,
+                    }}
+                  >
+                    Вас пригласил:
+                    <IonInput
+                      readonly
+                      fill='outline'
+                      value={
+                        referralData?.fullName?.trim()
+                          ? referralData.fullName
+                          : referralData?.phoneNumber
+                      }
+                      style={{
+                        height: 40,
+                        minHeight: 20,
+                        marginTop: 8,
+                      }}
+                    />
+                  </div>
+                )}
+                {error && (
+                  <IonText
+                    color='danger'
+                    style={{ display: 'block', marginBottom: 8 }}
+                  >
+                    {error}
+                  </IonText>
+                )}
+                <IonButton
+                  expand='block'
+                  disabled={!phone || !agree || phone.length < 9 || isSending}
+                  onClick={handleSendSms}
+                  style={{ marginTop: 24 }}
+                  className='primary-btn'
                 >
-                  {error}
-                </IonText>
-              )}
-              <IonButton
-                expand='block'
-                disabled={smsCode.length < 5 || isVerifying}
-                onClick={handleVerify}
-                style={{ marginTop: 24 }}
-                className='primary-btn'
-              >
-                {isVerifying
-                  ? t('verifying') || 'Проверка...'
-                  : t('cta_start_earning_1')}
-              </IonButton>
-            </div>
-          )}
+                  {isSending
+                    ? t('sending') || 'Отправка...'
+                    : t('cta_start_earning_1')}
+                </IonButton>
+              </div>
+            )}
+            {step === 2 && (
+              <div className='onboarding-form'>
+                <h2>{t('input_sms_label')}</h2>
+                <IonInputOtp
+                  length={6}
+                  value={smsCode}
+                  onIonInput={(e) => setSmsCode(e.detail.value!)}
+                />
+                <div style={{ marginTop: 16 }}>
+                  {t('not_received_code') || 'Не получили код?'}{' '}
+                  {secondsLeft > 0 ? (
+                    <span style={{ color: '#888', marginLeft: 8 }}>
+                      Повторная отправка через {secondsLeft} сек.
+                    </span>
+                  ) : (
+                    <a
+                      href='#'
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        await handleSendSms();
+                      }}
+                      style={{ color: '#1976d2', cursor: 'pointer' }}
+                    >
+                      {t('resend_sms')}
+                    </a>
+                  )}
+                </div>
+                {error && (
+                  <IonText
+                    color='danger'
+                    style={{
+                      display: 'block',
+                      marginBottom: 8,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {error}
+                  </IonText>
+                )}
+                <IonButton
+                  expand='block'
+                  disabled={smsCode.length < 5 || isVerifying}
+                  onClick={handleVerify}
+                  style={{ marginTop: 24 }}
+                  className='primary-btn'
+                >
+                  {isVerifying
+                    ? t('verifying') || 'Проверка...'
+                    : t('cta_start_earning_1')}
+                </IonButton>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </IonContent>
+      </IonContent>
+    </IonPage>
   );
 };
 
