@@ -17,7 +17,7 @@ import identificationCardBack from '../../assets/identificationCard-back.svg';
 import identificationSelfie from '../../assets/identificationSelfie.svg';
 
 import './styles.scss';
-import { setIdentificationImages, setPassportData } from '../../store/index';
+import { setPassportData } from '../../store/index';
 import { useTexts } from '../../context/TextsContext';
 
 const ProfileIdentification = () => {
@@ -83,13 +83,13 @@ const ProfileIdentification = () => {
 
   const onNext = () => {
     if (!files.front || !files.back) return;
-    dispatch(
-      setIdentificationImages({
-        front: files.front,
-        back: files.back,
-        selfie: files.selfie || null,
-      })
-    );
+    // dispatch(
+    //   setIdentificationImages({
+    //     front: files.front,
+    //     back: files.back,
+    //     selfie: files.selfie || null,
+    //   })
+    // );
     ocrCreate({
       documentType: 'passport',
       frontImage: files.front,

@@ -64,7 +64,7 @@ export const api = createApi({
     }),
     getCurrentUser: builder.query<UserMeResponse, void>({
       query: () => ({
-        url: 'https://oa.kg/api/users/me/',
+        url: 'https://oa.kg/api/users/me',
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       }),
@@ -72,7 +72,7 @@ export const api = createApi({
     }),
     getPolicies: builder.query<Policy[], void>({
       query: () => ({
-        url: 'https://oa.kg/api/policies/me/',
+        url: 'https://oa.kg/api/policies/me',
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       }),
@@ -241,6 +241,8 @@ export interface OcrPassportData {
   birthPlace: string;
   personalNumber: string;
   ethnicity: string;
+  series: string;
+  number: string;
 }
 
 export interface OcrResponse {

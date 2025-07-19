@@ -122,6 +122,8 @@ const ProfileIdentificationPassport = () => {
     }
   }, [isError, isSuccess, navigate, reset]);
 
+  console.log(ocrData);
+
   if (isLoading) return <Loader />;
 
   return (
@@ -258,7 +260,7 @@ const ProfileIdentificationPassport = () => {
                 name='documentType'
                 className='passport-input'
                 placeholder='ID'
-                value={ocrData.documentNumber.slice(0, 2) || ''}
+                value={ocrData.series || ''}
                 interface='popover'
               >
                 <IonSelectOption value='ID'>ID</IonSelectOption>
@@ -274,7 +276,7 @@ const ProfileIdentificationPassport = () => {
                 name='documentNumber'
                 className='passport-input'
                 placeholder='2303-04'
-                value={ocrData.documentNumber.slice(2) || ''}
+                value={ocrData.number || ''}
               />
             </div>
           </div>
