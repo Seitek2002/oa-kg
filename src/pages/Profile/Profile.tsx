@@ -122,6 +122,7 @@ const Profile: React.FC = () => {
             />
           </IonAvatar>
           <span className='profile-name'>{fullName || user?.phoneNumber}</span>
+          { fullName && <span className='profile-subname' style={{ marginBottom: 8 }}>{user?.phoneNumber}</span> }
           <span
             className={`profile-status ${
               user?.identificationStatus === 'approved'
