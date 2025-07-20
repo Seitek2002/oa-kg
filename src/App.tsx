@@ -90,7 +90,7 @@ const AppTabs: React.FC = () => {
             window.location.reload();
           }}
         >
-          {lang === 'ky' ? 'Кыргызча' : 'Русский'}
+          {lang === 'ky' ? 'Русский' : 'Кыргызча'}
         </span>
       </IonHeader>
       <IonTabs>
