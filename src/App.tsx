@@ -70,9 +70,9 @@ const AppTabs: React.FC = () => {
   const hideTabBar =
     location.pathname === '/a/onboarding' || location.pathname === '/a/auth';
 
-  const [lang, setLang] = React.useState<'kg' | 'ru'>(() => {
+  const [lang, setLang] = React.useState<'ky' | 'ru'>(() => {
     const stored = localStorage.getItem('lang');
-    return stored === 'ru' || stored === 'kg' ? stored : 'kg';
+    return stored === 'ru' || stored === 'ky' ? stored : 'ky';
   });
 
   return (
@@ -84,13 +84,13 @@ const AppTabs: React.FC = () => {
           className='text-[#000] absolute right-0 top-0 cursor-pointer'
           style={{ background: 'transparent', padding: 8 }}
           onClick={() => {
-            const newLang = lang === 'kg' ? 'ru' : 'kg';
+            const newLang = lang === 'ky' ? 'ru' : 'ky';
             localStorage.setItem('lang', newLang);
             setLang(newLang);
             window.location.reload();
           }}
         >
-          {lang === 'kg' ? 'Кыргызча' : 'Русский'}
+          {lang === 'ky' ? 'Кыргызча' : 'Русский'}
         </span>
       </IonHeader>
       <IonTabs>
