@@ -13,6 +13,7 @@ import {
   WithdrawalMethod,
   useLazyGetOperationsQuery,
   Operation,
+  useCreateWithdrawalRequestMutation,
 } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import { useGetCurrentUserQuery } from '../../services/api';
@@ -40,6 +41,7 @@ const Withdraw: React.FC = () => {
   const { data: user } = useGetCurrentUserQuery();
   const [getOperations] = useLazyGetOperationsQuery();
   const [getWithdrawalMethods] = useLazyGetWithdrawalMethodsQuery();
+  const [requestMoney] = useCreateWithdrawalRequestMutation();
 
   const defaultNumber = useMemo(
     () => user?.phoneNumber.slice(4) || '',
@@ -47,7 +49,11 @@ const Withdraw: React.FC = () => {
   );
 
   const [phone, setPhone] = useState('');
-  const [selectedBank, setSelectedBank] = useState('');
+  const [selectedBank, setSelectedBank] = useState<WithdrawalMethod>({
+    id: 0,
+    name: '',
+    image: '',
+  });
   const [amount, setAmount] = useState('');
   const [history, setHistory] = useState<Operation[]>(JSON.parse(localHistory));
   const [data, setData] = useState<WithdrawalMethod[]>(JSON.parse(localData));
@@ -93,19 +99,26 @@ const Withdraw: React.FC = () => {
       return;
     }
 
-    if (user?.identificationStatus !== 'verified') {
+    if (user?.identificationStatus !== 'approved') {
       navigate.push('/a/withdraw/identification');
       return;
+    }
+
+    try {
+      const res = requestMoney({
+        amount: amt + '',
+        method: selectedBank.id,
+        requisite: '996' + defaultNumber,
+      }).unwrap();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
     }
     navigate.push('/a/withdraw/info', 'forward', 'replace');
   };
 
   useEffect(() => {
     handleFetchHistory();
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
     handleFetch();
     // eslint-disable-next-line
   }, []);
@@ -113,7 +126,7 @@ const Withdraw: React.FC = () => {
   useEffect(() => {
     // Выбрать первый банк по умолчанию после загрузки
     if (data.length > 0 && !selectedBank) {
-      setSelectedBank(data[0].name);
+      setSelectedBank(data[0]);
     }
   }, [data, selectedBank]);
 
@@ -175,14 +188,14 @@ const Withdraw: React.FC = () => {
 
           <div className='withdraw-label'>Куда</div>
           <div className='withdraw-bank-list'>
-            {data.map((bank) => (
+            {data?.map((bank) => (
               <div
                 key={bank.id}
                 className={
                   'withdraw-bank-item' +
-                  (selectedBank === bank.name ? ' selected' : '')
+                  (selectedBank.id === bank.id ? ' selected' : '')
                 }
-                onClick={() => setSelectedBank(bank.name)}
+                onClick={() => setSelectedBank(bank)}
               >
                 <span className='withdraw-bank-radio'></span>
                 <img

@@ -16,6 +16,7 @@ const Finances: React.FC = () => {
 
   const handleFetch = async () => {
     const res = await getOperations().unwrap();
+    console.log(res);
     CompareLocaldata({
       oldData: localData,
       newData: res,

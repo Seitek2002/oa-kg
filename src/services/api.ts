@@ -122,6 +122,24 @@ export const api = createApi({
         };
       },
     }),
+    createWithdrawalRequest: builder.mutation<
+      unknown,
+      { method: number; requisite: string; amount: string }
+    >({
+      query: ({ method, requisite, amount }) => ({
+        url: 'https://oa.kg/api/withdrawal-requests/',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'accept': 'application/json',
+        },
+        body: new URLSearchParams({
+          method: String(method),
+          requisite,
+          amount,
+        }).toString(),
+      }),
+    }),
     getWithdrawalMethods: builder.query<WithdrawalMethod[], void>({
       query: () => ({
         url: 'https://oa.kg/api/withdrawal-methods/',
@@ -187,6 +205,7 @@ export const {
   useLazyGetPageTextsQuery,
   useGetQaListQuery,
   useUsersNameRetrieveQuery,
+  useCreateWithdrawalRequestMutation,
 } = api;
 
 // Типизация ответа для /api/users/me/
