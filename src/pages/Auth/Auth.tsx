@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   IonContent,
   IonButton,
@@ -16,8 +16,6 @@ import {
 } from '../../services/api';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { useHistory, useLocation } from 'react-router-dom';
-
-// import '../../components/OnboardingModal.css';
 import './style.scss';
 import { useTexts } from '../../context/TextsContext';
 
@@ -38,8 +36,7 @@ const Auth: React.FC = () => {
   const { t } = useTexts();
   const history = useHistory();
 
-  // Редирект если уже авторизован
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');
       if (tokenObj.access) {
@@ -48,9 +45,9 @@ const Auth: React.FC = () => {
     } catch (e) {
       // ignore JSON parse error
     }
-    // eslint-disable-next-line
   }, []);
-  const [step, setStep] = useState(1); // 1: номер, 2: код
+
+  const [step, setStep] = useState(1);
   const [phone, setPhone] = useState('');
   const [secondsLeft, setSecondsLeft] = useState<number>(() => {
     const saved = localStorage.getItem('auth_secondsLeft');
@@ -62,27 +59,39 @@ const Auth: React.FC = () => {
     }
     return 0;
   });
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // Получаем id из pathname
-  const referralId = pathname.split('/')[3];
-  // Делаем запрос, если есть id
-  const { data: referralData } = useUsersNameRetrieveQuery(
-    referralId ? Number(referralId) : skipToken
-  );
   const [agree, setAgree] = useState(false);
   const [smsCode, setSmsCode] = useState('');
   const [error, setError] = useState('');
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const phoneInputRef = useRef<HTMLIonInputElement>(null);
+  const otpInputRef = useRef<any>(null);
+
+  const referralId = pathname.split('/')[3];
+  const { data: referralData } = useUsersNameRetrieveQuery(
+    referralId ? Number(referralId) : skipToken
+  );
+
   const [sendSms, { isLoading: isSending }] = useSendSmsMutation();
   const [verifySms, { isLoading: isVerifying }] = useVerifySmsMutation();
 
-  // Автоматический вход при вводе 6-значного кода
-  React.useEffect(() => {
+  useEffect(() => {
     if (smsCode.length === 6 && !isVerifying) {
       handleVerify();
     }
-    // eslint-disable-next-line
   }, [smsCode, isVerifying]);
+
+  useEffect(() => {
+    if (step === 1) {
+      setTimeout(() => {
+        phoneInputRef.current?.setFocus();
+      }, 300);
+    } else if (step === 2) {
+      setTimeout(() => {
+        otpInputRef.current?.setFocus?.();
+      }, 300);
+    }
+  }, [step]);
 
   const handleSendSms = async () => {
     setError('');
@@ -124,7 +133,6 @@ const Auth: React.FC = () => {
       if (data.access) {
         localStorage.setItem('access', JSON.stringify(data));
       }
-      // После успешной авторизации можно редиректить или закрывать модалку
       history.replace('/a/home');
     } catch (e: unknown) {
       if (isErrorWithData(e) && e.data) {
@@ -135,8 +143,7 @@ const Auth: React.FC = () => {
     }
   };
 
-  // Таймер
-  React.useEffect(() => {
+  useEffect(() => {
     if (secondsLeft > 0 && !timerRef.current) {
       timerRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
@@ -159,8 +166,7 @@ const Auth: React.FC = () => {
     };
   }, [secondsLeft]);
 
-  // Сброс таймера при переходе на шаг 1
-  React.useEffect(() => {
+  useEffect(() => {
     if (step === 1) {
       setSecondsLeft(0);
       localStorage.removeItem('auth_secondsLeft');
@@ -180,6 +186,7 @@ const Auth: React.FC = () => {
                 <div className='onboarding-phoneNumber'>
                   <span style={{ marginRight: 8, fontSize: 22 }}>+996</span>
                   <IonInput
+                    ref={phoneInputRef}
                     type='tel'
                     placeholder='XXXXXXXXX'
                     value={phone}
@@ -276,6 +283,7 @@ const Auth: React.FC = () => {
               <div className='onboarding-form'>
                 <h2>{t('input_sms_label')}</h2>
                 <IonInputOtp
+                  ref={otpInputRef}
                   length={6}
                   value={smsCode}
                   onIonInput={(e) => setSmsCode(e.detail.value!)}
