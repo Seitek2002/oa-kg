@@ -55,6 +55,8 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
     handleFetch();
   }, []);
 
+  console.log(data);
+
   return (
     <IonCard
       className='card-block team-card'
