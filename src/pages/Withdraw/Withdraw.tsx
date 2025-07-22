@@ -182,6 +182,7 @@ const Withdraw: React.FC = () => {
             className='withdraw-input'
             value={amount}
             type='number'
+            mode='md'
             placeholder='Введите сумму'
             onIonInput={(e) => setAmount(e.detail.value!)}
             max={user?.balance || 0}
