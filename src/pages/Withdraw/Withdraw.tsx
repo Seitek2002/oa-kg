@@ -242,9 +242,11 @@ const Withdraw: React.FC = () => {
               <div className={`withdraw-history-status ${item.status}`}>
                 Статус: <span>{item.status}</span>
               </div>
-              <div className='withdraw-history-info'>
-                Комментарий: {item.comment}
-              </div>
+              {item.comment && (
+                <div className='withdraw-history-info'>
+                  Комментарий: {item.comment}
+                </div>
+              )}
             </div>
           ))}
         </div>

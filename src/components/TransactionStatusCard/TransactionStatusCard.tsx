@@ -8,10 +8,11 @@ import {
   IonImg,
 } from '@ionic/react';
 import { timeOutline } from 'ionicons/icons';
+import { useTexts } from '../../context/TextsContext';
+
 import clock from '../../assets/clock-time.svg';
 
 import './styles.scss';
-import { useTexts } from '../../context/TextsContext';
 
 interface ITransactionStatusCardProps {
   type: 'withdrawal' | 'referral' | 'osago';
@@ -109,18 +110,28 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
         )}
         {isPending && (
           <p className='transactionDetails-item'>
-            {t('withdraw_detail_2')}: <span>{amountDisplay} {t('balance_currency') || 'сом'}</span>
+            {t('withdraw_detail_2')}:{' '}
+            <span>
+              {amountDisplay} {t('balance_currency') || 'сом'}
+            </span>
           </p>
         )}
         {isPending && (
           <p className='transactionDetails-item status-item'>
-            {t('withdraw_detail_3')}: <span className='status'>{t('pending_status') || 'На рассмотрении'}</span>
+            {t('withdraw_detail_3')}:{' '}
+            <span className='status'>
+              {t('pending_status') || 'На рассмотрении'}
+            </span>
           </p>
         )}
-        <p className='transactionDetails-item'>{t('withdraw_detail_4') || 'Комментарии:'}</p>
-        <div className='transactionDetails-comments'>
-          {comments || t('withdraw_section')}
-        </div>
+        {comments && (
+          <>
+            <p className='transactionDetails-item'>
+              {t('withdraw_detail_4') || 'Комментарии:'}
+            </p>
+            <div className='transactionDetails-comments'>{comments}</div>
+          </>
+        )}
       </IonCardContent>
     </IonCard>
   );
