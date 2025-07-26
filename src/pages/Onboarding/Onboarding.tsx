@@ -41,6 +41,13 @@ const Onboarding: React.FC = () => {
   const swiperRef = useRef<SwiperCore>(null);
   const { t } = useTexts();
 
+  // Redirect if onboarding was already seen
+  React.useEffect(() => {
+    if (localStorage.getItem('onboardingSeen') === 'true') {
+      history.replace('/a/auth');
+    }
+  }, [history]);
+
   const renderPagination = () => (
     <div className='onboarding-pagination'>
       {slideKeys.map((_, idx: number) => (
@@ -56,6 +63,7 @@ const Onboarding: React.FC = () => {
     if (currentSlide < slideKeys.length - 1) {
       swiperRef.current?.slideNext();
     } else {
+      localStorage.setItem('onboardingSeen', 'true');
       history.push('/a/auth');
     }
   };
@@ -116,7 +124,14 @@ const Onboarding: React.FC = () => {
           >
             {t('cta_start_earning_1')}
           </IonButton>
-          <IonButton fill='clear' expand='block' onClick={() => history.push('/a/auth')}>
+          <IonButton
+            fill='clear'
+            expand='block'
+            onClick={() => {
+              localStorage.setItem('onboardingSeen', 'true');
+              history.push('/a/auth');
+            }}
+          >
             {t('btn_skip')}
           </IonButton>
         </div>

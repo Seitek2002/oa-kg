@@ -36,6 +36,7 @@ import WithdrawIdentification from './pages/WithdrawIdentification/WithdrawIdent
 import WithdrawInfo from './pages/WithdrawInfo/WithdrawInfo';
 import Onboarding from './pages/Onboarding/Onboarding';
 import Auth from './pages/Auth/Auth';
+import AuthVerify from './pages/Auth/AuthVerify';
 import Finances from './pages/Finances';
 import InstructionAccident from './pages/InstructionAccident/InstructionAccident';
 import MyFaqPage from './pages/FaqPage/FaqPage';
@@ -70,6 +71,16 @@ const AppTabs: React.FC = () => {
   const hideTabBar =
     location.pathname === '/a/onboarding' || location.pathname === '/a/auth';
 
+  // Глобальный редирект на Onboarding при первом заходе
+  React.useEffect(() => {
+    if (
+      localStorage.getItem('onboardingSeen') !== 'true' &&
+      location.pathname !== '/a/onboarding'
+    ) {
+      window.location.replace('/a/onboarding');
+    }
+  }, [location.pathname]);
+
   const [lang, setLang] = React.useState<'ky' | 'ru'>(() => {
     const stored = localStorage.getItem('lang');
     return stored === 'ru' || stored === 'ky' ? stored : 'ky';
@@ -103,6 +114,9 @@ const AppTabs: React.FC = () => {
           </Route>
           <Route exact path='/a/auth/:id'>
             <Auth />
+          </Route>
+          <Route exact path='/a/auth/verify'>
+            <AuthVerify />
           </Route>
           <Route exact path='/a/home' component={Home} />
           <Route exact path='/a/osago' component={Osago} />
