@@ -6,12 +6,10 @@ import {
   IonCheckbox,
   IonText,
   IonInput,
-  IonInputOtp,
   IonPage,
 } from '@ionic/react';
 import {
   useSendSmsMutation,
-  useVerifySmsMutation,
   useUsersNameRetrieveQuery,
 } from '../../services/api';
 import { skipToken } from '@reduxjs/toolkit/query';
