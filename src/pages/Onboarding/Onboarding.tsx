@@ -18,19 +18,19 @@ const slideKeys = [
   {
     image: img1,
     titleKey: 'promo_title_1',
-    subtitleKey: 'bonus_10_percent',
+    subtitleKey: 'earn_10_percent',
     extraKey: null,
   },
   {
     image: img2,
     titleKey: 'promo_title_2',
-    subtitleKey: 'bonus_5_percent',
+    subtitleKey: 'earn_10_percent',
     extraKey: null,
   },
   {
     image: img3,
     titleKey: 'promo_title_3',
-    subtitleKey: 'bonus_5_percent',
+    subtitleKey: '',
     extraKey: null, // Можно добавить отдельный ключ, если появится в API
   },
 ];
@@ -88,7 +88,7 @@ const Onboarding: React.FC = () => {
                   src={slide.image}
                   alt=''
                   style={{
-                    width: '100%',
+                    width: '80%',
                     maxHeight: 200,
                     objectFit: 'contain',
                   }}
