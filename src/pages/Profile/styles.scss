@@ -38,13 +38,19 @@
     position: relative;
     padding-left: 16px;
     font-size: 12px;
-    &.identified {
+    &.approved {
       color: #1cbe93;
       &:before {
         background-color: #1cbe93;
       }
     }
-    &.not-identified {
+    &.pending {
+      color: #0072de;
+      &:before {
+        background-color: #0072de;
+      }
+    }
+    &.not_submitted {
       color: #ff4d4f;
       &:before {
         background-color: #ff4d4f;

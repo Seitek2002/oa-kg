@@ -122,17 +122,19 @@ const Profile: React.FC = () => {
             />
           </IonAvatar>
           <span className='profile-name'>{fullName || user?.phoneNumber}</span>
-          { fullName && <span className='profile-subname' style={{ marginBottom: 8 }}>{user?.phoneNumber}</span> }
+          {fullName && (
+            <span className='profile-subname' style={{ marginBottom: 8 }}>
+              {user?.phoneNumber}
+            </span>
+          )}
           <span
-            className={`profile-status ${
-              user?.identificationStatus === 'approved'
-                ? 'identified'
-                : 'not-identified'
-            }`}
+            className={`profile-status ${user?.identificationStatus}`}
           >
-            {user?.identificationStatus === 'approved'
-              ? t('user_status_identified')
-              : t('user_status_not_identified')}
+            {user?.identificationStatus === 'approved' &&
+              t('user_status_identified')}
+            {user?.identificationStatus === 'not_submitted' &&
+              t('user_status_not_identified')}
+            {user?.identificationStatus === 'pendings' && 'На рассмотрении'}
           </span>
         </div>
         <div className='profile-actions'>
