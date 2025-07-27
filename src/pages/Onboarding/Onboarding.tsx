@@ -24,7 +24,7 @@ const slideKeys = [
   {
     image: img2,
     titleKey: 'promo_title_2',
-    subtitleKey: 'earn_10_percent',
+    subtitleKey: 'bonus_5_percent',
     extraKey: null,
   },
   {
