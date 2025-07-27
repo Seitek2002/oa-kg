@@ -134,7 +134,7 @@ const Profile: React.FC = () => {
               t('user_status_identified')}
             {user?.identificationStatus === 'not_submitted' &&
               t('user_status_not_identified')}
-            {user?.identificationStatus === 'pendings' && 'На рассмотрении'}
+            {user?.identificationStatus === 'pending' && 'На рассмотрении'}
           </span>
         </div>
         <div className='profile-actions'>
