@@ -30,7 +30,7 @@ const slideKeys = [
   {
     image: img3,
     titleKey: 'promo_title_3',
-    subtitleKey: '',
+    subtitleKey: 'license',
     extraKey: null, // Можно добавить отдельный ключ, если появится в API
   },
 ];
