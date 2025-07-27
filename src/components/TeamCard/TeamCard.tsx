@@ -70,13 +70,13 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               <div className='stat-card'>
                 <p className='stat-title'>{t('agents_count_label')}</p>
                 <p className='stat-number'>{data?.agentsCount}</p>
-                <p className='stat-info'>Всего агентов {data.totalAgents}</p>
+                <p className='stat-info'>{t('team_total_desc')}</p>
               </div>
             </IonCol>
             <IonCol size='6'>
               <div className='stat-card'>
                 <p className='stat-title'>{t('income_agents_label')}</p>
-                <p className='stat-number'>{+data?.agentsIncome}</p>
+                <p className='stat-number'>{Math.round(+data?.agentsIncome)}</p>
                 <p className='stat-info'>
                   {t('stat_desc_4')}
                 </p>
@@ -91,7 +91,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               fill='solid'
               expand='block'
               onClick={() => {
-                window.open('/a/invite', '_blank');
+                history.push('/a/invite');
               }}
             >
               <IonIcon slot='start' icon={personAddOutline} />
