@@ -64,7 +64,7 @@ const TransactionStatusCard: FC<ITransactionStatusCardProps> = ({
   const formattedTimestamp = formatDate(timestamp);
 
   return (
-    <IonCard className='transactionStatusCard'>
+    <IonCard className='transactionStatusCard' mode='md'>
       {isPending && (
         <IonCardHeader className='transactionStatusCard-header'>
           <IonImg className='clock' src={clock} alt='Clock' />

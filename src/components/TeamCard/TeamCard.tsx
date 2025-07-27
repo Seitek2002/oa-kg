@@ -76,7 +76,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
             <IonCol size='6'>
               <div className='stat-card'>
                 <p className='stat-title'>{t('income_agents_label')}</p>
-                <p className='stat-number'>{Math.round(+data?.agentsIncome)}</p>
+                <p className='stat-number'>{Math.floor(+data?.agentsIncome)}</p>
                 <p className='stat-info'>
                   {t('stat_desc_4')}
                 </p>
@@ -97,7 +97,7 @@ const TeamCard = ({ showButton }: { showButton?: boolean }) => {
               <IonIcon slot='start' icon={personAddOutline} />
               {t('btn_invite_agent')}
             </IonButton>
-            <p className='earn-percent'>{t('bonus_10_percent')}</p>
+            <p className='earn-percent'>{t('bonus_5_percent')}</p>
           </>
         )}
       </IonCardContent>

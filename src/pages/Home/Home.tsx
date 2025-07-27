@@ -81,7 +81,7 @@ const Home: FC = () => {
                 <IonCol size='6'>
                   <div className='stat-card'>
                     <p className='stat-title'>{t('income_label')}</p>
-                    <p className='stat-number'>{+data?.osagoIncome}</p>
+                    <p className='stat-number'>{Math.floor(+data?.osagoIncome)}</p>
                     <p className='stat-info'>{t('stat_desc_2')}</p>
                   </div>
                 </IonCol>
