@@ -90,11 +90,14 @@ label.withdraw-input {
 }
 
 .withdraw-input {
+  color: #171717;
+  background: #f5f5f5;
   --background: #f5f5f5;
   --padding-start: 16px;
   --padding-left: 16px;
   --padding-end: 16px;
   --border-radius: 12px;
+  --color: #171717;
 }
 
 .withdraw-bank-list {
