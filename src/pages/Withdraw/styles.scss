@@ -79,14 +79,20 @@
   justify-content: space-between;
 }
 
-.withdraw-input {
-  background: #f5f5f5;
-  font-size: 16px;
+label.withdraw-input {
+  padding-top: 0;
+  padding-bottom: 0;
   margin-bottom: 12px;
-  color: #171717;
   border-radius: 12px;
+  font-size: 16px;
+  color: #171717;
+  height: 10px;
+}
+
+.withdraw-input {
   --background: #f5f5f5;
   --padding-start: 16px;
+  --padding-left: 16px;
   --padding-end: 16px;
   --border-radius: 12px;
 }
