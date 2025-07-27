@@ -155,7 +155,7 @@ const Withdraw: React.FC = () => {
               onIonChange={(e) => setPhone(e.detail.value!)}
               readonly
               disabled
-              mode='md'
+              mode='ios'
               style={{
                 background: 'transparent',
                 border: 'none',
