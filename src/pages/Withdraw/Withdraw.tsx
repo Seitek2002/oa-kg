@@ -164,7 +164,7 @@ const Withdraw: React.FC = () => {
                 fontWeight: 400,
                 padding: 0,
                 width: '100%',
-                color: '#222',
+                color: '#000',
               }}
             />
           </div>
@@ -186,6 +186,9 @@ const Withdraw: React.FC = () => {
             placeholder='Введите сумму'
             onIonInput={(e) => setAmount(e.detail.value!)}
             max={user?.balance || 0}
+            style={{
+              padding: '0 16px',
+            }}
           />
 
           <div className='withdraw-label'>Куда</div>
