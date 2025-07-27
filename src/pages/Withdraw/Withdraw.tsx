@@ -178,20 +178,18 @@ const Withdraw: React.FC = () => {
               Доступно {user?.balance} сом
             </span>
           </div>
-          <label
-            className='withdraw-input'
-            style={{
-              padding: '0 16px',
-            }}
-          >
+          <label className='withdraw-input-label'>
             <IonInput
+              className='withdraw-input'
               value={amount}
-            className='withdraw-input'
               type='number'
               mode='md'
               placeholder='Введите сумму'
               onIonInput={(e) => setAmount(e.detail.value!)}
               max={user?.balance || 0}
+              style={{
+                padding: '0 16px',
+              }}
             />
           </label>
 
