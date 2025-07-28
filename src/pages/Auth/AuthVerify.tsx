@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   IonContent,
-  IonButton,
   IonText,
   IonInputOtp,
   IonPage,
 } from '@ionic/react';
+import GaIonButton from '../../components/GaIonButton';
 import { useVerifySmsMutation, useUsersNameRetrieveQuery } from '../../services/api';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
@@ -170,17 +170,18 @@ const AuthVerify: React.FC = () => {
                   {error}
                 </IonText>
               )}
-              <IonButton
+              <GaIonButton
                 expand='block'
                 disabled={smsCode.length < 5 || isVerifying}
                 onClick={handleVerify}
                 style={{ marginTop: 24 }}
                 className='primary-btn'
+                gaEventName='auth_verify_sms'
               >
                 {isVerifying
                   ? t('verifying') || 'Проверка...'
                   : t('cta_start_earning_1')}
-              </IonButton>
+              </GaIonButton>
             </div>
           </div>
         </div>

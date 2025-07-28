@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { IonContent, IonButton, IonText } from '@ionic/react';
+import { IonContent, IonText } from '@ionic/react';
+import GaIonButton from '../../components/GaIonButton';
 import { useHistory } from 'react-router-dom';
 import SwiperCore from 'swiper';
 
@@ -116,24 +117,26 @@ const Onboarding: React.FC = () => {
           {renderPagination()}
         </div>
         <div style={{ background: 'white', width: '100%', paddingBottom: '40px' }}>
-          <IonButton
+          <GaIonButton
             expand='block'
             className='primary-btn'
             onClick={handleStart}
             style={{ marginTop: 32, fontSize: 16 }}
+            gaEventName='onboarding_start'
           >
             {t('cta_start_earning_1')}
-          </IonButton>
-          <IonButton
+          </GaIonButton>
+          <GaIonButton
             fill='clear'
             expand='block'
             onClick={() => {
               localStorage.setItem('onboardingSeen', 'true');
               history.push('/a/auth');
             }}
+            gaEventName='onboarding_skip'
           >
             {t('btn_skip')}
-          </IonButton>
+          </GaIonButton>
         </div>
       </div>
     </IonContent>

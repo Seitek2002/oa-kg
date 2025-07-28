@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  IonButton,
   IonCard,
   IonCardContent,
   IonCol,
@@ -10,6 +9,7 @@ import {
   IonPage,
   IonRow,
 } from '@ionic/react';
+import GaIonButton from '../../components/GaIonButton';
 import { searchOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { useLazyGetPoliciesQuery, Policy } from '../../services/api';
@@ -133,7 +133,7 @@ const Osago: React.FC = () => {
               </span>
             </div>
             <div className='policy-buttons'>
-              <IonButton
+              <GaIonButton
                 expand='block'
                 fill='outline'
                 color='primary'
@@ -142,23 +142,25 @@ const Osago: React.FC = () => {
                 href={policy.policyPdfUrl}
                 target='_blank'
                 rel='noopener noreferrer'
+                gaEventName='osago_download_pdf'
               >
                 {t('btn_download')}
-              </IonButton>
+              </GaIonButton>
             </div>
           </div>
         ))}
 
         {/* Кнопка оформить ОСАГО */}
         <div className='bottom-button-wrapper'>
-          <IonButton
+          <GaIonButton
             expand='block'
             className='primary-btn'
             onClick={() => history.push('/a/referral')}
+            gaEventName='osago_referral'
           >
             <img src={car} alt={t('ofo_title')} />
             {t('ofo_title')}
-          </IonButton>
+          </GaIonButton>
 
           <div className='earn-percent'>{t('earn_10_percent')}</div>
         </div>

@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useTexts } from '../../context/TextsContext';
 import {
-  IonButton,
   IonCard,
   IonCardContent,
   IonCol,
@@ -10,6 +9,7 @@ import {
   IonPage,
   IonRow,
 } from '@ionic/react';
+import GaIonButton from '../../components/GaIonButton';
 import { helpCircleOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import IncomeCard from '../../components/IncomeCard/IncomeCard';
@@ -87,15 +87,16 @@ const Home: FC = () => {
                 </IonCol>
               </IonRow>
             </IonGrid>
-            <IonButton
+            <GaIonButton
               className='primary-btn'
               expand='block'
               fill='solid'
               onClick={() => history.push('/a/referral')}
+              gaEventName='home_referral'
             >
               <IonIcon slot='start' icon={car} />
               {t('ofo_title')}
-            </IonButton>
+            </GaIonButton>
             <p className='earn-percent'>{t('earn_10_percent')}</p>
           </IonCardContent>
         </IonCard>
@@ -103,7 +104,7 @@ const Home: FC = () => {
         {/* Моя команда */}
         <TeamCard showButton={true} />
 
-        <IonButton
+        <GaIonButton
           onClick={() => {
             window.open(
               'https://t.me/+ZMp1eTcT_4Y2MGEy',
@@ -114,10 +115,11 @@ const Home: FC = () => {
           className='outlined-btn'
           expand='block'
           fill='outline'
+          gaEventName='home_help'
         >
           <IonIcon slot='start' icon={helpCircleOutline} />
           {t('btn_help')}
-        </IonButton>
+        </GaIonButton>
       </div>
     </IonPage>
   );

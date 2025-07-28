@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   IonContent,
-  IonButton,
   IonItem,
   IonCheckbox,
   IonText,
   IonInput,
   IonPage,
 } from '@ionic/react';
+import GaIonButton from '../../components/GaIonButton';
 import {
   useSendSmsMutation,
   useUsersNameRetrieveQuery,
@@ -216,17 +216,18 @@ const Auth: React.FC = () => {
                   {error}
                 </IonText>
               )}
-              <IonButton
+              <GaIonButton
                 expand='block'
                 disabled={!phone || !agree || phone.length < 9 || isSending}
                 onClick={handleSendSms}
                 style={{ marginTop: 24 }}
                 className='primary-btn'
+                gaEventName='auth_send_sms'
               >
                 {isSending
                   ? t('sending') || 'Отправка...'
                   : t('cta_start_earning_1')}
-              </IonButton>
+              </GaIonButton>
             </div>
           </div>
         </div>
