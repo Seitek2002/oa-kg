@@ -1,25 +1,30 @@
 import { IonPage, IonButton } from '@ionic/react';
-
-import { Operation } from '../../services/api';
+import { useAppSelector } from '../../hooks/useAppSelector';
 import TransactionStatusCard from '../../components/TransactionStatusCard/TransactionStatusCard';
-
 import './styles.scss';
 
 const WithdrawInfo = () => {
-  const transaction: Operation = {
-    type: 'withdrawal',
-    status: 'paid',
-    id: '1234',
-    createdAt: '12:00 01.06.2025',
-    amountDisplay: '1000',
-    requisiteDisplay: '+996555112233 - BakAi',
+  const transaction = useAppSelector((state) => state.transaction);
+
+  // Преобразование для TransactionStatusCard (если нужно)
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const createdAt = `${pad(now.getHours())}:${pad(now.getMinutes())} ${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}`;
+
+  const cardData = {
+    type: 'withdrawal' as const,
+    status: 'paid' as const,
+    id: transaction.id ? String(transaction.id) : '',
+    createdAt,
+    amountDisplay: Math.floor(+transaction.amount),
+    requisiteDisplay: transaction.requisite,
   };
 
   return (
     <IonPage className='withdraw-info-page'>
       <TransactionStatusCard
-        {...transaction}
-        timestamp={transaction.createdAt}
+        {...cardData}
+        timestamp={cardData.createdAt}
       />
       <IonButton
         expand='block'

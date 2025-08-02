@@ -15,6 +15,8 @@ import {
   Operation,
   useCreateWithdrawalRequestMutation,
 } from '../../services/api';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { setTransaction } from '../../store/index';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import { useGetCurrentUserQuery } from '../../services/api';
 
@@ -34,6 +36,7 @@ function formatDate(dateStr: string) {
 
 const Withdraw: React.FC = () => {
   const navigate = useIonRouter();
+  const dispatch = useAppDispatch();
 
   const localHistory = localStorage.getItem('operations') || '[]';
   const localData = localStorage.getItem('withdrawalMethods') || '[]';
@@ -82,7 +85,7 @@ const Withdraw: React.FC = () => {
     });
   };
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     const balance = Number(user?.balance ?? 0);
     const amt = Number(amount);
 
@@ -105,12 +108,12 @@ const Withdraw: React.FC = () => {
     }
 
     try {
-      const res = requestMoney({
+      const res = await requestMoney({
         amount: amt + '',
         method: selectedBank.id,
         requisite: '996' + defaultNumber,
       }).unwrap();
-      console.log(res);
+      dispatch(setTransaction(res as any));
     } catch (error) {
       console.log(error);
     }

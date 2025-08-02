@@ -18,7 +18,7 @@ interface ITransactionStatusCardProps {
   type: 'withdrawal' | 'referral' | 'osago';
   id: string;
   timestamp: string;
-  amountDisplay: string;
+  amountDisplay: number;
   status: 'rejected' | 'paid' | 'created' | '';
   requisiteDisplay?: string;
   comments?: string;

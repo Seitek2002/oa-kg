@@ -16,7 +16,6 @@ const Finances: React.FC = () => {
 
   const handleFetch = async () => {
     const res = await getOperations().unwrap();
-    console.log(res);
     CompareLocaldata({
       oldData: localData,
       newData: res,
@@ -42,11 +41,25 @@ const Finances: React.FC = () => {
           </div>
         )}
         {data.map((op) => {
+          // Преобразование типов для TransactionStatusCard
+          const cardData = {
+            type: (op.type === 'withdrawal' || op.type === 'referral' || op.type === 'osago'
+              ? op.type
+              : 'withdrawal') as 'withdrawal' | 'referral' | 'osago',
+            id: String(op.id),
+            timestamp: op.createdAt || '',
+            amountDisplay: Number(op.amountDisplay ?? 0),
+            status:
+              op.status === 'rejected' || op.status === 'paid' || op.status === 'created'
+                ? op.status as 'rejected' | 'paid' | 'created'
+                : '' as '',
+            requisiteDisplay: op.requisiteDisplay ?? '',
+            comments: op.comment ?? '',
+          };
           return (
             <TransactionStatusCard
-              key={op.id}
-              {...op}
-              timestamp={op.createdAt}
+              key={cardData.id}
+              {...cardData}
             />
           );
         })}
