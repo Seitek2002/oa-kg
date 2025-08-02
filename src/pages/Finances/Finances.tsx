@@ -40,7 +40,7 @@ const Finances: React.FC = () => {
             {t('no_operations') || 'Нет операций'}
           </div>
         )}
-        {data.map((op) => {
+        {data.map((op, idx) => {
           // Преобразование типов для TransactionStatusCard
           const cardData = {
             type: (op.type === 'withdrawal' || op.type === 'referral' || op.type === 'osago'
@@ -58,7 +58,7 @@ const Finances: React.FC = () => {
           };
           return (
             <TransactionStatusCard
-              key={cardData.id}
+              key={idx}
               {...cardData}
             />
           );
