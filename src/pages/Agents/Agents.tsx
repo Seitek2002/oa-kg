@@ -54,56 +54,59 @@ const Agents: React.FC = () => {
 
   return (
     <IonPage className='agents-page'>
-      <div className='search-bar'>
-        <IonIcon icon={searchOutline} className='search-icon' />
-        <IonInput
-          placeholder={t('search_section')}
-          className='search-input'
-          value={searchTerm}
-          onIonInput={(e) =>
-            setSearchTerm((e.detail.value || '').toLowerCase())
-          }
-        />
-      </div>
-
-      <TeamCard />
-
-      {filtered.map((agent) => (
-        <div className='agent-card' key={agent.id}>
-          <div className='agent-name'>{agent.fullName || agent.phoneNumber}</div>
-          <div className='agent-info'>
-            {t('agent_reg_date').split(':')[0]}: <span>{formatDate(agent.dateJoined)}</span>
-          </div>
-          <div className='agent-info'>
-            {t('agent_phone').split(':')[0]}: <span>{agent.phoneNumber}</span>
-          </div>
-          <div className='agent-stats'>
-            <div className='stat-box'>
-              <span className='stat-value'>{agent.osagoCount}</span>
-              <div className='stat-label'>{t('earnings_quantity')}</div>
-            </div>
-            <div className='stat-box'>
-              <span className='stat-value'>{agent.osagoIncome}</span>
-              <div className='stat-label'>{t('your_profit')}</div>
-            </div>
-          </div>
+      <div>
+        <div className='search-bar'>
+          <IonIcon icon={searchOutline} className='search-icon' />
+          <IonInput
+            placeholder={t('search_section')}
+            className='search-input'
+            value={searchTerm}
+            onIonInput={(e) =>
+              setSearchTerm((e.detail.value || '').toLowerCase())
+            }
+          />
         </div>
-      ))}
 
-      <div className='agents-bottom'>
-        <IonButton
-          className='green-btn'
-          expand='block'
-          fill='solid'
-          onClick={() => {
-            history.push('/a/invite');
-          }}
-        >
-          <IonIcon slot='start' icon={personAddOutline} />
-          {t('btn_invite_friend')}
-        </IonButton>
-        <div className='earn-percent'>
-          {t('bonus_10_percent')}
+        <TeamCard />
+
+        {filtered.map((agent) => (
+          <div className='agent-card' key={agent.id}>
+            <div className='agent-name'>
+              {agent.fullName || agent.phoneNumber}
+            </div>
+            <div className='agent-info'>
+              {t('agent_reg_date').split(':')[0]}:{' '}
+              <span>{formatDate(agent.dateJoined)}</span>
+            </div>
+            <div className='agent-info'>
+              {t('agent_phone').split(':')[0]}: <span>{agent.phoneNumber}</span>
+            </div>
+            <div className='agent-stats'>
+              <div className='stat-box'>
+                <span className='stat-value'>{agent.osagoCount}</span>
+                <div className='stat-label'>{t('earnings_quantity')}</div>
+              </div>
+              <div className='stat-box'>
+                <span className='stat-value'>{agent.osagoIncome}</span>
+                <div className='stat-label'>{t('your_profit')}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <div className='agents-bottom'>
+          <IonButton
+            className='green-btn'
+            expand='block'
+            fill='solid'
+            onClick={() => {
+              history.push('/a/invite');
+            }}
+          >
+            <IonIcon slot='start' icon={personAddOutline} />
+            {t('btn_invite_friend')}
+          </IonButton>
+          <div className='earn-percent'>{t('bonus_10_percent')}</div>
         </div>
       </div>
     </IonPage>
