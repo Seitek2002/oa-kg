@@ -60,7 +60,9 @@ const ReferralInfo: FC = () => {
         <div className='referral-description'>{t('company_description')}</div>
         <div className='referral-title'>{t('referral_title')}</div>
         <div className='referral-code'>{data?.id}</div>
-        <p className='earn-percent-2' style={{ fontSize: '14px' }}>{t('earn_10_percent')}</p>
+        <p className='earn-percent-2' style={{ fontSize: '14px' }}>
+          {t('earn_10_percent')}
+        </p>
 
         <IonButton
           expand='block'
@@ -98,6 +100,14 @@ const ReferralInfo: FC = () => {
         <div className='referral-hint'>
           <img src={warning} alt='warning' />
           <span>{t('referral_instructions')}</span>
+        </div>
+
+        <div className='referral-hint'>
+          <img src={warning} alt='warning' />
+          <span style={{ fontSize: 12, color: '#7B7F88' }}>
+            Все полисы ОСАГО выписывается ОАО «Бакай Иншуренс» на основе
+            лицензии №03, номер бланка №0003 серии «ОС» от 05.02.24 г..
+          </span>
         </div>
       </div>
     </IonPage>
