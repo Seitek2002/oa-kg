@@ -195,6 +195,29 @@ const Withdraw: React.FC = () => {
               }}
             />
           </label>
+          <span
+            style={{
+              fontSize: 12,
+              color: '#888',
+              display: 'block',
+              marginBottom: 16,
+            }}
+          >
+            В соответствии с п.  2 ст. 187 Налогового кодекса (в редакции Закона
+            КР № 78‑З от 3 .04.23 г., с изменениями от 12 .02.25). Со всех
+            выплат свыше 5000 с. будет удержан подоходного налога в размере
+            10 %. Вам поступит:
+            <b>
+              {(() => {
+                const amt = Number(amount);
+                if (!amt) return '';
+                if (amt >= 5000) {
+                  return (amt * 0.9).toFixed(2) + ' сом';
+                }
+                return amt.toFixed(2) + ' сом';
+              })()}
+            </b>
+          </span>
 
           <div className='withdraw-label'>Куда</div>
           <div className='withdraw-bank-list'>
