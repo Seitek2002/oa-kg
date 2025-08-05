@@ -80,6 +80,10 @@
     display: flex;
     align-items: center;
 
+    &--referral {
+      text-decoration: none;
+    }
+
     &__content {
       margin-left: 16px;
     }

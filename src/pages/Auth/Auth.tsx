@@ -57,6 +57,7 @@ const Auth: React.FC = () => {
     return 0;
   });
   const [agree, setAgree] = useState(false);
+  const [referralAgree, setReferralAgree] = useState(false);
   const [error, setError] = useState('');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -178,6 +179,30 @@ const Auth: React.FC = () => {
                   OA.KG
                 </IonCheckbox>
               </IonItem>
+              {/* Cогласен с условиями участия в реферальной акции. */}
+              <IonItem>
+                <IonCheckbox
+                  className='onboarding-checkbox'
+                  checked={referralAgree}
+                  onIonChange={(e) => setReferralAgree(e.detail.checked)}
+                  labelPlacement='end'
+                >
+                  Согласен с{' '}
+                  <a
+                    href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.pdf'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{
+                      textDecoration: 'underline',
+                      color: '#1976d2',
+                      marginLeft: 4,
+                      whiteSpace: 'break-spaces',
+                    }}
+                  >
+                    с условиями участия в реферальной акции.
+                  </a>{' '}
+                </IonCheckbox>
+              </IonItem>
               {isSending ? (
                 <p className='onboarding-sms'>{t('sms_disclaimer')}</p>
               ) : (
@@ -218,7 +243,7 @@ const Auth: React.FC = () => {
               )}
               <GaIonButton
                 expand='block'
-                disabled={!phone || !agree || phone.length < 9 || isSending}
+                disabled={!phone || !agree || !referralAgree || phone.length < 9 || isSending}
                 onClick={handleSendSms}
                 style={{ marginTop: 24 }}
                 className='primary-btn'

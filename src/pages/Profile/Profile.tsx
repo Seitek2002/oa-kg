@@ -20,6 +20,7 @@ import { useTexts } from '../../context/TextsContext';
 
 import avatar from '../../assets/avatar-default.svg';
 import helpBuoy from '../../assets/helpBuoyFilled.svg';
+import helpReferral from '../../assets/helpReferral.svg';
 import helpQuestion from '../../assets/helpQuestionFilled.svg';
 
 import './styles.scss';
@@ -127,9 +128,7 @@ const Profile: React.FC = () => {
               {user?.phoneNumber}
             </span>
           )}
-          <span
-            className={`profile-status ${user?.identificationStatus}`}
-          >
+          <span className={`profile-status ${user?.identificationStatus}`}>
             {user?.identificationStatus === 'approved' &&
               t('user_status_identified')}
             {user?.identificationStatus === 'not_submitted' &&
@@ -158,6 +157,28 @@ const Profile: React.FC = () => {
               className='profile-action__arrow'
             />
           </div>
+          <a
+            className='profile-action profile-action--referral'
+            href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.pdf'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <div className='profile-action__icon profile-action__icon--blue'>
+              <IonIcon icon={helpReferral} />
+            </div>
+            <div className='profile-action__content'>
+              <div className='profile-action__title profile-action__title--blue'>
+                Правила реферальной акции
+              </div>
+              <div className='profile-action__subtitle'>
+                Услов. участии в реферальной акции
+              </div>
+            </div>
+            <IonIcon
+              icon={chevronForwardOutline}
+              className='profile-action__arrow'
+            />
+          </a>
           <div
             className='profile-action'
             onClick={() => navigate.push('/a/my-faq')}

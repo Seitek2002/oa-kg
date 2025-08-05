@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import {
   IonPage,
   IonButton,
@@ -19,6 +19,8 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { setTransaction } from '../../store/index';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import { useGetCurrentUserQuery } from '../../services/api';
+
+import qrCodeOutline from '../../assets/qr-outline.svg';
 
 import './styles.scss';
 
@@ -56,14 +58,22 @@ const Withdraw: React.FC = () => {
     id: 0,
     name: '',
     image: '',
+    requireUserQr: false,
   });
   const [amount, setAmount] = useState('');
   const [history, setHistory] = useState<Operation[]>(JSON.parse(localHistory));
   const [data, setData] = useState<WithdrawalMethod[]>(JSON.parse(localData));
-  const [toast, setToast] = useState<{ show: boolean; msg: string }>({
+  const [toast, setToast] = useState<{
+    show: boolean;
+    msg: string;
+    color?: string;
+  }>({
     show: false,
     msg: '',
+    color: 'danger',
   });
+  const [qrFile, setQrFile] = useState<File | null>(null);
+  const qrInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFetch = async () => {
     const res = await getWithdrawalMethods().unwrap();
@@ -107,17 +117,42 @@ const Withdraw: React.FC = () => {
       return;
     }
 
+    if (selectedBank.requireUserQr && !qrFile) {
+      setToast({ show: true, msg: 'Пожалуйста, загрузите QR-код' });
+      return;
+    }
+
     try {
+      const formData = new FormData();
+      formData.append('requisiteImage', qrFile || '');
       const res = await requestMoney({
         amount: amt + '',
         method: selectedBank.id,
         requisite: '996' + defaultNumber,
+        requisiteImage: qrFile || undefined,
       }).unwrap();
       dispatch(setTransaction(res as any));
     } catch (error) {
       console.log(error);
     }
     navigate.push('/a/withdraw/info', 'forward', 'replace');
+  };
+
+  const handleQrClick = () => {
+    qrInputRef.current?.click();
+  };
+
+  const handleQrChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setQrFile(e.target.files[0]);
+      setToast({
+        show: true,
+        msg: 'QR-код успешно загружен',
+        color: 'success',
+      });
+    } else {
+      setToast({ show: true, msg: 'Ошибка загрузки QR-кода' });
+    }
   };
 
   useEffect(() => {
@@ -139,7 +174,7 @@ const Withdraw: React.FC = () => {
         isOpen={toast.show}
         message={toast.msg}
         duration={2500}
-        color='danger'
+        color={toast.color}
         onDidDismiss={() => setToast({ show: false, msg: '' })}
       />
       <div>
@@ -240,6 +275,74 @@ const Withdraw: React.FC = () => {
               </div>
             ))}
           </div>
+          {selectedBank.requireUserQr && (
+            <div
+              className='withdraw-qr-upload'
+              style={{
+                background: '#f6f6f6',
+                borderRadius: 24,
+                padding: '32px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                margin: '24px 0',
+                textAlign: 'center',
+              }}
+              onClick={handleQrClick}
+            >
+              <input
+                ref={qrInputRef}
+                type='file'
+                accept='image/*'
+                style={{ display: 'none' }}
+                onChange={handleQrChange}
+              />
+              <IonIcon
+                icon={qrCodeOutline}
+                style={{
+                  fontSize: 48,
+                  color: '#2563eb',
+                  marginBottom: 16,
+                }}
+              />
+              <div
+                style={{
+                  fontSize: 16,
+                  color: '#222',
+                  fontWeight: 400,
+                  lineHeight: '1.3',
+                }}
+              >
+                {qrFile ? (
+                  <>
+                    <span style={{ color: '#2563eb', fontWeight: 500 }}>
+                      Файл загружен:
+                    </span>
+                    <br />
+                    <span style={{ fontSize: 15 }}>{qrFile.name}</span>
+                    <br />
+                    <img
+                      src={URL.createObjectURL(qrFile)}
+                      alt='QR'
+                      style={{
+                        marginTop: 12,
+                        maxWidth: 180,
+                        maxHeight: 180,
+                        borderRadius: 12,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    Загрузите снимок своего
+                    <br />
+                    QR-кода из MBANK, O! Деньги или др.
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           <IonButton
             expand='block'

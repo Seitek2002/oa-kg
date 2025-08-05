@@ -124,21 +124,31 @@ export const api = createApi({
     }),
     createWithdrawalRequest: builder.mutation<
       unknown,
-      { method: number; requisite: string; amount: string }
+      {
+        method: number;
+        requisite: string;
+        amount: string;
+        requisiteImage?: File;
+      }
     >({
-      query: ({ method, requisite, amount }) => ({
-        url: 'https://oa.kg/api/withdrawal-requests/',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'accept': 'application/json',
-        },
-        body: new URLSearchParams({
-          method: String(method),
-          requisite,
-          amount,
-        }).toString(),
-      }),
+      query: ({ method, requisite, amount, requisiteImage }) => {
+        const formData = new FormData();
+        formData.append('method', String(method));
+        formData.append('requisite', requisite);
+        formData.append('amount', amount);
+        if (requisiteImage) {
+          formData.append('requisiteImage', requisiteImage);
+        }
+        return {
+          url: 'https://oa.kg/api/withdrawal-requests/',
+          method: 'POST',
+          headers: {
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            accept: 'application/json',
+          },
+          body: formData,
+        };
+      },
     }),
     getWithdrawalMethods: builder.query<WithdrawalMethod[], void>({
       query: () => ({
@@ -292,6 +302,7 @@ export interface WithdrawalMethod {
   id: number;
   name: string;
   image: string;
+  requireUserQr: boolean;
 }
 
 export interface QaItem {
