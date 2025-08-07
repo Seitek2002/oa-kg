@@ -12,16 +12,15 @@ const IdentificationProcess: React.FC = () => {
   return (
     <IonPage className='identification-process-page'>
       <div className='identification-process-content'>
-        {user?.identificationStatus === 'approved' && (
+        {user?.identificationStatus === 'approved' ? (
           <>
             <img src={checkCircle} alt='check-circle' />
             <div className='identification-process-approved'>
               Вы идентифицированы
             </div>
           </>
-        )}
-        {user?.identificationStatus === 'pending' && (
-          <>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
             <h2 className='identification-process-title'>
               Идентификация в процессе
             </h2>
@@ -35,7 +34,7 @@ const IdentificationProcess: React.FC = () => {
               <br />
               идентификации
             </div>
-          </>
+          </div>
         )}
         <IonButton
           expand='block'
