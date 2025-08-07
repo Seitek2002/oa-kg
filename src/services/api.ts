@@ -226,7 +226,9 @@ export interface UserMeResponse {
   lastName: string;
   middleName: string;
   phoneNumber: string;
+  passportSelfie: string | null;
   balance: string;
+  withdrawnTotal: string;
   totalIncome: string;
   osagoIncome: string;
   agentsIncome: string;
@@ -235,6 +237,7 @@ export interface UserMeResponse {
   referralLink: string;
   authReferralLink: string;
   identificationStatus: string;
+  totalAgents: number;
   averageAgentsIncome: string;
 }
 

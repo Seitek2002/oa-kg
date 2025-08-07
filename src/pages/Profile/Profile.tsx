@@ -58,7 +58,6 @@ const Profile: React.FC = () => {
   const handleLogout = () => {
     localStorage.clear();
     navigate.push('/a/auth', 'root', 'replace');
-    console.log('вышел');
   };
 
   return (
@@ -97,7 +96,7 @@ const Profile: React.FC = () => {
       <div>
         <div className='profile-header'>
           <IonAvatar className='profile-avatar'>
-            <img src={avatar} alt='Avatar' />
+            <img src={user?.passportSelfie ?? avatar} alt='Avatar' />
             <IonIcon
               onClick={editClick}
               className='profile-edit'
