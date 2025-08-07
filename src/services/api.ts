@@ -187,6 +187,7 @@ export interface PageText {
   id: number;
   key: string;
   text: string;
+  file?: string;
 }
 
 export interface PageTextsResponse {

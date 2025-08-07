@@ -5,6 +5,7 @@ import {
   IonButton,
   IonIcon,
   IonPage,
+  IonModal,
   isPlatform,
 } from '@ionic/react';
 import { arrowBackOutline, closeOutline } from 'ionicons/icons';
@@ -19,6 +20,7 @@ import identificationSelfie from '../../assets/identificationSelfie.svg';
 import './styles.scss';
 import { setPassportData } from '../../store/index';
 import { useTexts } from '../../context/TextsContext';
+import loaderSpinner from '../../assets/loader-spinner.svg';
 
 const ProfileIdentification = () => {
   const history = useHistory();
@@ -151,6 +153,33 @@ const ProfileIdentification = () => {
           },
         ]}
       />
+      <IonModal isOpen={isLoading} backdropDismiss={false} showBackdrop>
+        <div
+          style={{
+            maxWidth: 340,
+            minHeight: 220,
+            borderRadius: 16,
+            padding: '32px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: 'auto',
+          }}
+        >
+          <img src={loaderSpinner} alt='loader' width={120} height={120} />
+          <p
+            style={{
+              textAlign: 'center',
+              fontSize: 18,
+              margin: '24px 0 0 0',
+              color: '#005caa',
+            }}
+          >
+            {t('documentsForm2.scanning') || 'Идет сканирование документов'}
+          </p>
+        </div>
+      </IonModal>
       <div className='identification-header'>
         <IonIcon
           onClick={() => history.goBack()}
@@ -163,6 +192,24 @@ const ProfileIdentification = () => {
       </div>
       <div className='identification-list'>
         {renderInputsObj.map(({ key, title, image }) => {
+          // Определяем ошибку для каждого поля
+          let fieldError = '';
+          if (
+            isError &&
+            error &&
+            typeof error === 'object' &&
+            'data' in error &&
+            error.data !== null &&
+            typeof error.data === 'object'
+          ) {
+            const dataObj = error.data as Record<string, unknown>;
+            if (key in dataObj && typeof dataObj[key] === 'string') {
+              fieldError = dataObj[key] as string;
+            } else if ('error' in dataObj && key === 'front' && typeof dataObj.error === 'string') {
+              // fallback: если только error, показываем под первым полем
+              fieldError = dataObj.error as string;
+            }
+          }
           return (
             <div
               key={key}
@@ -211,6 +258,18 @@ const ProfileIdentification = () => {
                   handleFileChange(key as 'front' | 'back' | 'selfie', e)
                 }
               />
+              {fieldError && (
+                <div
+                  style={{
+                    color: '#e53935',
+                    marginTop: 8,
+                    fontSize: 13,
+                    textAlign: 'center',
+                  }}
+                >
+                  {fieldError}
+                </div>
+              )}
             </div>
           );
         })}
