@@ -223,7 +223,16 @@ const Withdraw: React.FC = () => {
               type='number'
               mode='md'
               placeholder='Введите сумму'
-              onIonInput={(e) => setAmount(e.detail.value!)}
+              min={100}
+              onIonInput={(e) => {
+                const val = e.detail.value!;
+                // Не позволяем вводить меньше 100
+                if (val && Number(val) < 100) {
+                  setAmount('100');
+                } else {
+                  setAmount(val);
+                }
+              }}
               max={user?.balance || 0}
               style={{
                 padding: '0 16px',
@@ -242,7 +251,7 @@ const Withdraw: React.FC = () => {
             КР № 78‑З от 3 .04.23 г., с изменениями от 12 .02.25). Со всех
             выплат свыше 5000 с. будет удержан подоходного налога в размере
             10 %.
-            <b>
+            <b style={{ color: '#00c334ff' }}>
                Вам поступит:
               {(() => {
                 const amt = Number(amount);
