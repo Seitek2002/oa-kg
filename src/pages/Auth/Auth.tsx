@@ -31,8 +31,11 @@ function isErrorWithData(e: unknown): e is ErrorWithData {
 
 const Auth: React.FC = () => {
   const { pathname } = useLocation();
-  const { t } = useTexts();
+  const { t, getFile } = useTexts();
   const history = useHistory();
+
+  // Ссылки на документы из page-text через useTexts
+  // t('agree_with_terms') и t('agree_with_promotion') — это ссылки на PDF
 
   useEffect(() => {
     try {
@@ -162,24 +165,27 @@ const Auth: React.FC = () => {
                   onIonChange={(e) => setAgree(e.detail.checked)}
                   labelPlacement='end'
                 >
-                  Согласен с условиями{' '}
-                  <a
-                    href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.pdf'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{
-                      textDecoration: 'underline',
-                      color: '#1976d2',
-                      marginLeft: 4,
-                      whiteSpace: 'break-spaces',
-                    }}
-                  >
-                    публичной оферты
-                  </a>{' '}
-                  OA.KG
+                  {getFile('agree_with_terms') ? (
+                    <a
+                      href={getFile('agree_with_terms')}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      style={{
+                        textDecoration: 'underline',
+                        color: '#1976d2',
+                        marginLeft: 4,
+                        whiteSpace: 'break-spaces',
+                      }}
+                    >
+                      {t('agree_with_terms')}
+                    </a>
+                  ) : (
+                    <span style={{ color: '#888', marginLeft: 4 }}>
+                      {t('agree_with_terms') || 'оферты OA.KG (файл недоступен)'}
+                    </span>
+                  )}
                 </IonCheckbox>
               </IonItem>
-              {/* Cогласен с условиями участия в реферальной акции. */}
               <IonItem>
                 <IonCheckbox
                   className='onboarding-checkbox'
@@ -187,20 +193,25 @@ const Auth: React.FC = () => {
                   onIonChange={(e) => setReferralAgree(e.detail.checked)}
                   labelPlacement='end'
                 >
-                  Согласен с{' '}
-                  <a
-                    href='/a/ПУБЛИЧНАЯ ОФЕРТА для субагентов.pdf'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{
-                      textDecoration: 'underline',
-                      color: '#1976d2',
-                      marginLeft: 4,
-                      whiteSpace: 'break-spaces',
-                    }}
-                  >
-                    с условиями участия в реферальной акции.
-                  </a>{' '}
+                  {getFile('agree_with_promotion') ? (
+                    <a
+                      href={getFile('agree_with_promotion')}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      style={{
+                        textDecoration: 'underline',
+                        color: '#1976d2',
+                        marginLeft: 4,
+                        whiteSpace: 'break-spaces',
+                      }}
+                    >
+                      {t('agree_with_promotion')}
+                    </a>
+                  ) : (
+                    <span style={{ color: '#888', marginLeft: 4 }}>
+                      {t('agree_with_promotion') || 'условиями участия в реферальной акции (файл недоступен)'}
+                    </span>
+                  )}
                 </IonCheckbox>
               </IonItem>
               {isSending ? (

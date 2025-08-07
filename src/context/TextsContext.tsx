@@ -2,11 +2,12 @@ import React, { createContext, useContext, ReactNode, useEffect, useState } from
 import { useGetPageTextsQuery } from "../services/api";
 import { CompareLocaldata } from "../helpers/CompareLocaldata";
 
-type TextsMap = Record<string, string>;
+type TextsMap = Record<string, { text: string; file?: string }>;
 
 interface TextsContextValue {
   texts: TextsMap;
   t: (key: string) => string;
+  getFile: (key: string) => string | undefined;
   loading: boolean;
   error: string | null;
 }
@@ -31,7 +32,7 @@ export const TextsProvider = ({ children }: { children: ReactNode }) => {
       // Преобразуем results в TextsMap
       const newMap: TextsMap = {};
       data.results.forEach((item) => {
-        newMap[item.key] = item.text;
+        newMap[item.key] = { text: item.text, file: item.file };
       });
       // Сравниваем и обновляем localStorage и state
       CompareLocaldata({
@@ -44,10 +45,11 @@ export const TextsProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line
   }, [data]);
 
-  const t = (key: string) => texts[key] || "";
+  const t = (key: string) => texts[key]?.text || "";
+  const getFile = (key: string) => texts[key]?.file;
 
   return (
-    <TextsContext.Provider value={{ texts, t, loading: isLoading, error: error ? String(error) : null }}>
+    <TextsContext.Provider value={{ texts, t, getFile, loading: isLoading, error: error ? String(error) : null }}>
       {children}
     </TextsContext.Provider>
   );
