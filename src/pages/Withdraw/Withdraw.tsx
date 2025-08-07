@@ -256,7 +256,7 @@ const Withdraw: React.FC = () => {
               {(() => {
                 const amt = Number(amount);
                 if (!amt) return '';
-                if (amt >= 5000) {
+                if (+(user?.withdrawnTotal || '0') >= 5000) {
                   return (amt * 0.9).toFixed(2) + ' сом';
                 }
                 return amt.toFixed(2) + ' сом';
