@@ -61,6 +61,7 @@ const Withdraw: React.FC = () => {
     requireUserQr: false,
   });
   const [amount, setAmount] = useState('');
+  const [amountError, setAmountError] = useState('');
   const [history, setHistory] = useState<Operation[]>(JSON.parse(localHistory));
   const [data, setData] = useState<WithdrawalMethod[]>(JSON.parse(localData));
   const [toast, setToast] = useState<{
@@ -223,14 +224,16 @@ const Withdraw: React.FC = () => {
               type='number'
               mode='md'
               placeholder='Введите сумму'
-              min={100}
               onIonInput={(e) => {
-                const val = e.detail.value!;
-                // Не позволяем вводить меньше 100
-                if (val && Number(val) < 100) {
-                  setAmount('100');
+                setAmount(e.detail.value!);
+                setAmountError('');
+              }}
+              onBlur={() => {
+                const amt = Number(amount);
+                if (amount && amt < 100) {
+                  setAmountError('Минимальная сумма вывода — 100 сом');
                 } else {
-                  setAmount(val);
+                  setAmountError('');
                 }
               }}
               max={user?.balance || 0}
@@ -238,6 +241,11 @@ const Withdraw: React.FC = () => {
                 padding: '0 16px',
               }}
             />
+            {amountError && (
+              <div style={{ color: '#e53935', fontSize: 13, marginTop: 4 }}>
+                {amountError}
+              </div>
+            )}
           </label>
           <span
             style={{
@@ -257,8 +265,13 @@ const Withdraw: React.FC = () => {
                 const amt = Number(amount);
                 const withdrawn = +(user?.withdrawnTotal || '0');
                 if (!amt) return '';
-                if (withdrawn + amt >= 5000) {
+                if (withdrawn >= 5000) {
                   return (amt * 0.9).toFixed(2) + ' сом';
+                }
+                if (withdrawn + amt > 5000) {
+                  const taxable = withdrawn + amt - 5000;
+                  const nonTaxable = amt - taxable;
+                  return (nonTaxable + taxable * 0.9).toFixed(2) + ' сом';
                 }
                 return amt.toFixed(2) + ' сом';
               })()}
