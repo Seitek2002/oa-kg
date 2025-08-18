@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   IonPage,
   IonButton,
@@ -133,10 +133,25 @@ const Withdraw: React.FC = () => {
         requisiteImage: qrFile || undefined,
       }).unwrap();
       dispatch(setTransaction(res as any));
-    } catch (error) {
-      console.log(error);
+      navigate.push('/a/withdraw/info', 'forward', 'replace');
+    } catch (error: unknown) {
+      let msg = 'Ошибка создания заявки на вывод';
+      if (error && typeof error === 'object' && 'data' in error) {
+        const data = (error as any).data;
+        if (data) {
+          if (typeof data === 'string') {
+            msg = data;
+          } else if (typeof data === 'object') {
+            if ('error' in data && typeof (data as any).error === 'string') {
+              msg = (data as any).error;
+            } else if ('detail' in data && typeof (data as any).detail === 'string') {
+              msg = (data as any).detail;
+            }
+          }
+        }
+      }
+      setToast({ show: true, msg, color: 'danger' });
     }
-    navigate.push('/a/withdraw/info', 'forward', 'replace');
   };
 
   const handleQrClick = () => {

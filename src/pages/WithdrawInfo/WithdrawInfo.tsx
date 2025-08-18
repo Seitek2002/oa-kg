@@ -7,9 +7,7 @@ const WithdrawInfo = () => {
   const transaction = useAppSelector((state) => state.transaction);
 
   // Преобразование для TransactionStatusCard (если нужно)
-  const now = new Date();
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  const createdAt = `${pad(now.getHours())}:${pad(now.getMinutes())} ${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}`;
+  const createdAt = new Date().toISOString();
 
   const cardData = {
     type: 'withdrawal' as const,
