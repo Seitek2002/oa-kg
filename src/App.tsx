@@ -81,6 +81,24 @@ const AppTabs: React.FC = () => {
     }
   }, [location.pathname]);
 
+  // Трекинг PageView для SPA-переходов (Meta Pixel + GA4)
+  const firstPv = React.useRef(true);
+  React.useEffect(() => {
+    if (firstPv.current) {
+      // Первую загрузку уже отправил базовый пиксель в index.html
+      firstPv.current = false;
+      return;
+    }
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'PageView');
+    }
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', 'G-ZYHNYD1P7D', {
+        page_path: location.pathname + location.search,
+      });
+    }
+  }, [location.pathname, location.search]);
+
   const [lang, setLang] = React.useState<'ky' | 'ru'>(() => {
     const stored = localStorage.getItem('lang');
     return stored === 'ru' || stored === 'ky' ? stored : 'ky';
