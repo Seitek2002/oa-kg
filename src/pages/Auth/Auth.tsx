@@ -43,7 +43,7 @@ const Auth: React.FC = () => {
       if (tokenObj.access) {
         history.replace('/a/home');
       }
-    } catch (e) {
+    } catch {
       // ignore JSON parse error
     }
   }, []);
@@ -59,8 +59,8 @@ const Auth: React.FC = () => {
     }
     return 0;
   });
-  const [agree, setAgree] = useState(false);
-  const [referralAgree, setReferralAgree] = useState(false);
+  const [agree, setAgree] = useState(true);
+  const [referralAgree, setReferralAgree] = useState(true);
   const [error, setError] = useState('');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
