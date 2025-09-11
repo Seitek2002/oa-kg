@@ -6,8 +6,7 @@ import {
   IonPage,
 } from '@ionic/react';
 import GaIonButton from '../../components/GaIonButton';
-import { useVerifySmsMutation, useUsersNameRetrieveQuery } from '../../services/api';
-import { skipToken } from '@reduxjs/toolkit/query';
+import { useVerifySmsMutation } from '../../services/api';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import './style.scss';
 import { useTexts } from '../../context/TextsContext';
@@ -32,7 +31,6 @@ interface RouteParams {
 const AuthVerify: React.FC = () => {
   const { t } = useTexts();
   const history = useHistory();
-  const otpInputRef = useRef<any>(null);
 
   // Get phone and referralId from route params or location state
   const params = useParams<RouteParams>();
@@ -40,9 +38,6 @@ const AuthVerify: React.FC = () => {
   const phone = params.phone || location.state?.phone || '';
   const referralId = params.referralId || location.state?.referralId;
 
-  const { data: referralData } = useUsersNameRetrieveQuery(
-    referralId ? Number(referralId) : skipToken
-  );
 
   const [smsCode, setSmsCode] = useState('');
   const [error, setError] = useState('');
@@ -69,9 +64,11 @@ const AuthVerify: React.FC = () => {
   }, [smsCode, isVerifying]);
 
   useEffect(() => {
-    setTimeout(() => {
-      otpInputRef.current?.setFocus?.();
+    const id = window.setTimeout(() => {
+      const el = document.querySelector('ion-input-otp') as unknown as { setFocus?: () => void };
+      el?.setFocus?.();
     }, 300);
+    return () => window.clearTimeout(id);
   }, []);
 
   const handleVerify = async () => {
@@ -92,6 +89,14 @@ const AuthVerify: React.FC = () => {
       const data = await verifySms({ ...send }).unwrap();
       if (data.access) {
         localStorage.setItem('access', JSON.stringify(data));
+      }
+      // Facebook Pixel: успешная регистрация / верификация
+      if (typeof window.fbq === 'function') {
+        if (referralId) {
+          window.fbq('track', 'CompleteRegistration', { referral_id: referralId });
+        } else {
+          window.fbq('track', 'CompleteRegistration');
+        }
       }
       history.replace('/a/home');
     } catch (e: unknown) {
@@ -141,7 +146,6 @@ const AuthVerify: React.FC = () => {
             <div className='onboarding-form'>
               <h2>{t('input_sms_label')}</h2>
               <IonInputOtp
-                ref={otpInputRef}
                 length={6}
                 value={smsCode}
                 onIonInput={(e) => setSmsCode(e.detail.value!)}
