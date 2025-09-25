@@ -1,5 +1,6 @@
 import React from 'react';
-import { IonButton, IonIcon, IonPage } from '@ionic/react';
+import { IonIcon, IonPage } from '@ionic/react';
+import GaIonButton from '../components/GaIonButton';
 import { personAddOutline, informationCircleOutline } from 'ionicons/icons';
 import inviteLogo from '../assets//onboarding/inviteLogo.png';
 
@@ -71,7 +72,7 @@ const InviteFriend: React.FC = () => {
         <div style={{ color: '#1abc9c', fontSize: 16, marginBottom: 22 }}>
           {t('bonus_5_percent')}
         </div>
-        <IonButton
+        <GaIonButton
           expand='block'
           className='primary-btn'
           style={{
@@ -80,6 +81,10 @@ const InviteFriend: React.FC = () => {
             marginBottom: 18,
             fontSize: 17,
           }}
+          gaEventName='invite_click'
+          gaParams={{ button_name: 'invite_friend', page: 'InviteFriend' }}
+          pixelEventName='InviteFriendClick'
+          pixelParams={{ button_name: 'invite_friend', page: 'InviteFriend' }}
           onClick={() => {
             const link = data?.referralLink || '';
             if (navigator.share) {
@@ -95,7 +100,7 @@ const InviteFriend: React.FC = () => {
         >
           <IonIcon icon={personAddOutline} slot='start' />
           {t('btn_invite_friend')}
-        </IonButton>
+        </GaIonButton>
         <div className='referral-hint'>
           <IonIcon
             icon={informationCircleOutline}

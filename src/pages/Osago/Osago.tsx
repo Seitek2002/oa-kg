@@ -53,7 +53,8 @@ const Osago: React.FC = () => {
       oldData: localData,
       newData: res,
       localKey: 'policies',
-      setState: (data: any) => setData(Array.isArray(data) ? data : []),
+      setState: (payload: unknown) =>
+        setData(Array.isArray(payload) ? (payload as Policy[]) : []),
     });
   };
 
@@ -157,6 +158,9 @@ const Osago: React.FC = () => {
             className='primary-btn'
             onClick={() => history.push('/a/referral')}
             gaEventName='osago_referral'
+            gaParams={{ button_name: 'osago_create', page: 'Osago' }}
+            pixelEventName='OsagoCreateClick'
+            pixelParams={{ button_name: 'osago_create', page: 'Osago' }}
           >
             <img src={car} alt={t('ofo_title')} />
             {t('ofo_title')}
