@@ -10,7 +10,7 @@ import img2 from '../../assets/onboarding/image-2.png';
 import img3 from '../../assets/onboarding/image-3.png';
 
 import 'swiper/css';
-import '../../components/OnboardingModal.css'
+import '../../components/OnboardingModal.css';
 import './style.scss';
 
 import { useTexts } from '../../context/TextsContext';
@@ -21,18 +21,21 @@ const slideKeys = [
     titleKey: 'promo_title_1',
     subtitleKey: 'earn_10_percent',
     extraKey: null,
+    width: '80%',
   },
   {
     image: img2,
     titleKey: 'promo_title_2',
     subtitleKey: 'bonus_5_percent',
     extraKey: null,
+    width: '80%',
   },
   {
     image: img3,
     titleKey: 'promo_title_3',
     subtitleKey: 'license',
     extraKey: null, // Можно добавить отдельный ключ, если появится в API
+    width: '40%',
   },
 ];
 
@@ -71,7 +74,10 @@ const Onboarding: React.FC = () => {
 
   return (
     <IonContent scrollY={false}>
-      <div className='ion-content onboarding-content' style={{ overflow: 'auto' }}>
+      <div
+        className='ion-content onboarding-content'
+        style={{ overflow: 'auto' }}
+      >
         <div style={{ paddingTop: '120px', textAlign: 'center' }}>
           <Swiper
             slidesPerView={1}
@@ -89,7 +95,7 @@ const Onboarding: React.FC = () => {
                   src={slide.image}
                   alt=''
                   style={{
-                    width: '80%',
+                    width: slide.width,
                     maxHeight: 200,
                     objectFit: 'contain',
                   }}
@@ -116,7 +122,9 @@ const Onboarding: React.FC = () => {
           </Swiper>
           {renderPagination()}
         </div>
-        <div style={{ background: 'white', width: '100%', paddingBottom: '40px' }}>
+        <div
+          style={{ background: 'white', width: '100%', paddingBottom: '40px' }}
+        >
           <GaIonButton
             expand='block'
             className='primary-btn'
