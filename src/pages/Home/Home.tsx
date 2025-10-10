@@ -81,7 +81,9 @@ const Home: FC = () => {
                 <IonCol size='6'>
                   <div className='stat-card'>
                     <p className='stat-title'>{t('income_label')}</p>
-                    <p className='stat-number'>{Math.floor(+data?.osagoIncome)}</p>
+                    <p className='stat-number'>
+                      {Math.floor(+data?.osagoIncome)}
+                    </p>
                     <p className='stat-info'>{t('stat_desc_2')}</p>
                   </div>
                 </IonCol>
@@ -121,7 +123,8 @@ const Home: FC = () => {
           {t('btn_help')}
         </GaIonButton>
         <span style={{ fontSize: 12, color: '#7B7F88', marginTop: 8 }}>
-          Все полисы ОСАГО выписывается ОАО «Бакай Иншуренс» на основе лицензии №03, номер бланка №0003 серии «ОС» от 05.02.24 г..
+          Все полисы ОСАГО выписывается ОАО «Бакай Страхование» на основе
+          лицензии №03, номер бланка №0003 серии «ОС» от 05.02.24 г..
         </span>
       </div>
     </IonPage>

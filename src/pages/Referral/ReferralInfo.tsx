@@ -105,7 +105,7 @@ const ReferralInfo: FC = () => {
         <div className='referral-hint'>
           <img src={warning} alt='warning' />
           <span style={{ fontSize: 12, color: '#7B7F88' }}>
-            Все полисы ОСАГО выписывается ОАО «Бакай Иншуренс» на основе
+            Все полисы ОСАГО выписывается ОАО «Бакай Страхование» на основе
             лицензии №03, номер бланка №0003 серии «ОС» от 05.02.24 г..
           </span>
         </div>
