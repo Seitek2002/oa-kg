@@ -14,14 +14,20 @@
 }
 
 .referral-logo {
-  width: 40%;
+  width: 100%;
+  margin-top: 30px;
   margin-bottom: 12px;
 }
 
 .referral-description {
   color: #222;
-  font-size: 15px;
+  font-size: 26px;
   margin-bottom: 24px;
+  margin-top: 30px;
+}
+
+.referral-description span {
+  color: #2BC955;
 }
 
 .referral-title {
@@ -61,4 +67,8 @@
   color: #3880ff;
   font-size: 20px;
   margin-top: 2px;
+}
+
+.referral-page .earn-percent-2 {
+  margin-top: 40px !important;
 }

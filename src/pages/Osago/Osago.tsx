@@ -66,7 +66,7 @@ const Osago: React.FC = () => {
   // Фильтрация по поиску
   const filtered = data.filter((policy) => {
     const term = searchTerm.toLowerCase();
-    return policy.fullName.toLowerCase().includes(term);
+    return policy.fullName?.toLowerCase().includes(term);
   });
 
   return (

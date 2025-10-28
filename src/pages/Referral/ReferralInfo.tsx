@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { IonButton, IonPage } from '@ionic/react';
-import referralLogo from '../../assets/onboarding/bakaiIshnersu.png';
+import referralLogo from '../../assets/referralInfo/hor-logo.png';
 import { useLazyGetCurrentUserQuery } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
@@ -57,9 +57,12 @@ const ReferralInfo: FC = () => {
           alt={t('company_name')}
           className='referral-logo'
         />
-        <div className='referral-description'>{t('company_description')}</div>
-        <div className='referral-title'>{t('referral_title')}</div>
-        <div className='referral-code'>{data?.id}</div>
+        <div className='referral-description'>
+          {t('company_description')} 
+          <span> {t('company_description_2')}</span>
+        </div>
+        {/* <div className='referral-title'>{t('referral_title')}</div>
+        <div className='referral-code'>{data?.id}</div> */}
         <p className='earn-percent-2' style={{ fontSize: '14px' }}>
           {t('earn_10_percent')}
         </p>
