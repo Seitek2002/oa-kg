@@ -69,20 +69,30 @@ setupIonicReact();
 
 const AppTabs: React.FC = () => {
   const location = useLocation();
-  const { data: currentUser } = useGetCurrentUserQuery();
+
+  // Determine when to skip fetching current user (avoid loops for unauthenticated users)
+  const isAuthRoute = location.pathname.startsWith('/a/auth');
+  const isOnboarding = location.pathname === '/a/onboarding';
+  let hasAccess = false;
+  try {
+    const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');
+    hasAccess = !!tokenObj.access;
+  } catch {
+    hasAccess = false;
+  }
+  const skipUser = isOnboarding || isAuthRoute || !hasAccess;
+
+  const { data: currentUser } = useGetCurrentUserQuery(undefined, { skip: skipUser });
   const restricted = currentUser?.totalIncome === '0';
-  const hideTabBar =
-    location.pathname === '/a/onboarding' || location.pathname === '/a/auth' || restricted;
+  const hideTabBar = isOnboarding || isAuthRoute || restricted;
 
   // Глобальный редирект на Onboarding при первом заходе
   React.useEffect(() => {
-    if (
-      localStorage.getItem('onboardingSeen') !== 'true' &&
-      location.pathname !== '/a/onboarding'
-    ) {
+    const onboardingNotSeen = localStorage.getItem('onboardingSeen') !== 'true';
+    if (onboardingNotSeen && !isAuthRoute && location.pathname !== '/a/onboarding') {
       window.location.replace('/a/onboarding');
     }
-  }, [location.pathname]);
+  }, [location.pathname, isAuthRoute]);
 
   // Трекинг PageView для SPA-переходов (Meta Pixel + GA4)
   const firstPv = React.useRef(true);
