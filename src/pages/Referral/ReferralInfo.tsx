@@ -10,9 +10,11 @@ import warning from '../../assets/warning.svg';
 
 import './style.scss';
 import { useTexts } from '../../context/TextsContext';
+import { useLocale } from '../../context/LocaleContext';
 
 const ReferralInfo: FC = () => {
   const { t } = useTexts();
+  const { t: lt } = useLocale();
   const localData =
     localStorage.getItem('usersInfo') ||
     `{
@@ -58,13 +60,16 @@ const ReferralInfo: FC = () => {
           className='referral-logo'
         />
         <div className='referral-description'>
-          {t('company_description')} 
-          <span> {t('company_description_2')}</span>
+          {lt('referral_desc_line1')}
+          <br />
+          {lt('referral_desc_line2')}
+          <br />
+          <span>{lt('referral_desc_highlight')}</span>
         </div>
         {/* <div className='referral-title'>{t('referral_title')}</div>
         <div className='referral-code'>{data?.id}</div> */}
-        <p className='earn-percent-2' style={{ fontSize: '14px' }}>
-          {t('earn_10_percent')}
+        <p className='' style={{ fontSize: '18px', fontWeight: '500' }}>
+          {lt('referral_cashback')}
         </p>
 
         <IonButton
@@ -92,7 +97,7 @@ const ReferralInfo: FC = () => {
                 url: data.authReferralLink,
               });
             } else {
-              alert('Web Share API не поддерживается на этом устройстве');
+              alert(lt('web_share_not_supported'));
             }
           }}
         >
@@ -100,16 +105,15 @@ const ReferralInfo: FC = () => {
           {t('btn_share')}
         </IonButton>
 
-        <div className='referral-hint'>
+        {/* <div className='referral-hint'>
           <img src={warning} alt='warning' />
           <span>{t('referral_instructions')}</span>
-        </div>
+        </div> */}
 
         <div className='referral-hint'>
           <img src={warning} alt='warning' />
           <span style={{ fontSize: 12, color: '#7B7F88' }}>
-            Все полисы ОСАГО выписывается ОАО «Бакай Страхование» на основе
-            лицензии №03, номер бланка №0003 серии «ОС» от 05.02.24 г..
+            {lt('referral_legal_notice')}
           </span>
         </div>
       </div>
