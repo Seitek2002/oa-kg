@@ -90,6 +90,13 @@ export const api = createApi({
         };
       },
     }),
+    osagoRetrieve: builder.query<{ plate: string; has_osago: boolean; status: string; details: Record<string, string> }, string>({
+      query: (plate) => ({
+        url: `https://oa.kg/api/osago/${plate}/`,
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
     getReferrals: builder.query<Referral[], void>({
       query: () => ({
         url: 'https://oa.kg/api/referrals/me/',
@@ -217,6 +224,7 @@ export const {
   useGetQaListQuery,
   useUsersNameRetrieveQuery,
   useCreateWithdrawalRequestMutation,
+  useOsagoRetrieveQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/

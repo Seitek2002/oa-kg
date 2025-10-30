@@ -33,7 +33,7 @@ export const getBaseQuery =
         }
         headers.set('Accept', 'application/json');
         // Добавляем язык из localStorage
-        const lang = localStorage.getItem('lang') || 'ru';
+        const lang = localStorage.getItem('lang') || 'ky';
         headers.set('Accept-Language', lang);
         return headers;
       },
