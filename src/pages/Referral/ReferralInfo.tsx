@@ -1,7 +1,10 @@
 import { FC, useEffect, useState, useRef } from 'react';
 import { IonButton, IonPage, IonInput } from '@ionic/react';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
-import { useLazyGetCurrentUserQuery, useLazyOsagoRetrieveQuery } from '../../services/api';
+import {
+  useLazyGetCurrentUserQuery,
+  useLazyOsagoRetrieveQuery,
+} from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 import car from '../../assets/car.svg';
@@ -40,7 +43,10 @@ const ReferralInfo: FC = () => {
   const [getUserInfo] = useLazyGetCurrentUserQuery();
   const [triggerOsago, { isFetching }] = useLazyOsagoRetrieveQuery();
   const [plate, setPlate] = useState('');
-  const [result, setResult] = useState<{ type: 'none' | 'success' | 'error'; message: string }>({ type: 'none', message: '' });
+  const [result, setResult] = useState<{
+    type: 'none' | 'success' | 'error';
+    message: string;
+  }>({ type: 'none', message: '' });
   const plateRef = useRef<HTMLIonInputElement>(null);
 
   const handleFetch = async () => {
@@ -157,6 +163,7 @@ const ReferralInfo: FC = () => {
             placeholder={lt('osago_plate_placeholder')}
             value={plate}
             onIonInput={(e) => setPlate(e.detail.value ?? '')}
+            fill='outline'
           />
           <IonButton
             expand='block'
@@ -167,7 +174,9 @@ const ReferralInfo: FC = () => {
             {lt('osago_check_button')}
           </IonButton>
           {result.type !== 'none' && (
-            <div className={`osago-result ${result.type}`}>{result.message}</div>
+            <div className={`osago-result ${result.type}`}>
+              {result.message}
+            </div>
           )}
         </div>
 
