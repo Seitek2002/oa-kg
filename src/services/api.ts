@@ -225,6 +225,7 @@ export const {
   useUsersNameRetrieveQuery,
   useCreateWithdrawalRequestMutation,
   useOsagoRetrieveQuery,
+  useLazyOsagoRetrieveQuery,
 } = api;
 
 // Типизация ответа для /api/users/me/

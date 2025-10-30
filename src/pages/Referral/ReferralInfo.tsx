@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
-import { IonButton, IonPage } from '@ionic/react';
+import { IonButton, IonPage, IonInput } from '@ionic/react';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
-import { useLazyGetCurrentUserQuery } from '../../services/api';
+import { useLazyGetCurrentUserQuery, useLazyOsagoRetrieveQuery } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 import car from '../../assets/car.svg';
@@ -11,6 +11,8 @@ import warning from '../../assets/warning.svg';
 import './style.scss';
 import { useTexts } from '../../context/TextsContext';
 import { useLocale } from '../../context/LocaleContext';
+import kyDict from '../../locales/ky.json';
+import ruDict from '../../locales/ru.json';
 
 const ReferralInfo: FC = () => {
   const { t } = useTexts();
@@ -36,6 +38,9 @@ const ReferralInfo: FC = () => {
   const [data, setData] = useState(JSON.parse(localData));
 
   const [getUserInfo] = useLazyGetCurrentUserQuery();
+  const [triggerOsago, { isFetching }] = useLazyOsagoRetrieveQuery();
+  const [plate, setPlate] = useState('');
+  const [result, setResult] = useState<{ type: 'none' | 'success' | 'error'; message: string }>({ type: 'none', message: '' });
 
   const handleFetch = async () => {
     const res = await getUserInfo().unwrap();
@@ -50,6 +55,36 @@ const ReferralInfo: FC = () => {
   useEffect(() => {
     handleFetch();
   }, []);
+
+  const handleCheck = async () => {
+    const trimmed = plate.trim();
+    if (!trimmed) {
+      setResult({
+        type: 'error',
+        message: `${ruDict['s_format_invalid']} / ${kyDict['s_format_invalid']}`,
+      });
+      return;
+    }
+    try {
+      const res = await triggerOsago(trimmed).unwrap();
+      if (res.has_osago) {
+        setResult({
+          type: 'success',
+          message: `${ruDict['s_has_osago']} ${res.plate} / ${kyDict['s_has_osago']} ${res.plate}`,
+        });
+      } else {
+        setResult({
+          type: 'error',
+          message: `${ruDict['s_not_found']} ${res.plate} / ${kyDict['s_not_found']} ${res.plate}`,
+        });
+      }
+    } catch {
+      setResult({
+        type: 'error',
+        message: `${ruDict['s_request_error']} / ${kyDict['s_request_error']}`,
+      });
+    }
+  };
 
   return (
     <IonPage className='referral-page'>
@@ -109,6 +144,28 @@ const ReferralInfo: FC = () => {
           <img src={warning} alt='warning' />
           <span>{t('referral_instructions')}</span>
         </div> */}
+
+        <div className='osago-check'>
+          <div className='osago-title'>{lt('osago_check_title')}</div>
+          <div className='osago-subtitle'>{lt('osago_check_subtitle')}</div>
+          <IonInput
+            className={`osago-input ${result.type}`}
+            placeholder={lt('osago_plate_placeholder')}
+            value={plate}
+            onIonChange={(e) => setPlate(e.detail.value || '')}
+          />
+          <IonButton
+            expand='block'
+            className='osago-submit primary-btn'
+            disabled={isFetching}
+            onClick={handleCheck}
+          >
+            {lt('osago_check_button')}
+          </IonButton>
+          {result.type !== 'none' && (
+            <div className={`osago-result ${result.type}`}>{result.message}</div>
+          )}
+        </div>
 
         <div className='referral-hint'>
           <img src={warning} alt='warning' />

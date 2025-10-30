@@ -86,3 +86,73 @@
 .referral-page ion-button.referral-btn::part(native) {
   text-transform: none !important;
 }
+
+/* OSAGO check block */
+.osago-check {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.osago-title {
+  font-weight: 800;
+  font-size: 22px;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.osago-subtitle {
+  font-size: 14px;
+  color: #000;
+  opacity: 0.8;
+  margin-bottom: 16px;
+  line-height: 140%;
+}
+
+.osago-input {
+  margin: 0 auto 12px auto;
+  width: 100%;
+  max-width: 520px;
+}
+
+.osago-input::part(native) {
+  height: 48px;
+  border-radius: 12px;
+  border: 2px solid #2a66d1;
+  background: #fff;
+  text-align: center;
+  color: #222;
+  padding: 0 12px;
+}
+
+.osago-input.success::part(native) {
+  background: #eaf6ec; /* light green */
+  border-color: #2bc955;
+}
+
+.osago-input.error::part(native) {
+  background: #fdecec; /* light red */
+  border-color: #e53935;
+}
+
+.osago-submit {
+  margin: 8px auto 8px auto;
+  width: 100%;
+  max-width: 520px;
+}
+
+.osago-result {
+  font-size: 14px;
+  margin: 8px auto 0 auto;
+  width: 100%;
+  max-width: 520px;
+  text-align: left;
+  line-height: 140%;
+}
+
+.osago-result.success {
+  color: #2bc955;
+}
+
+.osago-result.error {
+  color: #e53935;
+}
