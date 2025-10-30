@@ -82,7 +82,7 @@ const ReferralInfo: FC = () => {
           }}
         >
           <img src={car} alt='car' />
-          {t('btn_issue_other')}
+          {lt('referral_btn_issue_other')}
         </IonButton>
 
         <IonButton
@@ -102,7 +102,7 @@ const ReferralInfo: FC = () => {
           }}
         >
           <img src={share} alt='share' />
-          {t('btn_share')}
+          {lt('referral_btn_share')}
         </IonButton>
 
         {/* <div className='referral-hint'>

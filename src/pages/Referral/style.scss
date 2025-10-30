@@ -72,3 +72,17 @@
 .referral-page .earn-percent-2 {
   margin-top: 40px !important;
 }
+
+/* Ensure buttons on ReferralInfo use sentence case (do not force uppercase) */
+.referral-page .primary-btn,
+.referral-page .referral-btn,
+.referral-page ion-button.primary-btn,
+.referral-page ion-button.referral-btn {
+  text-transform: none !important;
+  --text-transform: none;
+}
+/* Target Ionic's internal native button to fully disable uppercase in shadow DOM */
+.referral-page ion-button.primary-btn::part(native),
+.referral-page ion-button.referral-btn::part(native) {
+  text-transform: none !important;
+}
