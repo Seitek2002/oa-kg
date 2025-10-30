@@ -90,7 +90,7 @@ export const api = createApi({
         };
       },
     }),
-    osagoRetrieve: builder.query<{ plate: string; has_osago: boolean; status: string; details: Record<string, string> }, string>({
+    osagoRetrieve: builder.query<OsagoCheckResponse, string>({
       query: (plate) => ({
         url: `https://oa.kg/api/osago/${plate}/`,
         method: 'GET',
@@ -290,6 +290,20 @@ export interface OcrPassportData {
 export interface OcrResponse {
   id: number;
   data: OcrPassportData;
+}
+
+export interface OsagoCheckResponse {
+  plate: string;
+  has_osago?: boolean;
+  hasOsago?: boolean;
+  status?: string;
+  details?: {
+    startDate?: string;
+    endDate?: string;
+    database1?: string;
+    database2?: string;
+    [key: string]: string | undefined;
+  };
 }
 
 export interface Referral {

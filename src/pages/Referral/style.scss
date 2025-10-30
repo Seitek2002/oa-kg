@@ -163,3 +163,21 @@
   margin-right: 8px;
   vertical-align: middle;
 }
+
+/* details block under the result */
+.osago-details {
+  font-size: 13px;
+  margin: 6px auto 0 auto;
+  width: 100%;
+  max-width: 520px;
+  text-align: left;
+  line-height: 140%;
+}
+
+.osago-details.success {
+  color: #2bc955;
+}
+
+.osago-details.error {
+  color: #e53935;
+}

@@ -4,6 +4,7 @@ import referralLogo from '../../assets/referralInfo/hor-logo.png';
 import {
   useLazyGetCurrentUserQuery,
   useLazyOsagoRetrieveQuery,
+  OsagoCheckResponse,
 } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
@@ -47,6 +48,7 @@ const ReferralInfo: FC = () => {
     type: 'none' | 'success' | 'error';
     message: string;
   }>({ type: 'none', message: '' });
+  const [details, setDetails] = useState<string[]>([]);
   const plateRef = useRef<HTMLIonInputElement>(null);
 
   const handleFetch = async () => {
@@ -71,27 +73,41 @@ const ReferralInfo: FC = () => {
         type: 'error',
         message: `${ruDict['s_format_invalid']} / ${kyDict['s_format_invalid']}`,
       });
+      setDetails([]);
       return;
     }
 
     try {
-      const res = await triggerOsago(trimmed).unwrap();
-      if (res.has_osago) {
+      const res = (await triggerOsago(trimmed).unwrap()) as OsagoCheckResponse;
+      const has = res.hasOsago ?? res.has_osago ?? false;
+
+      const d = res.details || {};
+      const lines: string[] = [];
+      if (d.startDate || d.endDate) {
+        lines.push(`Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`);
+      }
+      if (d.database1) lines.push(String(d.database1));
+      if (d.database2) lines.push(String(d.database2));
+
+      if (has) {
         setResult({
           type: 'success',
-          message: `${ruDict['s_has_osago']} ${res.plate} / ${kyDict['s_has_osago']} ${res.plate}`,
+          message: res.status || `${ruDict['s_has_osago']} ${res.plate} / ${kyDict['s_has_osago']} ${res.plate}`,
         });
+        setDetails(lines);
       } else {
         setResult({
           type: 'error',
-          message: `${ruDict['s_not_found']} ${res.plate} / ${kyDict['s_not_found']} ${res.plate}`,
+          message: res.status || `${ruDict['s_not_found']} ${res.plate} / ${kyDict['s_not_found']} ${res.plate}`,
         });
+        setDetails(lines);
       }
     } catch {
       setResult({
         type: 'error',
         message: `${ruDict['s_request_error']} / ${kyDict['s_request_error']}`,
       });
+      setDetails([]);
     }
   };
 
@@ -162,7 +178,7 @@ const ReferralInfo: FC = () => {
             className={`osago-input ${result.type}`}
             placeholder={lt('osago_plate_placeholder')}
             value={plate}
-            onIonInput={(e) => setPlate(e.detail.value ?? '')}
+            onIonInput={(e) => setPlate(e.detail.value?.toUpperCase() ?? '')}
             fill='outline'
             mode='md'
           />
@@ -176,9 +192,18 @@ const ReferralInfo: FC = () => {
             {isFetching ? lt('osago_check_searching') : lt('osago_check_button')}
           </IonButton>
           {result.type !== 'none' && (
-            <div className={`osago-result ${result.type}`}>
-              {result.message}
-            </div>
+            <>
+              <div className={`osago-result ${result.type}`}>
+                {result.message}
+              </div>
+              {details.length > 0 && (
+                <div className={`osago-details ${result.type}`}>
+                  {details.map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 
