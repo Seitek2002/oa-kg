@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useRef } from 'react';
 import { IonButton, IonPage, IonInput } from '@ionic/react';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
 import { useLazyGetCurrentUserQuery, useLazyOsagoRetrieveQuery } from '../../services/api';
@@ -41,6 +41,7 @@ const ReferralInfo: FC = () => {
   const [triggerOsago, { isFetching }] = useLazyOsagoRetrieveQuery();
   const [plate, setPlate] = useState('');
   const [result, setResult] = useState<{ type: 'none' | 'success' | 'error'; message: string }>({ type: 'none', message: '' });
+  const plateRef = useRef<HTMLIonInputElement>(null);
 
   const handleFetch = async () => {
     const res = await getUserInfo().unwrap();
@@ -57,7 +58,8 @@ const ReferralInfo: FC = () => {
   }, []);
 
   const handleCheck = async () => {
-    const trimmed = plate.trim();
+    const current = (plateRef.current?.value as string | null) ?? plate;
+    const trimmed = (current ?? '').trim();
     if (!trimmed) {
       setResult({
         type: 'error',
@@ -65,6 +67,7 @@ const ReferralInfo: FC = () => {
       });
       return;
     }
+
     try {
       const res = await triggerOsago(trimmed).unwrap();
       if (res.has_osago) {
@@ -149,10 +152,11 @@ const ReferralInfo: FC = () => {
           <div className='osago-title'>{lt('osago_check_title')}</div>
           <div className='osago-subtitle'>{lt('osago_check_subtitle')}</div>
           <IonInput
+            ref={plateRef}
             className={`osago-input ${result.type}`}
             placeholder={lt('osago_plate_placeholder')}
             value={plate}
-            onIonChange={(e) => setPlate(e.detail.value || '')}
+            onIonInput={(e) => setPlate(e.detail.value ?? '')}
           />
           <IonButton
             expand='block'
