@@ -14,5 +14,6 @@
   "s_format_invalid": "Неправильный формат",
   "s_has_osago": "Автомобиль застрахован",
   "s_not_found": "Полис не найден",
-  "s_request_error": "Ошибка запроса"
+  "s_request_error": "Ошибка запроса",
+  "osago_check_searching": "Идет поиск..."
 }

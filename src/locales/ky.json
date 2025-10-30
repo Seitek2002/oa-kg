@@ -14,5 +14,6 @@
   "s_format_invalid": "Формат туура эмес",
   "s_has_osago": "Унаа камсыздандырылган",
   "s_not_found": "Полис табылган жок",
-  "s_request_error": "Сурам катасы"
+  "s_request_error": "Сурам катасы",
+  "osago_check_searching": "Издөө жүрүп жатат..."
 }

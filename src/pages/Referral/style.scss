@@ -157,3 +157,9 @@
 .osago-result.error {
   color: #e53935;
 }
+
+/* small spacing when spinner appears inside the check button */
+.inline-spinner {
+  margin-right: 8px;
+  vertical-align: middle;
+}

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useRef } from 'react';
-import { IonButton, IonPage, IonInput } from '@ionic/react';
+import { IonButton, IonPage, IonInput, IonSpinner } from '@ionic/react';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
 import {
   useLazyGetCurrentUserQuery,
@@ -171,7 +171,8 @@ const ReferralInfo: FC = () => {
             disabled={isFetching}
             onClick={handleCheck}
           >
-            {lt('osago_check_button')}
+            {isFetching && <IonSpinner name='dots' color='light' className='inline-spinner' />}
+            {isFetching ? lt('osago_check_searching') : lt('osago_check_button')}
           </IonButton>
           {result.type !== 'none' && (
             <div className={`osago-result ${result.type}`}>
