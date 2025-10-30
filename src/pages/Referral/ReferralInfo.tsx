@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { IonButton, IonPage } from '@ionic/react';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
 import { useLazyGetCurrentUserQuery } from '../../services/api';
