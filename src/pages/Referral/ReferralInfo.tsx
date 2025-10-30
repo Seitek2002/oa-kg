@@ -164,6 +164,7 @@ const ReferralInfo: FC = () => {
             value={plate}
             onIonInput={(e) => setPlate(e.detail.value ?? '')}
             fill='outline'
+            mode='md'
           />
           <IonButton
             expand='block'
