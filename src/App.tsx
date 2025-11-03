@@ -129,13 +129,13 @@ const AppTabs: React.FC = () => {
           <Route exact path='/a/onboarding'>
             <Onboarding />
           </Route>
-          <Route exact path='/a/auth'>
+          <Route exact path='/a/auth/:id'>
             <Auth />
           </Route>
           <Route exact path='/a/auth/verify'>
             <AuthVerify />
           </Route>
-          <Route exact path='/a/auth/:id'>
+          <Route exact path='/a/auth'>
             <Auth />
           </Route>
           <Route exact path='/a/home' component={Home} />

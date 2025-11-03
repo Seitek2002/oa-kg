@@ -131,19 +131,12 @@ const AuthVerify: React.FC = () => {
     };
   }, [secondsLeft]);
 
-  useEffect(() => {
-    // Reset timer if needed when mounting
-    // (no-op here, but can be extended)
-  }, []);
-
-  // Resend SMS is handled in Auth page, so here we just show the timer
-
   return (
     <IonPage>
       <IonContent scrollY={false}>
-        <div className='ion-content'>
+        <div className='ion-content' style={{ zIndex: 10000 }}>
           <div style={{ padding: '120px 24px 0 24px', textAlign: 'center' }}>
-            <div className='onboarding-form'>
+            <div className='onboarding-form auth-verify'>
               <h2>{t('input_sms_label')}</h2>
               <IonInputOtp
                 length={6}
