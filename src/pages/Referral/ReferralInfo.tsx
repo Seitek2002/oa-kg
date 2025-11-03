@@ -161,7 +161,7 @@ const ReferralInfo: FC = () => {
             }
           }}
         >
-          <img src={share} alt='share' />
+          <img src={share} alt='share' /> 
           {lt('referral_btn_share')}
         </IonButton>
 
