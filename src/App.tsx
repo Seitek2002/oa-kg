@@ -43,7 +43,6 @@ import MyFaqPage from './pages/FaqPage/FaqPage';
 
 import logo from './assets/logo.svg';
 import { TextsProvider } from './context/TextsContext';
-import { useGetCurrentUserQuery } from './services/api';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -73,18 +72,7 @@ const AppTabs: React.FC = () => {
   // Determine when to skip fetching current user (avoid loops for unauthenticated users)
   const isAuthRoute = location.pathname.startsWith('/a/auth');
   const isOnboarding = location.pathname === '/a/onboarding';
-  let hasAccess = false;
-  try {
-    const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');
-    hasAccess = !!tokenObj.access;
-  } catch {
-    hasAccess = false;
-  }
-  const skipUser = isOnboarding || isAuthRoute || !hasAccess;
-
-  const { data: currentUser } = useGetCurrentUserQuery(undefined, { skip: skipUser });
-  const restricted = currentUser?.totalIncome === '0';
-  const hideTabBar = isOnboarding || isAuthRoute || restricted;
+  const hideTabBar = isOnboarding || isAuthRoute;
 
   // Глобальный редирект на Onboarding при первом заходе
   React.useEffect(() => {
@@ -112,17 +100,6 @@ const AppTabs: React.FC = () => {
     }
   }, [location.pathname, location.search]);
 
-  // If user has totalIncome === '0', restrict navigation to ReferralInfo only
-  React.useEffect(() => {
-    if (restricted) {
-      const p = location.pathname;
-      const allow =
-        p === '/a/referral' || p.startsWith('/a/auth') || p === '/a/onboarding';
-      if (!allow) {
-        window.location.replace('/a/referral');
-      }
-    }
-  }, [restricted, location.pathname]);
 
   const [lang, setLang] = React.useState<'ky' | 'ru'>(() => {
     const stored = localStorage.getItem('lang');
@@ -155,11 +132,11 @@ const AppTabs: React.FC = () => {
           <Route exact path='/a/auth'>
             <Auth />
           </Route>
-          <Route exact path='/a/auth/:id'>
-            <Auth />
-          </Route>
           <Route exact path='/a/auth/verify'>
             <AuthVerify />
+          </Route>
+          <Route exact path='/a/auth/:id'>
+            <Auth />
           </Route>
           <Route exact path='/a/home' component={Home} />
           <Route exact path='/a/osago' component={Osago} />

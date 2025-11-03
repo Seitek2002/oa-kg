@@ -14,7 +14,7 @@ import { helpCircleOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import IncomeCard from '../../components/IncomeCard/IncomeCard';
 import TeamCard from '../../components/TeamCard/TeamCard';
-import { useLazyGetCurrentUserQuery } from '../../services/api';
+import { useLazyGetCurrentUserQuery, UserMeResponse } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 import car from '../../assets/car.svg';
@@ -47,13 +47,24 @@ const Home: FC = () => {
   const [getUserInfo] = useLazyGetCurrentUserQuery();
 
   const handleFetch = async () => {
-    const res = await getUserInfo().unwrap();
+    const res = (await getUserInfo().unwrap()) as UserMeResponse;
     CompareLocaldata({
       oldData: localData,
       newData: res,
       localKey: 'usersInfo',
       setState: setData,
     });
+    // Redirect to /a/referral if totalIncome is zero (e.g., "0", "0.0", "0.00")
+    const incomeStr = String(res.totalIncome ?? '').trim();
+    const incomeNum = parseFloat(incomeStr.replace(',', '.'));
+    const isZeroIncome =
+      (!Number.isNaN(incomeNum) && incomeNum === 0) ||
+      incomeStr === '0' ||
+      incomeStr === '0.0' ||
+      incomeStr === '0.00';
+    if (isZeroIncome && window.location.pathname !== '/a/referral') {
+      history.replace('/a/referral');
+    }
   };
 
   useEffect(() => {
