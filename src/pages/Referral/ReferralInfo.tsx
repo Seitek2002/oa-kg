@@ -11,12 +11,15 @@ import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 import car from '../../assets/car.svg';
 import share from '../../assets/share.svg';
 import warning from '../../assets/warning.svg';
+import cameraIcon from '../../assets/camera.svg';
+import example from '../../assets/example.svg';
 
-import './style.scss';
 import { useTexts } from '../../context/TextsContext';
 import { useLocale } from '../../context/LocaleContext';
 import kyDict from '../../locales/ky.json';
 import ruDict from '../../locales/ru.json';
+
+import './style.scss';
 
 const ReferralInfo: FC = () => {
   const { t } = useTexts();
@@ -84,7 +87,11 @@ const ReferralInfo: FC = () => {
       const d = res.details || {};
       const lines: string[] = [];
       if (d.startDate || d.endDate) {
-        lines.push(`Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`);
+        lines.push(
+          `Период: ${d.startDate ?? ''}${
+            d.startDate && d.endDate ? ' - ' : ''
+          }${d.endDate ?? ''}`
+        );
       }
       if (d.database1) lines.push(String(d.database1));
       if (d.database2) lines.push(String(d.database2));
@@ -92,13 +99,17 @@ const ReferralInfo: FC = () => {
       if (has) {
         setResult({
           type: 'success',
-          message: res.status || `${ruDict['s_has_osago']} ${res.plate} / ${kyDict['s_has_osago']} ${res.plate}`,
+          message:
+            res.status ||
+            `${ruDict['s_has_osago']} ${res.plate} / ${kyDict['s_has_osago']} ${res.plate}`,
         });
         setDetails(lines);
       } else {
         setResult({
           type: 'error',
-          message: res.status || `${ruDict['s_not_found']} ${res.plate} / ${kyDict['s_not_found']} ${res.plate}`,
+          message:
+            res.status ||
+            `${ruDict['s_not_found']} ${res.plate} / ${kyDict['s_not_found']} ${res.plate}`,
         });
         setDetails(lines);
       }
@@ -161,7 +172,7 @@ const ReferralInfo: FC = () => {
             }
           }}
         >
-          <img src={share} alt='share' /> 
+          <img src={share} alt='share' />
           {lt('referral_btn_share')}
         </IonButton>
 
@@ -173,23 +184,48 @@ const ReferralInfo: FC = () => {
         <div className='osago-check'>
           <div className='osago-title'>{lt('osago_check_title')}</div>
           <div className='osago-subtitle'>{lt('osago_check_subtitle')}</div>
-          <IonInput
-            ref={plateRef}
-            className={`osago-input ${result.type}`}
-            placeholder={lt('osago_plate_placeholder')}
-            value={plate}
-            onIonInput={(e) => setPlate(e.detail.value?.toUpperCase() ?? '')}
-            fill='outline'
-            mode='md'
-          />
+          <div style={{ position: 'relative' }}>
+            <IonInput
+              ref={plateRef}
+              className={`osago-input ${result.type}`}
+              placeholder={lt('osago_plate_placeholder')}
+              value={plate}
+              onIonInput={(e) => setPlate(e.detail.value?.toUpperCase() ?? '')}
+              fill='outline'
+              mode='md'
+            />
+            <img
+              src={cameraIcon}
+              alt='cameraIcon'
+              style={{
+                width: '30px',
+                position: 'absolute',
+                top: '12px',
+                right: '10px',
+                zIndex: 1,
+              }}
+            />
+          </div>
+          <div>
+            Пример: <b>01KG400AAP</b>
+          </div>
+          <img style={{ width: '200px' }} src={example} alt='example' />
           <IonButton
             expand='block'
             className='osago-submit primary-btn'
             disabled={isFetching}
             onClick={handleCheck}
           >
-            {isFetching && <IonSpinner name='dots' color='light' className='inline-spinner' />}
-            {isFetching ? lt('osago_check_searching') : lt('osago_check_button')}
+            {isFetching && (
+              <IonSpinner
+                name='dots'
+                color='light'
+                className='inline-spinner'
+              />
+            )}
+            {isFetching
+              ? lt('osago_check_searching')
+              : lt('osago_check_button')}
           </IonButton>
           {result.type !== 'none' && (
             <>
