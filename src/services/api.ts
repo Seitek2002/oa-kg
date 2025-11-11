@@ -97,6 +97,41 @@ export const api = createApi({
         headers: { 'Content-Type': 'application/json' },
       }),
     }),
+    detectNumber: builder.mutation<DetectNumberResponse, DetectNumberRequest>({
+      query: ({ frame }) => {
+        const formData = new FormData();
+        // Debug: validate the file before sending
+        try {
+          if (!frame) {
+            // eslint-disable-next-line no-console
+            console.warn('[detectNumber] frame is undefined/null');
+          } else if (typeof frame.size === 'number' && frame.size === 0) {
+            // eslint-disable-next-line no-console
+            console.warn('[detectNumber] frame size is 0 bytes; capture may have failed (videoWidth/videoHeight == 0)');
+          }
+          // eslint-disable-next-line no-console
+          console.debug('[detectNumber] frame meta', {
+            name: frame.name,
+            type: frame.type,
+            size: frame.size,
+          });
+        } catch {
+          // ignore
+        }
+
+        formData.append('frame', frame);
+
+        const url = 'https://imagegpt.operator.kg/api/detect-number/';
+
+        console.debug('[detectNumber] using URL', url);
+
+        return {
+          url,
+          method: 'POST',
+          body: formData,
+        };
+      },
+    }),
     getReferrals: builder.query<Referral[], void>({
       query: () => ({
         url: 'https://oa.kg/api/referrals/me/',
@@ -226,6 +261,7 @@ export const {
   useCreateWithdrawalRequestMutation,
   useOsagoRetrieveQuery,
   useLazyOsagoRetrieveQuery,
+  useDetectNumberMutation,
 } = api;
 
 // Типизация ответа для /api/users/me/
@@ -305,6 +341,40 @@ export interface OsagoCheckResponse {
     [key: string]: string | undefined;
   };
 }
+
+/**
+ * POST /api/detect-number/
+ * Принимает изображение (frame) и возвращает список результатов распознавания и проверки ОСАГО.
+ * Бэкенд может вернуть массив или объект с ключом results — поддерживаем оба варианта.
+ */
+export interface DetectNumberRequest {
+  frame: File;
+}
+
+export interface DetectNumberItem {
+  plate: string;                  // распознанный госномер, например 01KG400AAP
+  confidence?: number;            // уверенность распознавания (если есть)
+  has_osago?: boolean;            // флаг наличия ОСАГО в snake_case
+  hasOsago?: boolean;             // флаг наличия ОСАГО в camelCase
+  status?: string;                // текстовый статус (если есть)
+  details?: {
+    startDate?: string;
+    endDate?: string;
+    database1?: string;
+    database2?: string;
+    [key: string]: string | undefined;
+  };
+  bbox?: [number, number, number, number]; // [x,y,w,h] — если бэкенд присылает координаты
+  [key: string]: unknown;                  // на случай расширений схемы
+}
+
+// Поддержка двух частых вариантов ответа: массив или объект-обертка
+export type DetectNumberResponse =
+  | DetectNumberItem[]
+  | {
+      results: DetectNumberItem[];
+      [key: string]: unknown;
+    };
 
 export interface Referral {
   id: number;

@@ -27,8 +27,11 @@ export const getBaseQuery =
         const url = typeof args === 'string' ? args : args.url;
         const isAuthFree =
           url?.includes('/sms/send') || url?.includes('/sms/verify');
+        const isExternalDetect =
+          url?.startsWith('https://imagegpt.operator.kg/') ||
+          url?.startsWith('/imagegpt/');
 
-        if (access && !isAuthFree) {
+        if (access && !isAuthFree && !isExternalDetect) {
           headers.set('Authorization', `Bearer ${access}`);
         }
         headers.set('Accept', 'application/json');
@@ -45,8 +48,11 @@ export const getBaseQuery =
     const url = typeof args === 'string' ? args : args.url;
     const isAuthFree =
       url?.includes('/sms/send') || url?.includes('/sms/verify');
+    const isExternalDetect =
+      url?.startsWith('https://imagegpt.operator.kg/') ||
+      url?.startsWith('/imagegpt/');
 
-    if (result.meta?.response?.status === 401 && !isAuthFree) {
+    if (result.meta?.response?.status === 401 && !isAuthFree && !isExternalDetect) {
       let refresh = '';
       try {
         const tokenObj = JSON.parse(localStorage.getItem('access') || '{}');

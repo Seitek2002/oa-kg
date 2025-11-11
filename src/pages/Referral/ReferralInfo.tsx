@@ -1,10 +1,14 @@
 import { FC, useEffect, useState, useRef } from 'react';
-import { IonButton, IonPage, IonInput, IonSpinner } from '@ionic/react';
+import { IonButton, IonPage, IonInput, IonSpinner, IonModal } from '@ionic/react';
+import { createPortal } from 'react-dom';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
 import {
   useLazyGetCurrentUserQuery,
   useLazyOsagoRetrieveQuery,
   OsagoCheckResponse,
+  useDetectNumberMutation,
+  DetectNumberResponse,
+  DetectNumberItem,
 } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
@@ -53,6 +57,27 @@ const ReferralInfo: FC = () => {
   }>({ type: 'none', message: '' });
   const [details, setDetails] = useState<string[]>([]);
   const plateRef = useRef<HTMLIonInputElement>(null);
+
+  // Модалка камеры и авто-сканирование
+  const [isCamOpen, setIsCamOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'success' | 'error' | 'info' }>>([]);
+  const pushToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => {
+      const next = [...prev, { id, message, type }];
+      const MAX = 4; // ограничение на размер стека тостов
+      return next.length > MAX ? next.slice(next.length - MAX) : next;
+    });
+    window.setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 6000);
+  };
+  const videoRef2 = useRef<HTMLVideoElement>(null);
+  const canvasRef2 = useRef<HTMLCanvasElement>(null);
+  const intervalRef = useRef<number | null>(null);
+  const lastCheckedRef = useRef<{ plate: string; ts: number } | null>(null);
+  const [detectNumber] = useDetectNumberMutation();
 
   const handleFetch = async () => {
     const res = await getUserInfo().unwrap();
@@ -121,6 +146,198 @@ const ReferralInfo: FC = () => {
       setDetails([]);
     }
   };
+
+  // Нормализация ответа detect-number
+  const toItems = (resp: DetectNumberResponse): DetectNumberItem[] => {
+    if (Array.isArray(resp)) return resp;
+    if (resp && typeof resp === 'object' && 'results' in resp) {
+      const r = (resp as { results?: DetectNumberItem[] }).results;
+      return Array.isArray(r) ? r : [];
+    }
+    return [];
+  };
+
+  const startCamera = async () => {
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        pushToast('Камера не поддерживается', 'error');
+        return;
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false,
+      });
+      if (videoRef2.current) {
+        const vid = videoRef2.current as HTMLVideoElement & { srcObject: MediaStream | null };
+        vid.srcObject = stream;
+        await vid.play();
+      }
+    } catch (e) {
+      console.error('camera start error', e);
+      pushToast('Не удалось открыть камеру', 'error');
+    }
+  };
+
+  const stopCamera = () => {
+    const vid = videoRef2.current as (HTMLVideoElement & { srcObject: MediaStream | null }) | null;
+    const mediaStream = vid?.srcObject ?? null;
+    mediaStream?.getTracks().forEach((t) => t.stop());
+    if (videoRef2.current) {
+      const vid2 = videoRef2.current as HTMLVideoElement & { srcObject: MediaStream | null };
+      vid2.pause();
+      vid2.srcObject = null;
+    }
+  };
+
+  const captureAndSend = async () => {
+    if (!videoRef2.current || !canvasRef2.current || isSending) return;
+    try {
+      setIsSending(true);
+      const video = videoRef2.current;
+      const canvas = canvasRef2.current;
+
+      // Debug: ensure we actually have real video dimensions
+      if (!video.videoWidth || !video.videoHeight) {
+        // eslint-disable-next-line no-console
+        console.warn('[PlateScanner] video dimensions are 0; skip capture until metadata is loaded');
+        setIsSending(false);
+        return;
+      }
+
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+      // eslint-disable-next-line no-console
+      console.debug('[PlateScanner] capture dims', { vw, vh });
+      const maxW = 1280;
+      const scale = Math.min(1, maxW / vw);
+      const cw = Math.round(vw * scale);
+      const ch = Math.round(vh * scale);
+
+      canvas.width = cw;
+      canvas.height = ch;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        setIsSending(false);
+        return;
+      }
+
+      ctx.drawImage(video, 0, 0, cw, ch);
+
+      const blob: Blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (b) => {
+            if (!b) return reject(new Error('Не удалось получить Blob'));
+            resolve(b);
+          },
+          'image/jpeg',
+          0.9
+        );
+      });
+
+      // eslint-disable-next-line no-console
+      console.debug('[PlateScanner] blob size', blob.size);
+
+      const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
+      const resp = await detectNumber({ frame: file }).unwrap();
+      const items = toItems(resp);
+
+      if (items.length === 0) {
+        pushToast('Ничего не найдено', 'info');
+        return;
+      }
+
+      // лучший по confidence -> иначе первый
+      const sorted = [...items].sort((a, b) => {
+        const ca = typeof a.confidence === 'number' ? a.confidence : -1;
+        const cb = typeof b.confidence === 'number' ? b.confidence : -1;
+        return cb - ca;
+      });
+      const best = sorted[0];
+      const bestPlate = best?.plate || '';
+      if (bestPlate) {
+        setPlate(bestPlate);
+
+        // Автозапрос ОСАГО по распознанному номеру (с анти-спамом на 10 секунд для одинакового номера)
+        const now = Date.now();
+        if (
+          lastCheckedRef.current &&
+          lastCheckedRef.current.plate === bestPlate &&
+          now - lastCheckedRef.current.ts < 10000
+        ) {
+          // Пропускаем повторный запрос для того же номера в течение 10 секунд
+        } else {
+          lastCheckedRef.current = { plate: bestPlate, ts: now };
+          try {
+            const res = (await triggerOsago(bestPlate).unwrap()) as OsagoCheckResponse;
+            const has = res.hasOsago ?? res.has_osago ?? false;
+
+            const d = res.details || {};
+            const lines: string[] = [];
+            if (d.startDate || d.endDate) {
+              lines.push(
+                `Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`
+              );
+            }
+            if (d.database1) lines.push(String(d.database1));
+            if (d.database2) lines.push(String(d.database2));
+
+            if (has) {
+              const msg = `Полис найден для номера ${res.plate}`;
+              setResult({ type: 'success', message: msg });
+              setDetails(lines);
+              pushToast(msg, 'success');
+            } else {
+              const msg = `Полис не найден для номера ${res.plate}`;
+              setResult({ type: 'error', message: msg });
+              setDetails(lines);
+              pushToast(msg, 'error');
+            }
+
+            // Камеру не закрываем — продолжаем показывать превью и позволяем повторные сканы
+          } catch {
+            const msg = `${ruDict['s_request_error']} / ${kyDict['s_request_error']}`;
+            setResult({ type: 'error', message: msg });
+            setDetails([]);
+            pushToast(msg, 'error');
+          }
+        }
+      } else {
+        const list = items.map((i) => i.plate).filter(Boolean).join(', ');
+        pushToast(list ? `Найдены: ${list}` : 'Ничего не найдено', 'info');
+      }
+    } catch (e) {
+      console.error('detect-number error', e);
+      pushToast('Ошибка распознавания', 'error');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isCamOpen) {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      stopCamera();
+      return;
+    }
+    startCamera();
+    intervalRef.current = window.setInterval(() => {
+      void captureAndSend();
+    }, 2000);
+
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      stopCamera();
+    };
+  }, [isCamOpen]);
+
+  const openCamModal = () => setIsCamOpen(true);
+  const closeCamModal = () => setIsCamOpen(false);
 
   return (
     <IonPage className='referral-page'>
@@ -197,15 +414,72 @@ const ReferralInfo: FC = () => {
             <img
               src={cameraIcon}
               alt='cameraIcon'
+              onClick={openCamModal}
               style={{
                 width: '30px',
                 position: 'absolute',
                 top: '12px',
                 right: '10px',
-                zIndex: 1,
+                zIndex: 10,
+                cursor: 'pointer',
               }}
             />
           </div>
+          <IonModal isOpen={isCamOpen} onDidDismiss={closeCamModal}>
+            <div style={{ padding: 12 }}>
+              <video
+                ref={videoRef2}
+                playsInline
+                autoPlay
+                muted
+                style={{ width: '100%', borderRadius: 8, background: '#000' }}
+              />
+              <canvas ref={canvasRef2} style={{ display: 'none' }} />
+              <IonButton expand='block' fill='outline' onClick={closeCamModal} style={{ marginTop: 12 }}>
+                Закрыть
+              </IonButton>
+            </div>
+          </IonModal>
+          {/* Стек тостов через портал — поверх модалки */}
+          {typeof document !== 'undefined' &&
+            createPortal(
+              <div
+                style={{
+                  position: 'fixed',
+                  bottom: 20,
+                  right: 20,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                  zIndex: 999999, // выше ion-modal
+                  pointerEvents: 'none', // клики проходят к камере/странице
+                }}
+              >
+                {toasts.map((t) => (
+                  <div
+                    key={t.id}
+                    style={{
+                      background:
+                        t.type === 'success'
+                          ? '#2e7d32'
+                          : t.type === 'error'
+                          ? '#c62828'
+                          : 'rgba(0,0,0,0.85)',
+                      color: '#fff',
+                      padding: '10px 12px',
+                      borderRadius: 8,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                      maxWidth: 340,
+                      fontSize: 14,
+                      pointerEvents: 'auto',
+                    }}
+                  >
+                    {t.message}
+                  </div>
+                ))}
+              </div>,
+              document.body
+            )}
           <div>
             Пример: <b>01KG400AAP</b>
           </div>
