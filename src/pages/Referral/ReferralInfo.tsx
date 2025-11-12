@@ -242,7 +242,6 @@ const ReferralInfo: FC = () => {
       const items = toItems(resp);
 
       if (items.length === 0) {
-        pushToast('Ничего не найдено', 'info');
         return;
       }
 
@@ -255,7 +254,6 @@ const ReferralInfo: FC = () => {
       const best = sorted[0];
       const bestPlate = best?.plate || '';
       if (bestPlate) {
-        setPlate(bestPlate);
 
         // Автозапрос ОСАГО по распознанному номеру (с анти-спамом на 10 секунд для одинакового номера)
         const now = Date.now();
@@ -303,7 +301,9 @@ const ReferralInfo: FC = () => {
         }
       } else {
         const list = items.map((i) => i.plate).filter(Boolean).join(', ');
-        pushToast(list ? `Найдены: ${list}` : 'Ничего не найдено', 'info');
+        if (list) {
+          pushToast(`Найдены: ${list}`, 'info');
+        }
       }
     } catch (e) {
       console.error('detect-number error', e);
