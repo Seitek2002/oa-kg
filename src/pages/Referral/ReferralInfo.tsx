@@ -80,6 +80,7 @@ const ReferralInfo: FC = () => {
   const intervalRef = useRef<number | null>(null);
   const lastCheckedRef = useRef<{ plate: string; ts: number } | null>(null);
   const [detectNumber] = useDetectNumberMutation();
+  const [notFoundPlates, setNotFoundPlates] = useState<string[]>([]);
 
   const handleFetch = async () => {
     const res = await getUserInfo().unwrap();
@@ -298,6 +299,11 @@ const ReferralInfo: FC = () => {
               const msg = `Полис не найден для номера ${res.plate}`;
               setResult({ type: 'error', message: msg });
               setDetails(lines);
+              // добавить в список не найденных (без дубликатов, с нормализацией регистра/пробелов)
+              if (res.plate) {
+                const p = String(res.plate).toUpperCase().trim();
+                setNotFoundPlates((prev) => (prev.includes(p) ? prev : [...prev, p]));
+              }
               pushToast(msg, 'notfound'); // зелёный, можно стакать
             }
 
@@ -448,6 +454,35 @@ const ReferralInfo: FC = () => {
               <IonButton expand='block' fill='outline' onClick={closeCamModal} style={{ marginTop: 12 }}>
                 Закрыть
               </IonButton>
+              {/* Список не найденных полисов */}
+              {notFoundPlates.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>Не найденные полисы</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {notFoundPlates.map((p) => (
+                      <div
+                        key={p}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          background: '#f4f5f8',
+                          borderRadius: 8,
+                          padding: '8px 10px',
+                        }}
+                      >
+                        <span style={{ fontWeight: 500 }}>{p}</span>
+                        <IonButton
+                          size='small'
+                          onClick={() => window.open('https://oa.kg/bishkek-osago-online', '_blank')}
+                        >
+                          Оформить
+                        </IonButton>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </IonModal>
           {/* Стек тостов через портал — поверх модалки */}
