@@ -61,12 +61,14 @@ const ReferralInfo: FC = () => {
   // Модалка камеры и авто-сканирование
   const [isCamOpen, setIsCamOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'success' | 'error' | 'info' }>>([]);
-  const pushToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'found' | 'notfound' | 'error' | 'info' }>>([]);
+  const pushToast = (message: string, type: 'found' | 'notfound' | 'error' | 'info' = 'info') => {
     const id = Date.now() + Math.random();
     setToasts((prev) => {
-      const next = [...prev, { id, message, type }];
-      const MAX = 4; // ограничение на размер стека тостов
+      // Синие (found) не накапливаем: удаляем предыдущие blue перед добавлением
+      const base = type === 'found' ? prev.filter((t) => t.type !== 'found') : prev;
+      const next = [...base, { id, message, type }];
+      const MAX = 5; // общий лимит, зелёные (notfound) могут стакаться до MAX
       return next.length > MAX ? next.slice(next.length - MAX) : next;
     });
     window.setTimeout(() => {
@@ -242,6 +244,14 @@ const ReferralInfo: FC = () => {
       const items = toItems(resp);
 
       if (items.length === 0) {
+        let msg: string | undefined;
+        if (resp && typeof resp === 'object' && 'message' in resp) {
+          const m = (resp as { message?: unknown }).message;
+          msg = typeof m === 'string' ? m : undefined;
+        }
+        if (msg) {
+          pushToast(msg, 'info'); // показываем текст сервера, например: "Номера не найдены"
+        }
         return;
       }
 
@@ -283,12 +293,12 @@ const ReferralInfo: FC = () => {
               const msg = `Полис найден для номера ${res.plate}`;
               setResult({ type: 'success', message: msg });
               setDetails(lines);
-              pushToast(msg, 'success');
+              pushToast(msg, 'found'); // синий, не стакать
             } else {
               const msg = `Полис не найден для номера ${res.plate}`;
               setResult({ type: 'error', message: msg });
               setDetails(lines);
-              pushToast(msg, 'error');
+              pushToast(msg, 'notfound'); // зелёный, можно стакать
             }
 
             // Камеру не закрываем — продолжаем показывать превью и позволяем повторные сканы
@@ -459,12 +469,14 @@ const ReferralInfo: FC = () => {
                   <div
                     key={t.id}
                     style={{
-                      background:
-                        t.type === 'success'
-                          ? '#2e7d32'
-                          : t.type === 'error'
-                          ? '#c62828'
-                          : 'rgba(0,0,0,0.85)',
+                  background:
+                    t.type === 'found'
+                      ? '#3880ff' // синий для найденного полиса
+                      : t.type === 'notfound'
+                      ? '#2e7d32' // зелёный для не найденного
+                      : t.type === 'error'
+                      ? '#c62828' // красный для ошибок
+                      : 'rgba(0,0,0,0.85)',
                       color: '#fff',
                       padding: '10px 12px',
                       borderRadius: 8,
