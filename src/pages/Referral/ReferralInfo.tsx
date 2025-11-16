@@ -341,7 +341,7 @@ const ReferralInfo: FC = () => {
     startCamera();
     intervalRef.current = window.setInterval(() => {
       void captureAndSend();
-    }, 2000);
+    }, 1000);
 
     return () => {
       if (intervalRef.current) {
@@ -448,7 +448,7 @@ const ReferralInfo: FC = () => {
                 playsInline
                 autoPlay
                 muted
-                style={{ width: '100%', borderRadius: 8, background: '#000' }}
+                style={{ width: '100%', height: '40vh', objectFit: 'cover', borderRadius: 8, background: '#000' }}
               />
               <canvas ref={canvasRef2} style={{ display: 'none' }} />
               <IonButton expand='block' fill='outline' onClick={closeCamModal} style={{ marginTop: 12 }}>
@@ -458,7 +458,7 @@ const ReferralInfo: FC = () => {
               {notFoundPlates.length > 0 && (
                 <div style={{ marginTop: 12 }}>
                   <div style={{ fontWeight: 600, marginBottom: 8 }}>Не найденные полисы</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: '30vh', overflowY: 'auto' }}>
                     {notFoundPlates.map((p) => (
                       <div
                         key={p}
