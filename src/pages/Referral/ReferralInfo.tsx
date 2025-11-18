@@ -472,12 +472,26 @@ const ReferralInfo: FC = () => {
                         }}
                       >
                         <span style={{ fontWeight: 500 }}>{p}</span>
-                        <IonButton
-                          size='small'
-                          onClick={() => window.open('https://oa.kg/bishkek-osago-online', '_blank')}
-                        >
-                          Оформить
-                        </IonButton>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          <IonButton
+                            size='small'
+                            onClick={() => window.open('https://oa.kg/bishkek-osago-online', '_blank')}
+                          >
+                            Оформить
+                          </IonButton>
+                          <IonButton
+                            size='small'
+                            fill='clear'
+                            color='medium'
+                            onClick={() =>
+                              setNotFoundPlates((prev) => prev.filter((x) => x !== p))
+                            }
+                            aria-label='Удалить номер'
+                            title='Удалить'
+                          >
+                            ✕
+                          </IonButton>
+                        </div>
                       </div>
                     ))}
                   </div>
