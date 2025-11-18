@@ -302,9 +302,16 @@ const ReferralInfo: FC = () => {
               // добавить в список не найденных (без дубликатов, с нормализацией регистра/пробелов)
               if (res.plate) {
                 const p = String(res.plate).toUpperCase().trim();
-                setNotFoundPlates((prev) => (prev.includes(p) ? prev : [...prev, p]));
+                const exists = notFoundPlates.includes(p);
+                if (!exists) {
+                  setNotFoundPlates((prev) => [...prev, p]);
+                  pushToast(msg, 'notfound'); // показываем только если добавили новый номер
+                }
+                // если уже в списке — тост не показываем
+              } else {
+                // если номер не пришёл вовсе, показываем тост как раньше
+                pushToast(msg, 'notfound');
               }
-              pushToast(msg, 'notfound'); // зелёный, можно стакать
             }
 
             // Камеру не закрываем — продолжаем показывать превью и позволяем повторные сканы
