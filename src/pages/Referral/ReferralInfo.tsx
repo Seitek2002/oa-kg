@@ -2,14 +2,7 @@ import { FC, useEffect, useState, useRef } from 'react';
 import { IonButton, IonPage, IonInput, IonSpinner, IonModal } from '@ionic/react';
 import { createPortal } from 'react-dom';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
-import {
-  useLazyGetCurrentUserQuery,
-  useLazyOsagoRetrieveQuery,
-  OsagoCheckResponse,
-  useDetectNumberMutation,
-  DetectNumberResponse,
-  DetectNumberItem,
-} from '../../services/api';
+import { useLazyGetCurrentUserQuery, useLazyOsagoRetrieveQuery, OsagoCheckResponse } from '../../services/api';
 import { CompareLocaldata } from '../../helpers/CompareLocaldata';
 
 import car from '../../assets/car.svg';
@@ -79,7 +72,6 @@ const ReferralInfo: FC = () => {
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
   const intervalRef = useRef<number | null>(null);
   const lastCheckedRef = useRef<{ plate: string; ts: number } | null>(null);
-  const [detectNumber] = useDetectNumberMutation();
   const [notFoundPlates, setNotFoundPlates] = useState<string[]>([]);
 
   const handleFetch = async () => {
@@ -150,14 +142,36 @@ const ReferralInfo: FC = () => {
     }
   };
 
-  // Нормализация ответа detect-number
-  const toItems = (resp: DetectNumberResponse): DetectNumberItem[] => {
-    if (Array.isArray(resp)) return resp;
-    if (resp && typeof resp === 'object' && 'results' in resp) {
-      const r = (resp as { results?: DetectNumberItem[] }).results;
-      return Array.isArray(r) ? r : [];
+  // Вспомогательные функции для клиентского OCR
+  const extractPlate = (rawText: string): string | null => {
+    const norm = (rawText || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const m = norm.match(/(\d{2}KG\d{3}[A-Z]{3})/);
+    return m ? m[1] : null;
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const workerRef = useRef<any>(null);
+  const [ocrReady, setOcrReady] = useState(false);
+
+  const initOcrWorker = async () => {
+    if (workerRef.current) return;
+    try {
+      const { createWorker } = await import('tesseract.js');
+      const worker = await createWorker('eng', undefined, {
+        logger: (m: unknown) => console.debug('[OCR]', m),
+      });
+      await worker.setParameters({
+        tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        user_defined_dpi: '200',
+        tessedit_pageseg_mode: '7',
+      } as Record<string, string>);
+      workerRef.current = worker;
+      setOcrReady(true);
+    } catch (e) {
+      console.error('init OCR worker failed', e);
+      pushToast('Не удалось инициализировать OCR', 'error');
+      setOcrReady(false);
     }
-    return [];
   };
 
   const startCamera = async () => {
@@ -199,19 +213,24 @@ const ReferralInfo: FC = () => {
       const video = videoRef2.current;
       const canvas = canvasRef2.current;
 
-      // Debug: ensure we actually have real video dimensions
       if (!video.videoWidth || !video.videoHeight) {
-        // eslint-disable-next-line no-console
         console.warn('[PlateScanner] video dimensions are 0; skip capture until metadata is loaded');
+        setIsSending(false);
+        return;
+      }
+
+      // Ensure OCR worker is ready
+      if (!workerRef.current) {
+        await initOcrWorker();
+      }
+      if (!ocrReady || !workerRef.current) {
         setIsSending(false);
         return;
       }
 
       const vw = video.videoWidth;
       const vh = video.videoHeight;
-      // eslint-disable-next-line no-console
-      console.debug('[PlateScanner] capture dims', { vw, vh });
-      const maxW = 1280;
+      const maxW = 1024;
       const scale = Math.min(1, maxW / vw);
       const cw = Math.round(vw * scale);
       const ch = Math.round(vh * scale);
@@ -224,58 +243,26 @@ const ReferralInfo: FC = () => {
         return;
       }
 
+      // draw frame
       ctx.drawImage(video, 0, 0, cw, ch);
 
-      const blob: Blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          (b) => {
-            if (!b) return reject(new Error('Не удалось получить Blob'));
-            resolve(b);
-          },
-          'image/jpeg',
-          0.9
-        );
-      });
+      // OCR
+      const { data } = await workerRef.current.recognize(canvas);
+      const text = data?.text || '';
+      console.debug('[OCR] text:', text?.slice(0, 200));
 
-      // eslint-disable-next-line no-console
-      console.debug('[PlateScanner] blob size', blob.size);
-
-      const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
-      const resp = await detectNumber({ frame: file }).unwrap();
-      const items = toItems(resp);
-
-      if (items.length === 0) {
-        let msg: string | undefined;
-        if (resp && typeof resp === 'object' && 'message' in resp) {
-          const m = (resp as { message?: unknown }).message;
-          msg = typeof m === 'string' ? m : undefined;
-        }
-        if (msg) {
-          pushToast(msg, 'info'); // показываем текст сервера, например: "Номера не найдены"
-        }
-        return;
-      }
-
-      // лучший по confidence -> иначе первый
-      const sorted = [...items].sort((a, b) => {
-        const ca = typeof a.confidence === 'number' ? a.confidence : -1;
-        const cb = typeof b.confidence === 'number' ? b.confidence : -1;
-        return cb - ca;
-      });
-      const best = sorted[0];
-      const bestPlate = best?.plate || '';
+      const bestPlate = extractPlate(text) || '';
       if (bestPlate) {
-
-        // Автозапрос ОСАГО по распознанному номеру (с анти-спамом на 10 секунд для одинакового номера)
         const now = Date.now();
         if (
           lastCheckedRef.current &&
           lastCheckedRef.current.plate === bestPlate &&
           now - lastCheckedRef.current.ts < 10000
         ) {
-          // Пропускаем повторный запрос для того же номера в течение 10 секунд
+          // skip duplicate within 10s
         } else {
           lastCheckedRef.current = { plate: bestPlate, ts: now };
+          setPlate(bestPlate);
           try {
             const res = (await triggerOsago(bestPlate).unwrap()) as OsagoCheckResponse;
             const has = res.hasOsago ?? res.has_osago ?? false;
@@ -283,9 +270,7 @@ const ReferralInfo: FC = () => {
             const d = res.details || {};
             const lines: string[] = [];
             if (d.startDate || d.endDate) {
-              lines.push(
-                `Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`
-              );
+              lines.push(`Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`);
             }
             if (d.database1) lines.push(String(d.database1));
             if (d.database2) lines.push(String(d.database2));
@@ -294,27 +279,18 @@ const ReferralInfo: FC = () => {
               const msg = `Полис найден для номера ${res.plate}`;
               setResult({ type: 'success', message: msg });
               setDetails(lines);
-              pushToast(msg, 'found'); // синий, не стакать
+              pushToast(msg, 'found');
             } else {
               const msg = `Полис не найден для номера ${res.plate}`;
               setResult({ type: 'error', message: msg });
               setDetails(lines);
-              // добавить в список не найденных (без дубликатов, с нормализацией регистра/пробелов)
-              if (res.plate) {
-                const p = String(res.plate).toUpperCase().trim();
-                const exists = notFoundPlates.includes(p);
-                if (!exists) {
-                  setNotFoundPlates((prev) => [...prev, p]);
-                  pushToast(msg, 'notfound'); // показываем только если добавили новый номер
-                }
-                // если уже в списке — тост не показываем
-              } else {
-                // если номер не пришёл вовсе, показываем тост как раньше
+              const p = String(res.plate || bestPlate).toUpperCase().trim();
+              const exists = notFoundPlates.includes(p);
+              if (!exists) {
+                setNotFoundPlates((prev) => [...prev, p]);
                 pushToast(msg, 'notfound');
               }
             }
-
-            // Камеру не закрываем — продолжаем показывать превью и позволяем повторные сканы
           } catch {
             const msg = `${ruDict['s_request_error']} / ${kyDict['s_request_error']}`;
             setResult({ type: 'error', message: msg });
@@ -323,13 +299,11 @@ const ReferralInfo: FC = () => {
           }
         }
       } else {
-        const list = items.map((i) => i.plate).filter(Boolean).join(', ');
-        if (list) {
-          pushToast(`Найдены: ${list}`, 'info');
-        }
+        // no plate-like pattern in OCR text
+        console.debug('[OCR] no plate pattern found');
       }
     } catch (e) {
-      console.error('detect-number error', e);
+      console.error('ocr error', e);
       pushToast('Ошибка распознавания', 'error');
     } finally {
       setIsSending(false);
@@ -343,12 +317,23 @@ const ReferralInfo: FC = () => {
         intervalRef.current = null;
       }
       stopCamera();
+      if (workerRef.current) {
+        workerRef.current
+          .terminate()
+          .catch(() => {})
+          .finally(() => {
+            workerRef.current = null;
+            setOcrReady(false);
+          });
+      }
       return;
     }
+
+    void initOcrWorker();
     startCamera();
     intervalRef.current = window.setInterval(() => {
       void captureAndSend();
-    }, 1000);
+    }, 1500);
 
     return () => {
       if (intervalRef.current) {
@@ -356,6 +341,15 @@ const ReferralInfo: FC = () => {
         intervalRef.current = null;
       }
       stopCamera();
+      if (workerRef.current) {
+        workerRef.current
+          .terminate()
+          .catch(() => {})
+          .finally(() => {
+            workerRef.current = null;
+            setOcrReady(false);
+          });
+      }
     };
   }, [isCamOpen]);
 
