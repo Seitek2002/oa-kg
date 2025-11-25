@@ -60,7 +60,6 @@ const ReferralInfo: FC = () => {
 
   // Модалка камеры и авто-сканирование
   const [isCamOpen, setIsCamOpen] = useState(false);
-  const [isSending, setIsSending] = useState(false);
   const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'found' | 'notfound' | 'error' | 'info' }>>([]);
   const pushToast = (message: string, type: 'found' | 'notfound' | 'error' | 'info' = 'info') => {
     const id = Date.now() + Math.random();
@@ -78,6 +77,9 @@ const ReferralInfo: FC = () => {
   const videoRef2 = useRef<HTMLVideoElement>(null);
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
   const intervalRef = useRef<number | null>(null);
+  const captureIntervalRef = useRef<number | null>(null);
+  const frameBufferRef = useRef<{ blob: Blob; score: number }[]>([]);
+  const sendingRef = useRef(false);
   const lastCheckedRef = useRef<{ plate: string; ts: number } | null>(null);
   const [detectNumber] = useDetectNumberMutation();
   const [notFoundPlates, setNotFoundPlates] = useState<string[]>([]);
@@ -192,169 +194,195 @@ const ReferralInfo: FC = () => {
     }
   };
 
-  const captureAndSend = async () => {
-    if (!videoRef2.current || !canvasRef2.current || isSending) return;
-    try {
-      setIsSending(true);
-      const video = videoRef2.current;
-      const canvas = canvasRef2.current;
+  // Быстрая оценка «резкости» кадра
+  const sharpnessScore = (canvas: HTMLCanvasElement) => {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return 0;
+    const img = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let sum = 0;
+    for (let i = 0; i < img.length; i += 4) {
+      const g = img[i] * 0.299 + img[i + 1] * 0.587 + img[i + 2] * 0.114;
+      sum += g;
+    }
+    return sum;
+  };
 
-      // Debug: ensure we actually have real video dimensions
-      if (!video.videoWidth || !video.videoHeight) {
-        // eslint-disable-next-line no-console
-        console.warn('[PlateScanner] video dimensions are 0; skip capture until metadata is loaded');
-        setIsSending(false);
+  // Захват кадра каждые 100мс в буфер (до 10 штук)
+  const captureFrameToBuffer = () => {
+    const video = videoRef2.current;
+    const canvas = canvasRef2.current;
+    if (!video || !canvas) return;
+    if (!video.videoWidth || !video.videoHeight) return;
+
+    const maxW = 1280;
+    const scale = Math.min(1, maxW / video.videoWidth);
+    const cw = Math.round(video.videoWidth * scale);
+    const ch = Math.round(video.videoHeight * scale);
+    canvas.width = cw;
+    canvas.height = ch;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, cw, ch);
+
+    const score = sharpnessScore(canvas);
+
+    canvas.toBlob(
+      (b) => {
+        if (!b) return;
+        const buf = frameBufferRef.current;
+        buf.push({ blob: b, score });
+        if (buf.length > 10) buf.shift();
+      },
+      'image/jpeg',
+      0.9
+    );
+  };
+
+  // Отправка Blob на сервер + постобработка (как в captureAndSend)
+  const processBlob = async (blob: Blob) => {
+    // eslint-disable-next-line no-console
+    console.debug('[PlateScanner] blob size', blob.size);
+
+    const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
+    const resp = await detectNumber({ frame: file }).unwrap();
+    const items = toItems(resp);
+
+    if (items.length === 0) {
+      let msg: string | undefined;
+      if (resp && typeof resp === 'object' && 'message' in resp) {
+        const m = (resp as { message?: unknown }).message;
+        msg = typeof m === 'string' ? m : undefined;
+      }
+      if (msg) {
+        pushToast(msg, 'info');
+      }
+      return;
+    }
+
+    const sorted = [...items].sort((a, b) => {
+      const ca = typeof a.confidence === 'number' ? a.confidence : -1;
+      const cb = typeof b.confidence === 'number' ? b.confidence : -1;
+      return cb - ca;
+    });
+    const best = sorted[0];
+    const bestPlate = best?.plate || '';
+    if (bestPlate) {
+      const now = Date.now();
+      if (
+        lastCheckedRef.current &&
+        lastCheckedRef.current.plate === bestPlate &&
+        now - lastCheckedRef.current.ts < 10000
+      ) {
         return;
       }
+      lastCheckedRef.current = { plate: bestPlate, ts: now };
+      try {
+        const res = (await triggerOsago(bestPlate).unwrap()) as OsagoCheckResponse;
+        const has = res.hasOsago ?? res.has_osago ?? false;
 
-      const vw = video.videoWidth;
-      const vh = video.videoHeight;
-      // eslint-disable-next-line no-console
-      console.debug('[PlateScanner] capture dims', { vw, vh });
-      const maxW = 1280;
-      const scale = Math.min(1, maxW / vw);
-      const cw = Math.round(vw * scale);
-      const ch = Math.round(vh * scale);
-
-      canvas.width = cw;
-      canvas.height = ch;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        setIsSending(false);
-        return;
-      }
-
-      ctx.drawImage(video, 0, 0, cw, ch);
-
-      const blob: Blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          (b) => {
-            if (!b) return reject(new Error('Не удалось получить Blob'));
-            resolve(b);
-          },
-          'image/jpeg',
-          0.9
-        );
-      });
-
-      // eslint-disable-next-line no-console
-      console.debug('[PlateScanner] blob size', blob.size);
-
-      const file = new File([blob], 'frame.jpg', { type: 'image/jpeg' });
-      const resp = await detectNumber({ frame: file }).unwrap();
-      const items = toItems(resp);
-
-      if (items.length === 0) {
-        let msg: string | undefined;
-        if (resp && typeof resp === 'object' && 'message' in resp) {
-          const m = (resp as { message?: unknown }).message;
-          msg = typeof m === 'string' ? m : undefined;
+        const d = res.details || {};
+        const lines: string[] = [];
+        if (d.startDate || d.endDate) {
+          lines.push(
+            `Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`
+          );
         }
-        if (msg) {
-          pushToast(msg, 'info'); // показываем текст сервера, например: "Номера не найдены"
-        }
-        return;
-      }
+        if (d.database1) lines.push(String(d.database1));
+        if (d.database2) lines.push(String(d.database2));
 
-      // лучший по confidence -> иначе первый
-      const sorted = [...items].sort((a, b) => {
-        const ca = typeof a.confidence === 'number' ? a.confidence : -1;
-        const cb = typeof b.confidence === 'number' ? b.confidence : -1;
-        return cb - ca;
-      });
-      const best = sorted[0];
-      const bestPlate = best?.plate || '';
-      if (bestPlate) {
-
-        // Автозапрос ОСАГО по распознанному номеру (с анти-спамом на 10 секунд для одинакового номера)
-        const now = Date.now();
-        if (
-          lastCheckedRef.current &&
-          lastCheckedRef.current.plate === bestPlate &&
-          now - lastCheckedRef.current.ts < 10000
-        ) {
-          // Пропускаем повторный запрос для того же номера в течение 10 секунд
+        if (has) {
+          const msg = `Полис найден для номера ${res.plate}`;
+          setResult({ type: 'success', message: msg });
+          setDetails(lines);
+          pushToast(msg, 'found'); // синий, не стакать
         } else {
-          lastCheckedRef.current = { plate: bestPlate, ts: now };
-          try {
-            const res = (await triggerOsago(bestPlate).unwrap()) as OsagoCheckResponse;
-            const has = res.hasOsago ?? res.has_osago ?? false;
-
-            const d = res.details || {};
-            const lines: string[] = [];
-            if (d.startDate || d.endDate) {
-              lines.push(
-                `Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`
-              );
+          const msg = `Полис не найден для номера ${res.plate}`;
+          setResult({ type: 'error', message: msg });
+          setDetails(lines);
+          if (res.plate) {
+            const p = String(res.plate).toUpperCase().trim();
+            const exists = notFoundPlates.includes(p);
+            if (!exists) {
+              setNotFoundPlates((prev) => [...prev, p]);
+              pushToast(msg, 'notfound');
             }
-            if (d.database1) lines.push(String(d.database1));
-            if (d.database2) lines.push(String(d.database2));
-
-            if (has) {
-              const msg = `Полис найден для номера ${res.plate}`;
-              setResult({ type: 'success', message: msg });
-              setDetails(lines);
-              pushToast(msg, 'found'); // синий, не стакать
-            } else {
-              const msg = `Полис не найден для номера ${res.plate}`;
-              setResult({ type: 'error', message: msg });
-              setDetails(lines);
-              // добавить в список не найденных (без дубликатов, с нормализацией регистра/пробелов)
-              if (res.plate) {
-                const p = String(res.plate).toUpperCase().trim();
-                const exists = notFoundPlates.includes(p);
-                if (!exists) {
-                  setNotFoundPlates((prev) => [...prev, p]);
-                  pushToast(msg, 'notfound'); // показываем только если добавили новый номер
-                }
-                // если уже в списке — тост не показываем
-              } else {
-                // если номер не пришёл вовсе, показываем тост как раньше
-                pushToast(msg, 'notfound');
-              }
-            }
-
-            // Камеру не закрываем — продолжаем показывать превью и позволяем повторные сканы
-          } catch {
-            const msg = `${ruDict['s_request_error']} / ${kyDict['s_request_error']}`;
-            setResult({ type: 'error', message: msg });
-            setDetails([]);
-            pushToast(msg, 'error');
+          } else {
+            pushToast(msg, 'notfound');
           }
         }
-      } else {
-        const list = items.map((i) => i.plate).filter(Boolean).join(', ');
-        if (list) {
-          pushToast(`Найдены: ${list}`, 'info');
-        }
+      } catch {
+        const msg = `${ruDict['s_request_error']} / ${kyDict['s_request_error']}`;
+        setResult({ type: 'error', message: msg });
+        setDetails([]);
+        pushToast(msg, 'error');
       }
-    } catch (e) {
-      console.error('detect-number error', e);
-      pushToast('Ошибка распознавания', 'error');
-    } finally {
-      setIsSending(false);
+    } else {
+      const list = items.map((i) => i.plate).filter(Boolean).join(', ');
+      if (list) {
+        pushToast(`Найдены: ${list}`, 'info');
+      }
     }
   };
 
+
   useEffect(() => {
     if (!isCamOpen) {
+      if (captureIntervalRef.current) {
+        window.clearInterval(captureIntervalRef.current);
+        captureIntervalRef.current = null;
+      }
       if (intervalRef.current) {
         window.clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      frameBufferRef.current = [];
+      sendingRef.current = false;
       stopCamera();
       return;
     }
     startCamera();
-    intervalRef.current = window.setInterval(() => {
-      void captureAndSend();
+
+    // Захват кадров в буфер каждые 100мс
+    captureIntervalRef.current = window.setInterval(() => {
+      captureFrameToBuffer();
+    }, 100);
+
+    // Каждую секунду отправлять самый «резкий» кадр
+    intervalRef.current = window.setInterval(async () => {
+      if (sendingRef.current) return;
+      const buf = frameBufferRef.current;
+      if (!buf.length) return;
+
+      let best = buf[0];
+      for (let i = 1; i < buf.length; i++) {
+        if (buf[i].score > best.score) best = buf[i];
+      }
+      // очистка окна
+      frameBufferRef.current = [];
+
+      try {
+        sendingRef.current = true;
+        await processBlob(best.blob);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('send best frame failed', e);
+      } finally {
+        sendingRef.current = false;
+      }
     }, 1000);
 
     return () => {
+      if (captureIntervalRef.current) {
+        window.clearInterval(captureIntervalRef.current);
+        captureIntervalRef.current = null;
+      }
       if (intervalRef.current) {
         window.clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      frameBufferRef.current = [];
+      sendingRef.current = false;
       stopCamera();
     };
   }, [isCamOpen]);
