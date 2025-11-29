@@ -1,5 +1,11 @@
 import { FC, useEffect, useState, useRef } from 'react';
-import { IonButton, IonPage, IonInput, IonSpinner, IonModal } from '@ionic/react';
+import {
+  IonButton,
+  IonPage,
+  IonInput,
+  IonSpinner,
+  IonModal,
+} from '@ionic/react';
 import { createPortal } from 'react-dom';
 import referralLogo from '../../assets/referralInfo/hor-logo.png';
 import {
@@ -61,12 +67,22 @@ const ReferralInfo: FC = () => {
   // Модалка камеры и авто-сканирование
   const [isCamOpen, setIsCamOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'found' | 'notfound' | 'error' | 'info' }>>([]);
-  const pushToast = (message: string, type: 'found' | 'notfound' | 'error' | 'info' = 'info') => {
+  const [toasts, setToasts] = useState<
+    Array<{
+      id: number;
+      message: string;
+      type: 'found' | 'notfound' | 'error' | 'info';
+    }>
+  >([]);
+  const pushToast = (
+    message: string,
+    type: 'found' | 'notfound' | 'error' | 'info' = 'info'
+  ) => {
     const id = Date.now() + Math.random();
     setToasts((prev) => {
       // Синие (found) не накапливаем: удаляем предыдущие blue перед добавлением
-      const base = type === 'found' ? prev.filter((t) => t.type !== 'found') : prev;
+      const base =
+        type === 'found' ? prev.filter((t) => t.type !== 'found') : prev;
       const next = [...base, { id, message, type }];
       const MAX = 5; // общий лимит, зелёные (notfound) могут стакаться до MAX
       return next.length > MAX ? next.slice(next.length - MAX) : next;
@@ -171,7 +187,9 @@ const ReferralInfo: FC = () => {
         audio: false,
       });
       if (videoRef2.current) {
-        const vid = videoRef2.current as HTMLVideoElement & { srcObject: MediaStream | null };
+        const vid = videoRef2.current as HTMLVideoElement & {
+          srcObject: MediaStream | null;
+        };
         vid.srcObject = stream;
         await vid.play();
       }
@@ -182,11 +200,15 @@ const ReferralInfo: FC = () => {
   };
 
   const stopCamera = () => {
-    const vid = videoRef2.current as (HTMLVideoElement & { srcObject: MediaStream | null }) | null;
+    const vid = videoRef2.current as
+      | (HTMLVideoElement & { srcObject: MediaStream | null })
+      | null;
     const mediaStream = vid?.srcObject ?? null;
     mediaStream?.getTracks().forEach((t) => t.stop());
     if (videoRef2.current) {
-      const vid2 = videoRef2.current as HTMLVideoElement & { srcObject: MediaStream | null };
+      const vid2 = videoRef2.current as HTMLVideoElement & {
+        srcObject: MediaStream | null;
+      };
       vid2.pause();
       vid2.srcObject = null;
     }
@@ -202,7 +224,9 @@ const ReferralInfo: FC = () => {
       // Debug: ensure we actually have real video dimensions
       if (!video.videoWidth || !video.videoHeight) {
         // eslint-disable-next-line no-console
-        console.warn('[PlateScanner] video dimensions are 0; skip capture until metadata is loaded');
+        console.warn(
+          '[PlateScanner] video dimensions are 0; skip capture until metadata is loaded'
+        );
         setIsSending(false);
         return;
       }
@@ -245,14 +269,6 @@ const ReferralInfo: FC = () => {
       const items = toItems(resp);
 
       if (items.length === 0) {
-        let msg: string | undefined;
-        if (resp && typeof resp === 'object' && 'message' in resp) {
-          const m = (resp as { message?: unknown }).message;
-          msg = typeof m === 'string' ? m : undefined;
-        }
-        if (msg) {
-          pushToast(msg, 'info'); // показываем текст сервера, например: "Номера не найдены"
-        }
         return;
       }
 
@@ -265,7 +281,6 @@ const ReferralInfo: FC = () => {
       const best = sorted[0];
       const bestPlate = best?.plate || '';
       if (bestPlate) {
-
         // Автозапрос ОСАГО по распознанному номеру (с анти-спамом на 10 секунд для одинакового номера)
         const now = Date.now();
         if (
@@ -277,14 +292,18 @@ const ReferralInfo: FC = () => {
         } else {
           lastCheckedRef.current = { plate: bestPlate, ts: now };
           try {
-            const res = (await triggerOsago(bestPlate).unwrap()) as OsagoCheckResponse;
+            const res = (await triggerOsago(
+              bestPlate
+            ).unwrap()) as OsagoCheckResponse;
             const has = res.hasOsago ?? res.has_osago ?? false;
 
             const d = res.details || {};
             const lines: string[] = [];
             if (d.startDate || d.endDate) {
               lines.push(
-                `Период: ${d.startDate ?? ''}${d.startDate && d.endDate ? ' - ' : ''}${d.endDate ?? ''}`
+                `Период: ${d.startDate ?? ''}${
+                  d.startDate && d.endDate ? ' - ' : ''
+                }${d.endDate ?? ''}`
               );
             }
             if (d.database1) lines.push(String(d.database1));
@@ -323,7 +342,10 @@ const ReferralInfo: FC = () => {
           }
         }
       } else {
-        const list = items.map((i) => i.plate).filter(Boolean).join(', ');
+        const list = items
+          .map((i) => i.plate)
+          .filter(Boolean)
+          .join(', ');
         if (list) {
           pushToast(`Найдены: ${list}`, 'info');
         }
@@ -455,17 +477,38 @@ const ReferralInfo: FC = () => {
                 playsInline
                 autoPlay
                 muted
-                style={{ width: '100%', height: '40vh', objectFit: 'cover', borderRadius: 8, background: '#000' }}
+                style={{
+                  width: '100%',
+                  height: '40vh',
+                  objectFit: 'cover',
+                  borderRadius: 8,
+                  background: '#000',
+                }}
               />
               <canvas ref={canvasRef2} style={{ display: 'none' }} />
-              <IonButton expand='block' fill='outline' onClick={closeCamModal} style={{ marginTop: 12 }}>
+              <IonButton
+                expand='block'
+                fill='outline'
+                onClick={closeCamModal}
+                style={{ marginTop: 12 }}
+              >
                 Закрыть
               </IonButton>
               {/* Список не найденных полисов */}
               {notFoundPlates.length > 0 && (
                 <div style={{ marginTop: 12 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 8 }}>Не найденные полисы</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: '30vh', overflowY: 'auto' }}>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                    Не найденные полисы
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column-reverse',
+                      gap: 8,
+                      maxHeight: '30vh',
+                      overflowY: 'auto',
+                    }}
+                  >
                     {notFoundPlates.map((p) => (
                       <div
                         key={p}
@@ -479,10 +522,21 @@ const ReferralInfo: FC = () => {
                         }}
                       >
                         <span style={{ fontWeight: 500 }}>{p}</span>
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: 8,
+                            alignItems: 'center',
+                          }}
+                        >
                           <IonButton
                             size='small'
-                            onClick={() => window.open('https://oa.kg/bishkek-osago-online', '_blank')}
+                            onClick={() =>
+                              window.open(
+                                'https://oa.kg/bishkek-osago-online',
+                                '_blank'
+                              )
+                            }
                           >
                             Оформить
                           </IonButton>
@@ -491,7 +545,9 @@ const ReferralInfo: FC = () => {
                             fill='clear'
                             color='medium'
                             onClick={() =>
-                              setNotFoundPlates((prev) => prev.filter((x) => x !== p))
+                              setNotFoundPlates((prev) =>
+                                prev.filter((x) => x !== p)
+                              )
                             }
                             aria-label='Удалить номер'
                             title='Удалить'
@@ -525,14 +581,14 @@ const ReferralInfo: FC = () => {
                   <div
                     key={t.id}
                     style={{
-                  background:
-                    t.type === 'found'
-                      ? '#3880ff' // синий для найденного полиса
-                      : t.type === 'notfound'
-                      ? '#2e7d32' // зелёный для не найденного
-                      : t.type === 'error'
-                      ? '#c62828' // красный для ошибок
-                      : 'rgba(0,0,0,0.85)',
+                      background:
+                        t.type === 'found'
+                          ? '#3880ff' // синий для найденного полиса
+                          : t.type === 'notfound'
+                          ? '#2e7d32' // зелёный для не найденного
+                          : t.type === 'error'
+                          ? '#c62828' // красный для ошибок
+                          : 'rgba(0,0,0,0.85)',
                       color: '#fff',
                       padding: '10px 12px',
                       borderRadius: 8,
